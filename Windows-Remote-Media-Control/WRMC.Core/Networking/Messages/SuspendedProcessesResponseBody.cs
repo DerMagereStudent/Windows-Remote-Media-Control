@@ -6,7 +6,7 @@ namespace WRMC.Core.Networking {
 	/// <summary>
 	/// Represents the data body for the response data containing all suspended media processes of the server device.
 	/// </summary>
-	public class SuspendedProcessesResponseBody {
+	public class SuspendedProcessesResponseBody : MessageBody {
 		/// <summary>
 		/// List of all suspended processes.
 		/// </summary>

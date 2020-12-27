@@ -6,7 +6,7 @@ namespace WRMC.Core.Networking {
 	/// <summary>
 	/// Represents the data body for the response data containing all active media sessions on the server device.
 	/// </summary>
-	public class MediaSessionsResponseBody {
+	public class MediaSessionsResponseBody : MessageBody {
 		/// <summary>
 		/// List of all media sessions.
 		/// </summary>

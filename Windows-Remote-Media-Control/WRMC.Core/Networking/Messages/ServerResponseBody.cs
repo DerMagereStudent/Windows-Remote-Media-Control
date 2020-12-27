@@ -2,7 +2,7 @@
 	/// <summary>
 	/// Represents the data body for the response data containing the information of a server device.
 	/// </summary>
-	public class ServerResponseBody {
+	public class ServerResponseBody : MessageBody {
 		/// <summary>
 		/// The server device information.
 		/// </summary>
