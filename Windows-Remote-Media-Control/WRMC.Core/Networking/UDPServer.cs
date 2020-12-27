@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace WRMC.Core.Networking {
 	/// <summary>
-	/// Represents the windows-/server-side part of the communication.
+	/// Represents the windows-/server-side part of the UDP communication.
 	/// </summary>
 	public class UdpServer {
 		private System.Net.Sockets.UdpClient server;
@@ -91,6 +91,8 @@ namespace WRMC.Core.Networking {
 					if (request.Method == Request.Type.FindServer)
 						this.OnFindServerRequestReceived?.Invoke(this, EventArgs.Empty);
 				}
+
+				this.server.BeginReceive(this.OnRequestReceived, null);
 			}
 			catch (ObjectDisposedException) {
 				// Server was stopped

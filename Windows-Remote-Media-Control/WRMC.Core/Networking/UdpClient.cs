@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace WRMC.Core.Networking {
+	/// <summary>
+	/// Represents the Android-/client-side part of the UDP communication.
+	/// </summary>
 	public class UdpClient {
 		private System.Net.Sockets.UdpClient client;
 		private CancellationTokenSource cancellationTokenSource;
@@ -48,7 +51,7 @@ namespace WRMC.Core.Networking {
 		/// <param name="sendTimeout">The time span between two requests.</param>
 		/// <param name="searchDuration">The duration the client should keep sending requests.</param>
 		public void StartSending(int sendTimeout, int searchDuration) {
-			if (this.cancellationTokenSource == null || !this.cancellationTokenSource.IsCancellationRequested)
+			if (this.cancellationTokenSource != null && !this.cancellationTokenSource.IsCancellationRequested)
 				return;
 
 			this.cancellationTokenSource = new CancellationTokenSource(searchDuration);
@@ -104,6 +107,8 @@ namespace WRMC.Core.Networking {
 					if (response.Method == Response.Type.Servers)
 						this.OnServersResponseReceived?.Invoke(this, new MessageBodyEventArgs<ServerResponseBody>(response.Body as ServerResponseBody));
 				}
+
+				this.client.BeginReceive(this.OnResponseReceived, null);
 			}
 			catch (ObjectDisposedException) {
 				// Server was stopped

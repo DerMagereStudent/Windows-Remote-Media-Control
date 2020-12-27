@@ -2,7 +2,7 @@
 
 namespace WRMC.Core.Networking {
 	public class MessageBodyEventArgs<T> : EventArgs where T : MessageBody {
-		public MessageBody DataBody;
+		public T DataBody;
 
 		public MessageBodyEventArgs(T dataBody) {
 			this.DataBody = dataBody;
@@ -10,7 +10,7 @@ namespace WRMC.Core.Networking {
 	}
 
 	public class MessageEventArgs<T> : EventArgs where T : Message {
-		public Message Message;
+		public T Message;
 
 		public MessageEventArgs(T message) {
 			this.Message = message;
@@ -18,7 +18,7 @@ namespace WRMC.Core.Networking {
 	}
 
 	public class RequestEventArgs<T> : EventArgs where T : Request {
-		public Request Request;
+		public T Request;
 
 		public RequestEventArgs(T request) {
 			this.Request = request;
@@ -26,7 +26,7 @@ namespace WRMC.Core.Networking {
 	}
 
 	public class ResponseEventArgs<T> : EventArgs where T : Response {
-		public Response Response;
+		public T Response;
 
 		public ResponseEventArgs(T response) {
 			this.Response = response;

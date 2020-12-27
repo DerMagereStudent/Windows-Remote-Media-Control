@@ -10,7 +10,7 @@ namespace WRMC.Core.Networking {
 		/// <summary>
 		/// The port that the UDP client is listening on. Different from the default server port to prevent the server from receiving its own message while sending and vice versa.
 		/// </summary>
-		public static int DefaultClientPort = 6167;
+		public static int DefaultClientPort = 6197;
 
 		/// <summary>
 		/// The default IP end point the server listens to.
