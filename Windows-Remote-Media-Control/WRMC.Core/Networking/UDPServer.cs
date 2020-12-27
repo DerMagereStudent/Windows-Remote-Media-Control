@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 using System.Text;
 
 using Newtonsoft.Json;
@@ -9,7 +8,7 @@ namespace WRMC.Core.Networking {
 	/// Represents the windows-/server-side part of the communication.
 	/// </summary>
 	public class UdpServer {
-		private UdpClient server;
+		private System.Net.Sockets.UdpClient server;
 
 		/// <summary>
 		/// Property which indicates if the server is currently listening for incoming datagrams.
@@ -22,10 +21,10 @@ namespace WRMC.Core.Networking {
 		public event TypedEventHandler<UdpServer, EventArgs> OnFindServerRequestReceived = null;
 
 		/// <summary>
-		/// Creates a new instance of the class <see cref="UdpServer"/>
+		/// Creates a new instance of the class <see cref="UdpServer"/>.
 		/// </summary>
 		public UdpServer() {
-			this.server = new UdpClient(UdpOptions.DefaultServerPort);
+			this.server = new System.Net.Sockets.UdpClient(UdpOptions.DefaultServerPort);
 		}
 
 		/// <summary>
@@ -37,7 +36,7 @@ namespace WRMC.Core.Networking {
 
 			// If client was closed due to the call of System.Net.UdpClient.Close.
 			if (this.server.Client == null)
-				this.server = new UdpClient(UdpOptions.DefaultServerPort);
+				this.server = new System.Net.Sockets.UdpClient(UdpOptions.DefaultServerPort);
 
 			this.server.BeginReceive(this.OnRequestReceived, null);
 			this.Running = true;
@@ -90,7 +89,7 @@ namespace WRMC.Core.Networking {
 					Request request = datagramObject as Request;
 
 					if (request.Method == Request.Type.FindServer)
-						OnFindServerRequestReceived?.Invoke(this, EventArgs.Empty);
+						this.OnFindServerRequestReceived?.Invoke(this, EventArgs.Empty);
 				}
 			}
 			catch (ObjectDisposedException) {
