@@ -5,6 +5,11 @@ namespace WRMC.Core.Models {
 	/// Represents a single windows transport controls media session.
 	/// </summary>
 	public class MediaSession : IEquatable<MediaSession> {
+		public enum PlaybackState {
+			Paused,
+			Playing
+		}
+
 		/// <summary>
 		/// The id of the corresponding process.
 		/// </summary>
@@ -24,6 +29,8 @@ namespace WRMC.Core.Models {
 		/// the artist of the media being played
 		/// </summary>
 		public string Artist { get; set; }
+
+		public PlaybackState State { get; set; }
 
 		public bool Equals(MediaSession other) => this.ProcessID == other.ProcessID && this.Title.Equals(other.Title) && this.Artist.Equals(other.Artist);
 	}
