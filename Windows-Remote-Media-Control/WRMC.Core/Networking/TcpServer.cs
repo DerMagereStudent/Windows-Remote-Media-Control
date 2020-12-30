@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -59,9 +60,9 @@ namespace WRMC.Core.Networking {
 		/// Creates a new object of the class <see cref="TcpServer"/>
 		/// </summary>
 		public TcpServer() {
-			this.server = new TcpListener(TcpOptions.DefaultIPAddress, TcpOptions.DefaultPort);
-			this.clients = new Dictionary<TcpClient, ClientDevice>();
-			this.clientBuffers = new Dictionary<TcpClient, byte[]>();
+			this.server = new TcpListener(TcpOptions.DefaultListenIPAddress, TcpOptions.DefaultPort);
+			this.clients = new Dictionary<System.Net.Sockets.TcpClient, ClientDevice>();
+			this.clientBuffers = new Dictionary<System.Net.Sockets.TcpClient, byte[]>();
 			Task.Factory.StartNew(() => this.ClientConnectionMonitoring());
 		}
 
@@ -134,6 +135,7 @@ namespace WRMC.Core.Networking {
 			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultMessageSerializationOptions));
 
 			client.GetStream().BeginWrite(data, 0, data.Length, this.OnWrite, client);
+			this.OnConnectionAccpeted?.Invoke(this, new ClientEventArgs(client, clientDevice));
 		}
 
 		/// <summary>
@@ -173,10 +175,10 @@ namespace WRMC.Core.Networking {
 		/// <param name="receiver">The receiver client of the data.</param>
 		public void SendData(byte[] data, ClientDevice receiver) {
 			try {
-				TcpClient receiverClient = null;
+				System.Net.Sockets.TcpClient receiverClient = null;
 
 				lock (this.clientsLock) {
-					foreach (KeyValuePair<TcpClient, ClientDevice> client in this.clients)
+					foreach (KeyValuePair<System.Net.Sockets.TcpClient, ClientDevice> client in this.clients)
 						if (client.Value.Equals(receiver)) {
 							receiverClient = client.Key;
 							break;
@@ -245,6 +247,8 @@ namespace WRMC.Core.Networking {
 				
 				lock (this.clientBuffersLock)
 					dataString = Encoding.UTF8.GetString(this.clientBuffers[client], 0, received);
+
+				Trace.WriteLine(dataString);
 				
 				object dataObject = JsonConvert.DeserializeObject(dataString, SerializationOptions.DefaultMessageSerializationOptions);
 
@@ -257,8 +261,10 @@ namespace WRMC.Core.Networking {
 					if (dataObject is Request) {
 						Request request = dataObject as Request;
 
-						if (request.Method == Request.Type.Connect)
-							this.OnConnectRequestReceived?.Invoke(this, new ClientRequestEventArgs(client, null, request));
+						if (request.Method == Request.Type.Connect) {
+							AuthenticatedMessageBody body = request.Body as AuthenticatedMessageBody;
+							this.OnConnectRequestReceived?.Invoke(this, new ClientRequestEventArgs(client, body.ClientDevice, request));
+						}
 					}
 				}
 				else {
@@ -283,14 +289,18 @@ namespace WRMC.Core.Networking {
 		private void ClientConnectionMonitoring() {
 			while (true) {
 				lock (this.clientsLock) {
+					List<System.Net.Sockets.TcpClient> clientsToClose = new List<System.Net.Sockets.TcpClient>();
+
 					foreach (System.Net.Sockets.TcpClient client in this.clients.Keys)
 						if (!client.IsConnected())
-							this.CloseConnection(client);
+							clientsToClose.Add(client);
+
+					foreach(System.Net.Sockets.TcpClient client in clientsToClose)
+						this.CloseConnection(client);
 				}
 				Thread.Sleep(1000);
 			}
 		}
-
 
 		private void CloseConnection(System.Net.Sockets.TcpClient client) {
 			try { client.GetStream().Close(); } catch (ObjectDisposedException) { }

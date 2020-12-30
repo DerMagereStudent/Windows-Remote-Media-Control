@@ -1,5 +1,7 @@
 ﻿using System.Net;
 
+using Newtonsoft.Json;
+
 namespace WRMC.Core.Networking {
 	/// <summary>
 	/// Represents all necessary information about a client.
@@ -18,6 +20,7 @@ namespace WRMC.Core.Networking {
 		/// <summary>
 		/// The local IP-Addresse of the client.
 		/// </summary>
+		[JsonConverter(typeof(IPAddressJsonConverter))]
 		public IPAddress IPAddress { get; set; }
 
 		/// <summary>

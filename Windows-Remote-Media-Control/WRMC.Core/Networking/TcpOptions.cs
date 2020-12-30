@@ -8,9 +8,14 @@ namespace WRMC.Core.Networking {
 		public static int DefaultPort = 6198;
 
 		/// <summary>
+		/// The default maximum tries to build a TCP connection.
+		/// </summary>
+		public static int DefaultMaxConnectTries = 10;
+
+		/// <summary>
 		/// The default IP address the server listens to.
 		/// </summary>
-		public static IPAddress DefaultIPAddress = IPAddress.Any;
+		public static IPAddress DefaultListenIPAddress = IPAddress.Any;
 
 		/// <summary>
 		/// The default IP end point the server listens to.

@@ -20,11 +20,9 @@ namespace WRMC.Core.Networking {
 	}
 
 	public class ServerEventArgs : EventArgs {
-		public System.Net.Sockets.TcpListener Server { get; set; }
 		public ServerDevice ServerDevice { get; set; }
 
-		public ServerEventArgs(System.Net.Sockets.TcpListener server, ServerDevice serverDevice) {
-			this.Server = server;
+		public ServerEventArgs(ServerDevice serverDevice) {
 			this.ServerDevice = serverDevice;
 		}
 	}
@@ -56,7 +54,7 @@ namespace WRMC.Core.Networking {
 	public class ServerMessageEventArgs : ServerEventArgs {
 		public Message Message { get; set; }
 
-		public ServerMessageEventArgs(System.Net.Sockets.TcpListener server, ServerDevice serverDevice, Message message) : base(server, serverDevice) {
+		public ServerMessageEventArgs(ServerDevice serverDevice, Message message) : base(serverDevice) {
 			this.Message = message;
 		}
 	}
@@ -64,7 +62,7 @@ namespace WRMC.Core.Networking {
 	public class ServerRequestEventArgs : ServerEventArgs {
 		public Request Request { get; set; }
 
-		public ServerRequestEventArgs(System.Net.Sockets.TcpListener server, ServerDevice serverDevice, Request request) : base(server, serverDevice) {
+		public ServerRequestEventArgs(ServerDevice serverDevice, Request request) : base(serverDevice) {
 			this.Request = request;
 		}
 	}
@@ -72,7 +70,7 @@ namespace WRMC.Core.Networking {
 	public class ServerResponseEventArgs : ServerEventArgs {
 		public Response Response { get; set; }
 
-		public ServerResponseEventArgs(System.Net.Sockets.TcpListener server, ServerDevice serverDevice, Response response) : base(server, serverDevice) {
+		public ServerResponseEventArgs(ServerDevice serverDevice, Response response) : base(serverDevice) {
 			this.Response = response;
 		}
 	}
