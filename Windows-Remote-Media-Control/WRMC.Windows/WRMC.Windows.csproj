@@ -52,6 +52,37 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\BringToFrontButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\CustomScrollBarV.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\CustomScrollBarV.Designer.cs">
+      <DependentUpon>CustomScrollBarV.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\CustomScrollBarH.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\CustomScrollBarH.Designer.cs">
+      <DependentUpon>CustomScrollBarH.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FormDragControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\IScrollable.cs" />
+    <Compile Include="Controls\NoFocusCuesButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ScrollablePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ScrollablePanel.Designer.cs">
+      <DependentUpon>ScrollablePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WindowsDefaultTitleBarButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -60,6 +91,18 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\CustomScrollBarV.resx">
+      <DependentUpon>CustomScrollBarV.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\CustomScrollBarH.resx">
+      <DependentUpon>CustomScrollBarH.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ScrollablePanel.resx">
+      <DependentUpon>ScrollablePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -82,9 +125,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\WRMC.Core\WRMC.Core.csproj">
       <Project>{a5048d97-c15b-456d-94dd-d669c711b3da}</Project>
