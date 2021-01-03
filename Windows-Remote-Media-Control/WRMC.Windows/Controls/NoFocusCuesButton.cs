@@ -5,7 +5,6 @@ namespace WRMC.Windows.Controls {
 	/// <summary>
 	/// Modified button which has no focus rectangles when the form which contains this button loses focus while the button was focused.
 	/// </summary>
-	[ToolboxItem(typeof(NoFocusCueBotton))]
 	public class NoFocusCueBotton : Button {
 		protected override bool ShowFocusCues => false;
 

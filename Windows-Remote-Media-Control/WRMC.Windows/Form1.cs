@@ -5,15 +5,25 @@ namespace WRMC.Windows {
 	public partial class Form1 : Form {
 		public Form1() {
 			this.InitializeComponent();
+			this.notifyIcon.Icon = SystemIcons.Application;
 
-			for (int i = 0; i < 10; i++)
-				this.scrollablePanel1.Controls.Add(new Panel() {
-					Location = new Point(i * 200, 0),
-					Size = new Size(200, this.scrollablePanel1.Height + 10),
-					BackColor = i % 2 == 0 ? Color.DarkGreen : Color.Blue,
-					Margin = new Padding(0),
-					Padding = new Padding(0)
-				});
+			this.toolStripButtonExit.Click += (s, e) => { Application.Exit(); };
+			this.toolStripButtonShowHide.Click += (s, e) => {
+				if (this.Visible)
+					this.Hide();
+				else
+					this.Show();
+
+				this.toolStripButtonShowHide.Text = this.Visible ? "Minimize to Tray" : "Show Window";
+			};
+		}
+
+		private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
+			if (e.CloseReason == CloseReason.UserClosing) {
+				e.Cancel = true;
+				this.Hide();
+				this.toolStripButtonShowHide.Text = "Show Window";
+			}
 		}
 	}
 }

@@ -58,7 +58,7 @@ namespace WRMC.Windows.Controls {
 				return;
 
 			Form form = this.Target?.FindForm();
-			form?.SetDesktopLocation(Control.MousePosition.X + this.MouseDownPosition.X, Control.MousePosition.Y + this.MouseDownPosition.Y);
+			form?.SetDesktopLocation(Control.MousePosition.X - this.MouseDownPosition.X, Control.MousePosition.Y - this.MouseDownPosition.Y);
 		}
 
 		protected virtual void TargetMouseUp(object sender, MouseEventArgs e) {
