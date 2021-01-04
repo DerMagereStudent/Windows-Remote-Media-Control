@@ -170,16 +170,19 @@ namespace WRMC.Windows.Controls {
 		private void panelHandle_MouseDown(object sender, MouseEventArgs e) {
 			this.mouseDown = true;
 			this.xOffset = e.Location.X;
+			this.Refresh();
 		}
 
 		private void panelHandle_MouseEnter(object sender, EventArgs e) {
 			this.Height = this.ActiveHeight;
 			this.hover = true;
+			this.Refresh();
 		}
 
 		private void panelHandle_MouseLeave(object sender, EventArgs e) {
 			this.Height = this.InactiveHeight;
 			this.hover = false;
+			this.Refresh();
 		}
 
 		private void panelHandle_MouseMove(object sender, MouseEventArgs e) {
@@ -200,6 +203,7 @@ namespace WRMC.Windows.Controls {
 
 		private void panelHandle_MouseUp(object sender, MouseEventArgs e) {
 			this.mouseDown = false;
+			this.Refresh();
 		}
 
 		private void target_OnScrollValueChanged(IScrollable sender, EventArgs e) {

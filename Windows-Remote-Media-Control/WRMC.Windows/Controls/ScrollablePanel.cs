@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 
 using WRMC.Core;
@@ -9,6 +10,8 @@ namespace WRMC.Windows.Controls {
 	public partial class ScrollablePanel : UserControl, IScrollable {
 		public class ControlCollection : Control.ControlCollection {
 			private Panel container;
+
+			//public override int Count => this.container.Controls.Count;
 
 			public ControlCollection(Control owner, Panel container) : base(owner) {
 				this.container = container;
@@ -27,6 +30,10 @@ namespace WRMC.Windows.Controls {
 				else
 					this.container.Controls.Remove(value);
 			}
+
+			public override void Clear() {
+				this.container?.Invoke(new Action(() => this.container.Controls.Clear()));
+			}
 		}
 
 		private float _visiblePercentH = 0.0f;
@@ -40,6 +47,14 @@ namespace WRMC.Windows.Controls {
 
 		private bool firingScrollBarH;
 		private bool firingScrollBarV;
+
+		protected override CreateParams CreateParams {
+			get {
+				CreateParams param = base.CreateParams;
+				//param.ExStyle |= 0x02000000;
+				return param;
+			}
+		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[Browsable(false)]
@@ -131,6 +146,11 @@ namespace WRMC.Windows.Controls {
 
 		public ScrollablePanel() {
 			this.InitializeComponent();
+
+			this.SetStyle(ControlStyles.UserPaint, true);
+			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+
 			this.MouseWheel += this.ScrollablePanel_MouseWheel;
 		}
 
@@ -152,6 +172,7 @@ namespace WRMC.Windows.Controls {
 		private void SetLocationByScrollValue() {
 			this.panelInner.Location = new Point(this.VisiblePercentH.Equals(100.0f) ? 0 : (int)((this.Width - this.panelInner.Width) * (this.ScrollValueH / 100.0f)), this.panelInner.Location.Y);
 			this.panelInner.Location = new Point(this.panelInner.Location.X, this.VisiblePercentV.Equals(100.0f) ? 0 : (int)((this.Height - this.panelInner.Height) * (this.ScrollValueV / 100.0f)));
+			this.Refresh();
 		}
 
 		private void scrollBarH_OnScrollValueChanged(CustomScrollBarH sender, EventArgs e) {

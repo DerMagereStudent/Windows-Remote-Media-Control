@@ -6,6 +6,7 @@ namespace WRMC.Core.Models {
 	/// </summary>
 	public class MediaSession : IEquatable<MediaSession> {
 		public enum PlaybackState {
+			None,
 			Paused,
 			Playing
 		}

@@ -14,7 +14,7 @@
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -32,9 +32,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.WindowsRuntime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.5\System.Runtime.WindowsRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -55,6 +63,9 @@
     <Compile Include="Controls\BringToFrontButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\CustomComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\CustomScrollBarV.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -71,6 +82,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\IScrollable.cs" />
+    <Compile Include="Controls\MediaSessionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MediaSessionControl.Designer.cs">
+      <DependentUpon>MediaSessionControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NoFocusCuesButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -89,6 +106,9 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormCloseAction.cs" />
+    <Compile Include="Media\MediaSessionExtractor.cs" />
+    <Compile Include="Media\TransportControlsMediaSessionExtractor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Controls\CustomScrollBarV.resx">
@@ -96,6 +116,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\CustomScrollBarH.resx">
       <DependentUpon>CustomScrollBarH.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MediaSessionControl.resx">
+      <DependentUpon>MediaSessionControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ScrollablePanel.resx">
       <DependentUpon>ScrollablePanel.cs</DependentUpon>
@@ -111,7 +134,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -125,12 +150,35 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\play-circle-outline.png" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WRMC.Core\WRMC.Core.csproj">
       <Project>{a5048d97-c15b-456d-94dd-d669c711b3da}</Project>
       <Name>WRMC.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\skip-next-circle-outline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\skip-previous-circle-outline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pause-circle-outline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons8-next-50.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons8-pause-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons8-play-50.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons8-previous-50.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
