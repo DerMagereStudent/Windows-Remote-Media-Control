@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WRMC.Core.Models {
 	/// <summary>
@@ -12,9 +13,9 @@ namespace WRMC.Core.Models {
 		}
 
 		/// <summary>
-		/// The id of the corresponding process.
+		/// The ids of the corresponding processes.
 		/// </summary>
-		public int ProcessID { get; set; }
+		public List<int> ProcessIDs { get; set; }
 
 		/// <summary>
 		/// The name of the corresponding process.
@@ -33,6 +34,6 @@ namespace WRMC.Core.Models {
 
 		public PlaybackState State { get; set; }
 
-		public bool Equals(MediaSession other) => this.ProcessID == other.ProcessID && this.Title.Equals(other.Title) && this.Artist.Equals(other.Artist);
+		public bool Equals(MediaSession other) => this.ProcessIDs.Equals(other.ProcessIDs) && this.Title.Equals(other.Title) && this.Artist.Equals(other.Artist);
 	}
 }

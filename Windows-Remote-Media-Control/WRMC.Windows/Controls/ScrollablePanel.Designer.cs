@@ -31,7 +31,7 @@ namespace WRMC.Windows.Controls {
 			// 
 			this.panelInner.AutoSize = true;
 			this.panelInner.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.panelInner.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+			this.panelInner.BackColor = System.Drawing.Color.Transparent;
 			this.panelInner.Location = new System.Drawing.Point(0, 0);
 			this.panelInner.Margin = new System.Windows.Forms.Padding(0);
 			this.panelInner.Name = "panelInner";

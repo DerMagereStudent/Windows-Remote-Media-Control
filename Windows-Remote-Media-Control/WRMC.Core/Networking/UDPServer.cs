@@ -69,7 +69,7 @@ namespace WRMC.Core.Networking {
 				}
 			};
 
-			byte[] datagram = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultMessageSerializationOptions));
+			byte[] datagram = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions));
 
 			return this.server.Send(datagram, datagram.Length, UdpOptions.DefaultServerSendingIPEndPoint) == datagram.Length;
 		}
@@ -83,7 +83,7 @@ namespace WRMC.Core.Networking {
 				// EndReceive throws a ObjectDisposedException if the underlying UDP client was closed.
 				byte[] datagram = this.server.EndReceive(ar, ref UdpOptions.DefaultServerListenIPEndPoint);
 				string datagramString = Encoding.UTF8.GetString(datagram);
-				object datagramObject = JsonConvert.DeserializeObject(datagramString, SerializationOptions.DefaultMessageSerializationOptions);
+				object datagramObject = JsonConvert.DeserializeObject(datagramString, SerializationOptions.DefaultSerializationOptions);
 
 				if (datagramObject is Request) {
 					Request request = datagramObject as Request;

@@ -147,7 +147,6 @@ namespace WRMC.Windows.Controls {
 		public ScrollablePanel() {
 			this.InitializeComponent();
 
-			this.SetStyle(ControlStyles.UserPaint, true);
 			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 

@@ -73,9 +73,29 @@ namespace WRMC.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap icons8_next_50_active {
+            get {
+                object obj = ResourceManager.GetObject("icons8_next_50_active", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap icons8_pause_32 {
             get {
                 object obj = ResourceManager.GetObject("icons8-pause-32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons8_pause_32_active {
+            get {
+                object obj = ResourceManager.GetObject("icons8_pause_32_active", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +113,29 @@ namespace WRMC.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap icons8_play_50_active {
+            get {
+                object obj = ResourceManager.GetObject("icons8_play_50_active", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap icons8_previous_50 {
             get {
                 object obj = ResourceManager.GetObject("icons8-previous-50", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons8_previous_50_active {
+            get {
+                object obj = ResourceManager.GetObject("icons8_previous_50_active", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

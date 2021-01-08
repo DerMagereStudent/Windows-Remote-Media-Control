@@ -95,7 +95,7 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		/// <param name="message">The message to send.</param>
 		public void SendMessage(Message message) {
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultMessageSerializationOptions));
+			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultSerializationOptions));
 			this.SendData(data);
 		}
 
@@ -104,7 +104,7 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		/// <param name="request">The request to send.</param>
 		public void SendRequest(Request request) {
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request, SerializationOptions.DefaultMessageSerializationOptions));
+			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request, SerializationOptions.DefaultSerializationOptions));
 			this.SendData(data);
 		}
 
@@ -113,7 +113,7 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		/// <param name="response">The response to send.</param>
 		public void SendResponse(Response response) {
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultMessageSerializationOptions));
+			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions));
 			this.SendData(data);
 		}
 
@@ -154,7 +154,7 @@ namespace WRMC.Core.Networking {
 				received = this.client.GetStream().EndRead(ar);
 
 			string dataString = Encoding.UTF8.GetString(this.buffer, 0, received);
-			object dataObject = JsonConvert.DeserializeObject(dataString, SerializationOptions.DefaultMessageSerializationOptions);
+			object dataObject = JsonConvert.DeserializeObject(dataString, SerializationOptions.DefaultSerializationOptions);
 
 			if (dataObject is Message)
 				this.OnMessageReceived?.Invoke(this, new ServerMessageEventArgs(this.serverDevice, dataObject as Message));

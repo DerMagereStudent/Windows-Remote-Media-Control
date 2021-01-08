@@ -41,7 +41,7 @@ namespace WRMC.Windows.Controls {
 			this.labelProcessID.Location = new System.Drawing.Point(0, 0);
 			this.labelProcessID.Name = "labelProcessID";
 			this.labelProcessID.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-			this.labelProcessID.Size = new System.Drawing.Size(85, 40);
+			this.labelProcessID.Size = new System.Drawing.Size(100, 40);
 			this.labelProcessID.TabIndex = 0;
 			this.labelProcessID.Text = "123456789";
 			this.labelProcessID.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -51,7 +51,7 @@ namespace WRMC.Windows.Controls {
 			this.labelProcessName.Dock = System.Windows.Forms.DockStyle.Left;
 			this.labelProcessName.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelProcessName.ForeColor = System.Drawing.Color.White;
-			this.labelProcessName.Location = new System.Drawing.Point(85, 0);
+			this.labelProcessName.Location = new System.Drawing.Point(100, 0);
 			this.labelProcessName.Name = "labelProcessName";
 			this.labelProcessName.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
 			this.labelProcessName.Size = new System.Drawing.Size(160, 40);
@@ -65,7 +65,7 @@ namespace WRMC.Windows.Controls {
 			this.labelTitle.Dock = System.Windows.Forms.DockStyle.Left;
 			this.labelTitle.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelTitle.ForeColor = System.Drawing.Color.White;
-			this.labelTitle.Location = new System.Drawing.Point(245, 0);
+			this.labelTitle.Location = new System.Drawing.Point(260, 0);
 			this.labelTitle.Name = "labelTitle";
 			this.labelTitle.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
 			this.labelTitle.Size = new System.Drawing.Size(340, 40);
@@ -79,10 +79,10 @@ namespace WRMC.Windows.Controls {
 			this.labelArtist.Dock = System.Windows.Forms.DockStyle.Left;
 			this.labelArtist.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelArtist.ForeColor = System.Drawing.Color.White;
-			this.labelArtist.Location = new System.Drawing.Point(585, 0);
+			this.labelArtist.Location = new System.Drawing.Point(600, 0);
 			this.labelArtist.Name = "labelArtist";
 			this.labelArtist.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-			this.labelArtist.Size = new System.Drawing.Size(180, 40);
+			this.labelArtist.Size = new System.Drawing.Size(168, 40);
 			this.labelArtist.TabIndex = 3;
 			this.labelArtist.Text = "Naruto";
 			this.labelArtist.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -92,6 +92,8 @@ namespace WRMC.Windows.Controls {
 			this.buttonPrevious.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
 			this.buttonPrevious.Cursor = System.Windows.Forms.Cursors.Hand;
 			this.buttonPrevious.FlatAppearance.BorderSize = 0;
+			this.buttonPrevious.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+			this.buttonPrevious.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
 			this.buttonPrevious.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.buttonPrevious.Location = new System.Drawing.Point(774, 8);
 			this.buttonPrevious.Name = "buttonPrevious";
@@ -104,6 +106,8 @@ namespace WRMC.Windows.Controls {
 			this.buttonPlayPause.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
 			this.buttonPlayPause.Cursor = System.Windows.Forms.Cursors.Hand;
 			this.buttonPlayPause.FlatAppearance.BorderSize = 0;
+			this.buttonPlayPause.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+			this.buttonPlayPause.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
 			this.buttonPlayPause.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.buttonPlayPause.Location = new System.Drawing.Point(809, 9);
 			this.buttonPlayPause.Name = "buttonPlayPause";
@@ -116,6 +120,8 @@ namespace WRMC.Windows.Controls {
 			this.buttonNext.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
 			this.buttonNext.Cursor = System.Windows.Forms.Cursors.Hand;
 			this.buttonNext.FlatAppearance.BorderSize = 0;
+			this.buttonNext.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+			this.buttonNext.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
 			this.buttonNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.buttonNext.Location = new System.Drawing.Point(842, 8);
 			this.buttonNext.Name = "buttonNext";
@@ -127,7 +133,7 @@ namespace WRMC.Windows.Controls {
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(18)))), ((int)(((byte)(18)))));
+			this.BackColor = System.Drawing.Color.Transparent;
 			this.Controls.Add(this.buttonNext);
 			this.Controls.Add(this.buttonPlayPause);
 			this.Controls.Add(this.buttonPrevious);

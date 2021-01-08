@@ -10,7 +10,7 @@ using WRMC.Core.Models;
 namespace WRMC.Windows.Media {
 	public abstract class MediaSessionExtractor {
 		public static MediaSessionExtractor Default { get; set; }
-		public SynchronizedCollection<MediaSession> Sessions { get; protected set; }
+		public abstract List<MediaSession> Sessions { get; }
 
 		public abstract event TypedEventHandler<MediaSessionExtractor, EventArgs> OnSessionsChanged;
 

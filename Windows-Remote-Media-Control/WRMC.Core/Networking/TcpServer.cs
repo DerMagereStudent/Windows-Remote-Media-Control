@@ -132,7 +132,7 @@ namespace WRMC.Core.Networking {
 				}
 			};
 
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultMessageSerializationOptions));
+			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions));
 
 			client.GetStream().BeginWrite(data, 0, data.Length, this.OnWrite, client);
 			this.OnConnectionAccpeted?.Invoke(this, new ClientEventArgs(client, clientDevice));
@@ -144,7 +144,7 @@ namespace WRMC.Core.Networking {
 		/// <param name="message">The message to send.</param>
 		/// <param name="receiver">The receiver client of the message.</param>
 		public void SendMessage(Message message, ClientDevice receiver) {
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultMessageSerializationOptions));
+			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultSerializationOptions));
 			this.SendData(data, receiver);
 		}
 
@@ -154,7 +154,7 @@ namespace WRMC.Core.Networking {
 		/// <param name="request">The request to send.</param>
 		/// <param name="receiver">The receiver client of the message.</param>
 		public void SendRequest(Request request, ClientDevice receiver) {
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request, SerializationOptions.DefaultMessageSerializationOptions));
+			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request, SerializationOptions.DefaultSerializationOptions));
 			this.SendData(data, receiver);
 		}
 
@@ -164,7 +164,7 @@ namespace WRMC.Core.Networking {
 		/// <param name="response">The response to send.</param>
 		/// <param name="receiver">The receiver client of the response.</param>
 		public void SendRequest(Response response, ClientDevice receiver) {
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultMessageSerializationOptions));
+			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions));
 			this.SendData(data, receiver);
 		}
 
@@ -250,7 +250,7 @@ namespace WRMC.Core.Networking {
 
 				Trace.WriteLine(dataString);
 				
-				object dataObject = JsonConvert.DeserializeObject(dataString, SerializationOptions.DefaultMessageSerializationOptions);
+				object dataObject = JsonConvert.DeserializeObject(dataString, SerializationOptions.DefaultSerializationOptions);
 
 				bool condition;
 

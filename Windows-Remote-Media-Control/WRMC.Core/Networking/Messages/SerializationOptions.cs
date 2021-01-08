@@ -2,7 +2,7 @@
 
 namespace WRMC.Core.Networking {
 	public static class SerializationOptions {
-		public static JsonSerializerSettings DefaultMessageSerializationOptions => new JsonSerializerSettings() {
+		public static JsonSerializerSettings DefaultSerializationOptions => new JsonSerializerSettings() {
 			TypeNameHandling = TypeNameHandling.All
 		};
 	}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,23 +12,38 @@ using WRMC.Core.Models;
 namespace WRMC.Windows.Media {
 	public class TransportControlsMediaSessionExtractor : MediaSessionExtractor {
 		private GlobalSystemMediaTransportControlsSessionManager manager;
-		private SynchronizedCollection<GlobalSystemMediaTransportControlsSession> observedSessions;
+		private Dictionary<GlobalSystemMediaTransportControlsSession, MediaSession> sessions;
+
+		public override List<MediaSession> Sessions => new List<MediaSession>(this.sessions.Values);
 
 		public override event TypedEventHandler<MediaSessionExtractor, EventArgs> OnSessionsChanged = null;
 
 		public TransportControlsMediaSessionExtractor() {
 			this.manager = GlobalSystemMediaTransportControlsSessionManager.RequestAsync().GetAwaiter().GetResult();
-			this.Sessions = new SynchronizedCollection<MediaSession>();
-			this.observedSessions = new SynchronizedCollection<GlobalSystemMediaTransportControlsSession>();
+			this.sessions = new Dictionary<GlobalSystemMediaTransportControlsSession, MediaSession>();
 
 			this.manager.SessionsChanged += (s, e) => this.UpdateSessionsList();
+		}
+
+		public GlobalSystemMediaTransportControlsSession GetSystemSession(MediaSession session) {
+			foreach (var keyValuePair in this.sessions)
+				if (keyValuePair.Value.Equals(session))
+					return keyValuePair.Key;
+
+			return null;
 		}
 
 		private void UpdateSessionsList() {
 			List<GlobalSystemMediaTransportControlsSession> newSessions = new List<GlobalSystemMediaTransportControlsSession>();
 
 			foreach (var session in this.manager.GetSessions()) {
-				if (this.observedSessions.Contains(session)) {
+				MediaSession ms = MediaSessionConverter.FromWindowsMediaTransportControls(session);
+
+				if (ms == null)
+					continue;
+
+				if (this.sessions.ContainsKey(session)) {
+					this.sessions[session] = ms;
 					newSessions.Add(session);
 					continue;
 				}
@@ -36,19 +52,25 @@ namespace WRMC.Windows.Media {
 				session.PlaybackInfoChanged += this.OnPlaybackInfoChanged;
 				//session.TimelinePropertiesChanged += (s, e) => this.UpdateSessions();
 
-				this.observedSessions.Add(session);
+				this.sessions.Add(session, ms);
+
 				newSessions.Add(session);
 			}
 
-			for (int i = this.observedSessions.Count - 1; i >= 0; i--) {
-				if (!newSessions.Contains(this.observedSessions[i])) {
-					this.observedSessions[i].MediaPropertiesChanged -= this.OnMediaPropertiesChanged;
-					this.observedSessions[i].PlaybackInfoChanged -= this.OnPlaybackInfoChanged;
-					this.observedSessions.Remove(this.observedSessions[i]);
+			List<GlobalSystemMediaTransportControlsSession> keysToRemove = new List<GlobalSystemMediaTransportControlsSession>();
+
+			foreach (var key in this.sessions.Keys) {
+				if (!newSessions.Contains(key)) {
+					key.MediaPropertiesChanged -= this.OnMediaPropertiesChanged;
+					key.PlaybackInfoChanged -= this.OnPlaybackInfoChanged;
+					keysToRemove.Add(key);
 				}
 			}
 
-			this.UpdateSessions();
+			foreach (var key in keysToRemove)
+				this.sessions.Remove(key);
+
+			this.OnSessionsChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		public override void Initialise() {
@@ -56,61 +78,29 @@ namespace WRMC.Windows.Media {
 		}
 
 		private void OnMediaPropertiesChanged(object sender, MediaPropertiesChangedEventArgs e) {
-			this.UpdateSessions();
+			this.UpdateSession(sender as GlobalSystemMediaTransportControlsSession);
 		}
 
 		private void OnPlaybackInfoChanged(object sender, PlaybackInfoChangedEventArgs e) {
-			this.UpdateSessions();
+			this.UpdateSession(sender as GlobalSystemMediaTransportControlsSession);
 		}
 
-		private void UpdateSessions() {
-			this.Sessions.Clear();
+		private void UpdateSession(GlobalSystemMediaTransportControlsSession session) {
+			MediaSession ms = MediaSessionConverter.FromWindowsMediaTransportControls(session);
 
-			foreach (var session in this.manager.GetSessions()) {
-				int id = 0;
-				string name = null;
+			if (ms == null) {
+				if (this.sessions.ContainsKey(session))
+					this.sessions.Remove(session);
 
-				Process[] processes = Process.GetProcesses();
+				this.OnSessionsChanged?.Invoke(this, EventArgs.Empty);
 
-				foreach (Process p in processes) {
-					try {
-						if (p.MainModule.FileName.Contains(session.SourceAppUserModelId)) {
-							id = p.Id;
-							name = p.MainModule.FileName;
-							break;
-						}
-						else {
-							if (p.MainModule.FileName.Contains("WindowsApps")) {
-								if (p.MainModule.FileName.Contains("Video.UI.exe")) {
-									id = p.Id;
-									name = p.MainModule.FileName;
-									break;
-								}
-							}
-						}
-					}
-					catch (Win32Exception e) { }
-					catch (InvalidOperationException) { }
-				}
-
-				if (id == 0 || string.IsNullOrEmpty(name))
-					continue;
-
-				var mediaProperties = session.TryGetMediaPropertiesAsync().GetAwaiter().GetResult();
-				var playbackInfo = session.GetPlaybackInfo();
-
-				MediaSession ms = new MediaSession() {
-					ProcessID = id,
-					ProcessName = name,
-					Title = mediaProperties.Title,
-					Artist = mediaProperties.Artist,
-					State = playbackInfo.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing ? MediaSession.PlaybackState.Playing :
-							(playbackInfo.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused ? MediaSession.PlaybackState.Paused : MediaSession.PlaybackState.None)
-				};
-
-				if (!this.Sessions.Contains(ms))
-					this.Sessions.Add(ms);
+				return;
 			}
+
+			if (this.sessions.ContainsKey(session))
+				this.sessions[session] = ms;
+			else
+				this.sessions.Add(session, ms);
 
 			this.OnSessionsChanged?.Invoke(this, EventArgs.Empty);
 		}
