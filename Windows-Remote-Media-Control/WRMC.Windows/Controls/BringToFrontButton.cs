@@ -6,7 +6,7 @@ namespace WRMC.Windows.Controls {
 	/// <summary>
 	/// Button which brings a given target control to front when the button was clicked.
 	/// </summary>
-	public class BringToFrontButton : NoFocusCueBotton {
+	public class BringToFrontButton : NoFocusCueButton {
 		/// <summary>
 		/// The target control which should be brought to front.
 		/// </summary>

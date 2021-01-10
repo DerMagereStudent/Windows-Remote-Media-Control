@@ -82,7 +82,20 @@ namespace WRMC.Windows.Media {
 		}
 
 		private void OnPlaybackInfoChanged(object sender, PlaybackInfoChangedEventArgs e) {
-			this.UpdateSession(sender as GlobalSystemMediaTransportControlsSession);
+			var session = sender as GlobalSystemMediaTransportControlsSession;
+
+			if (!this.sessions.ContainsKey(session))
+				return;
+
+			var playbackInfo = session.GetPlaybackInfo();
+
+			if (this.sessions[session].State == MediaSession.PlaybackState.Paused && playbackInfo.PlaybackStatus != GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing)
+				return;
+
+			if (playbackInfo.PlaybackStatus != GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing && playbackInfo.PlaybackStatus != GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused)
+				return;
+
+			this.UpdateSession(session);
 		}
 
 		private void UpdateSession(GlobalSystemMediaTransportControlsSession session) {
@@ -93,7 +106,6 @@ namespace WRMC.Windows.Media {
 					this.sessions.Remove(session);
 
 				this.OnSessionsChanged?.Invoke(this, EventArgs.Empty);
-
 				return;
 			}
 

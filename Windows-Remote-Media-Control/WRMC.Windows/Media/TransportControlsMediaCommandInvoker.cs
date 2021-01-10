@@ -53,10 +53,10 @@ namespace WRMC.Windows.Media {
 				}
 				catch (ArgumentException) { }
 			}
-			List<IntPtr> wndHandles = new List<IntPtr>();
 
-			foreach (Process p in processes)
-				wndHandles.AddRange(p.GetWindowHandles());
+			List<IntPtr> wndHandles = session.AppType == MediaSession.ApplicationType.UWP ?
+				new List<IntPtr>(new[] { NativeHWNDExtractor.GetHwndsForUWPApp(session.AUMID) }) :
+				NativeHWNDExtractor.GetHwndsForPids(session.ProcessIDs);
 
 			foreach (IntPtr hwnd in wndHandles) {
 				if (!NativeMethods.IsWindowVisible(hwnd))

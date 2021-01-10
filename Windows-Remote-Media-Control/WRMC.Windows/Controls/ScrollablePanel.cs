@@ -32,7 +32,15 @@ namespace WRMC.Windows.Controls {
 			}
 
 			public override void Clear() {
-				this.container?.Invoke(new Action(() => this.container.Controls.Clear()));
+				this.container?.Invoke(new Action(() => {
+					for (int i = this.container.Controls.Count - 1; i >= 0; i--) {
+						Control c = this.container.Controls[i];
+						this.container.Controls.Remove(c);
+						c.Dispose();
+					}
+
+					this.container.Controls.Clear();
+				}));
 			}
 		}
 
@@ -51,7 +59,7 @@ namespace WRMC.Windows.Controls {
 		protected override CreateParams CreateParams {
 			get {
 				CreateParams param = base.CreateParams;
-				//param.ExStyle |= 0x02000000;
+				param.ExStyle |= 0x02000000;
 				return param;
 			}
 		}

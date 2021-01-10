@@ -28,9 +28,9 @@ namespace WRMC.Windows.Controls {
 			this.labelProcessName = new System.Windows.Forms.Label();
 			this.labelTitle = new System.Windows.Forms.Label();
 			this.labelArtist = new System.Windows.Forms.Label();
-			this.buttonPrevious = new System.Windows.Forms.Button();
-			this.buttonPlayPause = new System.Windows.Forms.Button();
-			this.buttonNext = new System.Windows.Forms.Button();
+			this.buttonPrevious = new WRMC.Windows.Controls.NoFocusCueButton();
+			this.buttonPlayPause = new WRMC.Windows.Controls.NoFocusCueButton();
+			this.buttonNext = new WRMC.Windows.Controls.NoFocusCueButton();
 			this.SuspendLayout();
 			// 
 			// labelProcessID
@@ -154,8 +154,8 @@ namespace WRMC.Windows.Controls {
 		private System.Windows.Forms.Label labelProcessName;
 		private System.Windows.Forms.Label labelTitle;
 		private System.Windows.Forms.Label labelArtist;
-		private System.Windows.Forms.Button buttonPrevious;
-		private System.Windows.Forms.Button buttonPlayPause;
-		private System.Windows.Forms.Button buttonNext;
+		private WRMC.Windows.Controls.NoFocusCueButton buttonPrevious;
+		private WRMC.Windows.Controls.NoFocusCueButton buttonPlayPause;
+		private WRMC.Windows.Controls.NoFocusCueButton buttonNext;
 	}
 }

@@ -1,5 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace WRMC.Windows.Controls {
@@ -55,17 +57,31 @@ namespace WRMC.Windows.Controls {
 				return;
 			}
 
+			string text = "";
+
+			if (string.IsNullOrWhiteSpace(this.DisplayMember))
+				text = this.Items[e.Index].ToString();
+			else {
+				Type textType = this.Items[e.Index].GetType();
+				PropertyInfo textProperty = textType.GetProperty(this.DisplayMember);
+
+				if (textProperty == null)
+					text = this.Items[e.Index].ToString();
+				else
+					text = textProperty.GetValue(this.Items[e.Index]).ToString();
+			}
+
 			if (e.State.HasFlag(DrawItemState.Selected) && !e.State.HasFlag(DrawItemState.ComboBoxEdit)) {
 				e.DrawBackground();
 				e.Graphics.FillRectangle(this.highlightColorBrush, e.Bounds);
 				Font f = this.Font;
-				e.Graphics.DrawString(this.Items[e.Index].ToString(), f, this.foreColorBrush, e.Bounds, StringFormat.GenericDefault);
+				e.Graphics.DrawString(text, f, this.foreColorBrush, e.Bounds, StringFormat.GenericDefault);
 			}
 			else {
 				e.DrawBackground();
 				e.Graphics.FillRectangle(this.backColorBrush, e.Bounds);
 				Font f = this.Font;
-				e.Graphics.DrawString(this.Items[e.Index].ToString(), f, this.foreColorBrush, e.Bounds, StringFormat.GenericDefault);
+				e.Graphics.DrawString(text, f, this.foreColorBrush, e.Bounds, StringFormat.GenericDefault);
 			}
 		}
 	}

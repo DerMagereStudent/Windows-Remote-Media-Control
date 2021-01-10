@@ -2,43 +2,45 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-
+using System.Text;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.Core;
+using Windows.Management.Deployment;
 using Windows.Media.Control;
 
 using WRMC.Core.Models;
+using WRMC.Windows.Native;
 
 namespace WRMC.Windows.Media {
 	public static class MediaSessionConverter {
 		public static MediaSession FromWindowsMediaTransportControls(GlobalSystemMediaTransportControlsSession session) {
-			List<int> ids = new List<int>(); ;
+			MediaSession.ApplicationType type = GetApplicationType(session);
+
+			List<int> ids = new List<int>();
 			string name = null;
 
 			Process[] processes = Process.GetProcesses();
 
 			foreach (Process p in processes) {
 				try {
-					if (p.MainModule.FileName.Contains(session.SourceAppUserModelId)) {
+					if (type == MediaSession.ApplicationType.UWP) {
+						IntPtr hProcess = NativeMethods.OpenProcess(NativeDefinitions.PROCESS_QUERY_LIMITED_INFORMATION, false, p.Id);
+						
+						uint sbc = 256;
+						StringBuilder sbApplicationUserModelId = new StringBuilder((int)sbc);
+						NativeMethods.GetApplicationUserModelId(hProcess, ref sbc, sbApplicationUserModelId);
+
+						string sApplicationUserModelId = sbApplicationUserModelId.ToString();
+
+						if (sApplicationUserModelId.Equals(session.SourceAppUserModelId)) {
+							ids.Add(p.Id);
+							name = p.MainModule.FileName;
+						}
+
+						NativeMethods.CloseHandle(hProcess);
+					} else if (p.MainModule.FileName.Contains(session.SourceAppUserModelId)) {
 						ids.Add(p.Id);
 						name = p.MainModule.FileName;
-
-						foreach (Process cp in processes) {
-							try {
-								if (cp.MainModule.FileName.Contains(session.SourceAppUserModelId) && cp.Id != p.Id)
-									ids.Add(cp.Id);
-							}
-							catch (Win32Exception) { }
-							catch (InvalidOperationException) { }
-						}
-
-						break;
-					}
-					else {
-						if (p.MainModule.FileName.Contains("WindowsApps")) {
-							if (p.MainModule.FileName.Contains("Video.UI.exe")) {
-								ids.Add(p.Id);
-								name = p.MainModule.FileName;
-							}
-						}
 					}
 				}
 				catch (Win32Exception) { }
@@ -58,13 +60,28 @@ namespace WRMC.Windows.Media {
 					Title = mediaProperties.Title,
 					Artist = mediaProperties.Artist,
 					State = playbackInfo.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing ? MediaSession.PlaybackState.Playing :
-							(playbackInfo.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused ? MediaSession.PlaybackState.Paused : MediaSession.PlaybackState.None)
+							(playbackInfo.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused ? MediaSession.PlaybackState.Paused : MediaSession.PlaybackState.None),
+					AppType = type,
+					AUMID = session.SourceAppUserModelId
 				};
 
 				return ms;
 			} catch (Exception) {
 				return null;
 			}
+		}
+
+		private static MediaSession.ApplicationType GetApplicationType(GlobalSystemMediaTransportControlsSession session) {
+			PackageManager packageManager = new PackageManager();
+
+			foreach (Package package in packageManager.FindPackagesForUserWithPackageTypes("", PackageTypes.Main | PackageTypes.Optional)) {
+				IReadOnlyList<AppListEntry> entries = package.GetAppListEntries();
+				foreach (AppListEntry entry in entries)
+					if (entry.AppUserModelId.Equals(session.SourceAppUserModelId))
+						return MediaSession.ApplicationType.UWP;
+			}
+
+			return MediaSession.ApplicationType.Other;
 		}
 	}
 }

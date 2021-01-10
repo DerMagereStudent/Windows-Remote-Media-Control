@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,7 +17,7 @@ namespace WRMC.Windows {
 		protected override CreateParams CreateParams {
 			get {
 				CreateParams param = base.CreateParams;
-				//param.ExStyle |= 0x02000000;
+				param.ExStyle |= 0x02000000;
 				return param;
 			}
 		}
@@ -25,16 +27,21 @@ namespace WRMC.Windows {
 
 			Settings.Load();
 
-			MediaSessionExtractor.Default = new TransportControlsMediaSessionExtractor();
+			MediaSessionExtractor.Default = Settings.Current.SessionExtractor;
 			MediaSessionExtractor.Default.OnSessionsChanged += (s, e) => this.UpdateSessionList();
 
-			MediaCommandInvoker.Default = new TransportControlsMediaCommandInvoker();
+			MediaCommandInvoker.SetInvoker(MediaSessionExtractor.Default.GetType());
 
 			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
 			this.comboBoxCloseAction.DataSource = Enum.GetValues(typeof(FormCloseAction));
 			this.comboBoxCloseAction.SelectedItem = Settings.Current.CloseAction;
+
+			this.customComboBoxSessionExtractor.DisplayMember = "Name";
+			this.customComboBoxSessionExtractor.DataSource = MediaCommandInvoker.RegisteredExtractors;
+
+			this.customComboBoxSessionExtractor.SelectedItem = Settings.Current.SessionExtractor.GetType();
 
 			this.notifyIcon.Icon = SystemIcons.Application;
 
@@ -88,6 +95,17 @@ namespace WRMC.Windows {
 
 		private void comboBoxCloseAction_SelectionChangeCommitted(object sender, EventArgs e) {
 			Settings.Current.CloseAction = (FormCloseAction)(sender as CustomComboBox).SelectedItem;
+			Settings.Save();
+		}
+
+		private void customComboBoxSessionExtractor_SelectionChangeCommitted(object sender, EventArgs e) {
+			Type type = (Type)(sender as CustomComboBox).SelectedItem;
+
+			Settings.Current.SessionExtractor = Activator.CreateInstance(type) as MediaSessionExtractor;
+
+			MediaSessionExtractor.Default = Settings.Current.SessionExtractor;
+			MediaCommandInvoker.SetInvoker(type);
+
 			Settings.Save();
 		}
 	}

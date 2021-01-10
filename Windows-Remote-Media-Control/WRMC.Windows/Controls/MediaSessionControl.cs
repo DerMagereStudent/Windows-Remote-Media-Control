@@ -25,7 +25,7 @@ namespace WRMC.Windows.Controls {
 		protected override CreateParams CreateParams {
 			get {
 				CreateParams param = base.CreateParams;
-				//param.ExStyle |= 0x02000000;
+				param.ExStyle |= 0x02000000;
 				return param;
 			}
 		}
@@ -69,8 +69,6 @@ namespace WRMC.Windows.Controls {
 					MediaCommandInvoker.Default.Pause(this.MediaSession);
 				else if (this.MediaSession.State == MediaSession.PlaybackState.Paused)
 					MediaCommandInvoker.Default.Play(this.MediaSession);
-
-				MediaCommandInvoker.Default.MoveToScreen(this.MediaSession, "\\\\.\\DISPLAY2");
 
 				this.OnPlayPause?.Invoke(this, EventArgs.Empty);
 			};

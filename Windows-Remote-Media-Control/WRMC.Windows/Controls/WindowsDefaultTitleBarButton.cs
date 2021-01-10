@@ -8,7 +8,7 @@ namespace WRMC.Windows.Controls {
 	/// Button which represents the default close, minimize or maximize buttons of the windows 10 aero theme.
 	/// </summary>
 	[ToolboxItem(true)]
-	public class WindowsDefaultTitleBarButton : NoFocusCueBotton {
+	public class WindowsDefaultTitleBarButton : NoFocusCueButton {
 		/// <summary>
 		/// Represents the 3 possible types of the windows border buttons.
 		/// </summary>

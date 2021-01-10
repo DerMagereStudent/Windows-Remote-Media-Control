@@ -26,11 +26,21 @@ namespace WRMC.Windows {
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.panelTitleBar = new System.Windows.Forms.Panel();
+			this.buttonMinimize = new WRMC.Windows.Controls.WindowsDefaultTitleBarButton();
+			this.buttonClose = new WRMC.Windows.Controls.WindowsDefaultTitleBarButton();
 			this.panelMenu = new System.Windows.Forms.Panel();
+			this.buttonSettings = new WRMC.Windows.Controls.BringToFrontButton();
 			this.panelSettings = new System.Windows.Forms.Panel();
+			this.labelSessionExtractor = new System.Windows.Forms.Label();
+			this.customComboBoxSessionExtractor = new WRMC.Windows.Controls.CustomComboBox();
 			this.labelCloseAction = new System.Windows.Forms.Label();
+			this.comboBoxCloseAction = new WRMC.Windows.Controls.CustomComboBox();
+			this.buttonDevices = new WRMC.Windows.Controls.BringToFrontButton();
 			this.panelDevices = new System.Windows.Forms.Panel();
+			this.buttonSessions = new WRMC.Windows.Controls.BringToFrontButton();
 			this.panelSessions = new System.Windows.Forms.Panel();
+			this.scrollablePanel = new WRMC.Windows.Controls.ScrollablePanel();
+			this.customScrollBarV = new WRMC.Windows.Controls.CustomScrollBarV();
 			this.panelSessionsHeader = new System.Windows.Forms.Panel();
 			this.labelHeaderArtist = new System.Windows.Forms.Label();
 			this.labelHeaderTitle = new System.Windows.Forms.Label();
@@ -42,14 +52,6 @@ namespace WRMC.Windows {
 			this.toolStripButtonShowHide = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripButtonExit = new System.Windows.Forms.ToolStripMenuItem();
-			this.scrollablePanel = new WRMC.Windows.Controls.ScrollablePanel();
-			this.customScrollBarV = new WRMC.Windows.Controls.CustomScrollBarV();
-			this.comboBoxCloseAction = new WRMC.Windows.Controls.CustomComboBox();
-			this.buttonSettings = new WRMC.Windows.Controls.BringToFrontButton();
-			this.buttonDevices = new WRMC.Windows.Controls.BringToFrontButton();
-			this.buttonSessions = new WRMC.Windows.Controls.BringToFrontButton();
-			this.buttonMinimize = new WRMC.Windows.Controls.WindowsDefaultTitleBarButton();
-			this.buttonClose = new WRMC.Windows.Controls.WindowsDefaultTitleBarButton();
 			this.formDragControl = new WRMC.Windows.Controls.FormDragControl();
 			this.panelTitleBar.SuspendLayout();
 			this.panelMenu.SuspendLayout();
@@ -70,6 +72,37 @@ namespace WRMC.Windows {
 			this.panelTitleBar.Size = new System.Drawing.Size(1090, 29);
 			this.panelTitleBar.TabIndex = 0;
 			// 
+			// buttonMinimize
+			// 
+			this.buttonMinimize.ButtonType = WRMC.Windows.Controls.WindowsDefaultTitleBarButton.Type.Minimize;
+			this.buttonMinimize.ClickColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(46)))), ((int)(((byte)(65)))));
+			this.buttonMinimize.ClickIconColor = System.Drawing.Color.White;
+			this.buttonMinimize.Dock = System.Windows.Forms.DockStyle.Right;
+			this.buttonMinimize.HoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
+			this.buttonMinimize.HoverIconColor = System.Drawing.Color.White;
+			this.buttonMinimize.IconColor = System.Drawing.Color.White;
+			this.buttonMinimize.Location = new System.Drawing.Point(1000, 0);
+			this.buttonMinimize.Name = "buttonMinimize";
+			this.buttonMinimize.Size = new System.Drawing.Size(45, 29);
+			this.buttonMinimize.TabIndex = 1;
+			this.buttonMinimize.Text = "windowsDefaultTitleBarButton2";
+			this.buttonMinimize.UseVisualStyleBackColor = true;
+			// 
+			// buttonClose
+			// 
+			this.buttonClose.ClickColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(112)))), ((int)(((byte)(122)))));
+			this.buttonClose.ClickIconColor = System.Drawing.Color.White;
+			this.buttonClose.Dock = System.Windows.Forms.DockStyle.Right;
+			this.buttonClose.HoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(17)))), ((int)(((byte)(35)))));
+			this.buttonClose.HoverIconColor = System.Drawing.Color.White;
+			this.buttonClose.IconColor = System.Drawing.Color.White;
+			this.buttonClose.Location = new System.Drawing.Point(1045, 0);
+			this.buttonClose.Name = "buttonClose";
+			this.buttonClose.Size = new System.Drawing.Size(45, 29);
+			this.buttonClose.TabIndex = 0;
+			this.buttonClose.Text = "windowsDefaultTitleBarButton1";
+			this.buttonClose.UseVisualStyleBackColor = true;
+			// 
 			// panelMenu
 			// 
 			this.panelMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(49)))), ((int)(((byte)(69)))));
@@ -83,8 +116,29 @@ namespace WRMC.Windows {
 			this.panelMenu.Size = new System.Drawing.Size(200, 636);
 			this.panelMenu.TabIndex = 1;
 			// 
+			// buttonSettings
+			// 
+			this.buttonSettings.Dock = System.Windows.Forms.DockStyle.Top;
+			this.buttonSettings.FlatAppearance.BorderSize = 0;
+			this.buttonSettings.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(232)))), ((int)(((byte)(166)))));
+			this.buttonSettings.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
+			this.buttonSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.buttonSettings.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.buttonSettings.ForeColor = System.Drawing.Color.White;
+			this.buttonSettings.Location = new System.Drawing.Point(0, 170);
+			this.buttonSettings.Name = "buttonSettings";
+			this.buttonSettings.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+			this.buttonSettings.Size = new System.Drawing.Size(200, 50);
+			this.buttonSettings.TabIndex = 1;
+			this.buttonSettings.Target = this.panelSettings;
+			this.buttonSettings.Text = "Settings";
+			this.buttonSettings.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonSettings.UseVisualStyleBackColor = true;
+			// 
 			// panelSettings
 			// 
+			this.panelSettings.Controls.Add(this.labelSessionExtractor);
+			this.panelSettings.Controls.Add(this.customComboBoxSessionExtractor);
 			this.panelSettings.Controls.Add(this.labelCloseAction);
 			this.panelSettings.Controls.Add(this.comboBoxCloseAction);
 			this.panelSettings.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -92,6 +146,33 @@ namespace WRMC.Windows {
 			this.panelSettings.Name = "panelSettings";
 			this.panelSettings.Size = new System.Drawing.Size(890, 636);
 			this.panelSettings.TabIndex = 4;
+			// 
+			// labelSessionExtractor
+			// 
+			this.labelSessionExtractor.AutoSize = true;
+			this.labelSessionExtractor.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelSessionExtractor.ForeColor = System.Drawing.Color.White;
+			this.labelSessionExtractor.Location = new System.Drawing.Point(16, 53);
+			this.labelSessionExtractor.Name = "labelSessionExtractor";
+			this.labelSessionExtractor.Size = new System.Drawing.Size(269, 17);
+			this.labelSessionExtractor.TabIndex = 3;
+			this.labelSessionExtractor.Text = "Session Extraction and Command Invokation:";
+			// 
+			// customComboBoxSessionExtractor
+			// 
+			this.customComboBoxSessionExtractor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
+			this.customComboBoxSessionExtractor.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+			this.customComboBoxSessionExtractor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.customComboBoxSessionExtractor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.customComboBoxSessionExtractor.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.customComboBoxSessionExtractor.ForeColor = System.Drawing.Color.White;
+			this.customComboBoxSessionExtractor.FormattingEnabled = true;
+			this.customComboBoxSessionExtractor.ItemHighlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
+			this.customComboBoxSessionExtractor.Location = new System.Drawing.Point(294, 50);
+			this.customComboBoxSessionExtractor.Name = "customComboBoxSessionExtractor";
+			this.customComboBoxSessionExtractor.Size = new System.Drawing.Size(273, 26);
+			this.customComboBoxSessionExtractor.TabIndex = 2;
+			this.customComboBoxSessionExtractor.SelectionChangeCommitted += new System.EventHandler(this.customComboBoxSessionExtractor_SelectionChangeCommitted);
 			// 
 			// labelCloseAction
 			// 
@@ -104,6 +185,41 @@ namespace WRMC.Windows {
 			this.labelCloseAction.TabIndex = 1;
 			this.labelCloseAction.Text = "FormClose Action:";
 			// 
+			// comboBoxCloseAction
+			// 
+			this.comboBoxCloseAction.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
+			this.comboBoxCloseAction.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+			this.comboBoxCloseAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBoxCloseAction.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.comboBoxCloseAction.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.comboBoxCloseAction.ForeColor = System.Drawing.Color.White;
+			this.comboBoxCloseAction.FormattingEnabled = true;
+			this.comboBoxCloseAction.ItemHighlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
+			this.comboBoxCloseAction.Location = new System.Drawing.Point(446, 14);
+			this.comboBoxCloseAction.Name = "comboBoxCloseAction";
+			this.comboBoxCloseAction.Size = new System.Drawing.Size(121, 26);
+			this.comboBoxCloseAction.TabIndex = 0;
+			this.comboBoxCloseAction.SelectionChangeCommitted += new System.EventHandler(this.comboBoxCloseAction_SelectionChangeCommitted);
+			// 
+			// buttonDevices
+			// 
+			this.buttonDevices.Dock = System.Windows.Forms.DockStyle.Top;
+			this.buttonDevices.FlatAppearance.BorderSize = 0;
+			this.buttonDevices.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(232)))), ((int)(((byte)(166)))));
+			this.buttonDevices.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
+			this.buttonDevices.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.buttonDevices.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.buttonDevices.ForeColor = System.Drawing.Color.White;
+			this.buttonDevices.Location = new System.Drawing.Point(0, 120);
+			this.buttonDevices.Name = "buttonDevices";
+			this.buttonDevices.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+			this.buttonDevices.Size = new System.Drawing.Size(200, 50);
+			this.buttonDevices.TabIndex = 2;
+			this.buttonDevices.Target = this.panelDevices;
+			this.buttonDevices.Text = "Devices";
+			this.buttonDevices.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonDevices.UseVisualStyleBackColor = true;
+			// 
 			// panelDevices
 			// 
 			this.panelDevices.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -111,6 +227,25 @@ namespace WRMC.Windows {
 			this.panelDevices.Name = "panelDevices";
 			this.panelDevices.Size = new System.Drawing.Size(890, 636);
 			this.panelDevices.TabIndex = 4;
+			// 
+			// buttonSessions
+			// 
+			this.buttonSessions.Dock = System.Windows.Forms.DockStyle.Top;
+			this.buttonSessions.FlatAppearance.BorderSize = 0;
+			this.buttonSessions.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(232)))), ((int)(((byte)(166)))));
+			this.buttonSessions.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
+			this.buttonSessions.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.buttonSessions.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.buttonSessions.ForeColor = System.Drawing.Color.White;
+			this.buttonSessions.Location = new System.Drawing.Point(0, 70);
+			this.buttonSessions.Name = "buttonSessions";
+			this.buttonSessions.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+			this.buttonSessions.Size = new System.Drawing.Size(200, 50);
+			this.buttonSessions.TabIndex = 0;
+			this.buttonSessions.Target = this.panelSessions;
+			this.buttonSessions.Text = "Sessions";
+			this.buttonSessions.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonSessions.UseVisualStyleBackColor = true;
 			// 
 			// panelSessions
 			// 
@@ -123,6 +258,32 @@ namespace WRMC.Windows {
 			this.panelSessions.Size = new System.Drawing.Size(890, 636);
 			this.panelSessions.TabIndex = 3;
 			// 
+			// scrollablePanel
+			// 
+			this.scrollablePanel.BackColor = System.Drawing.Color.Transparent;
+			this.scrollablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.scrollablePanel.Location = new System.Drawing.Point(0, 40);
+			this.scrollablePanel.Margin = new System.Windows.Forms.Padding(0);
+			this.scrollablePanel.Name = "scrollablePanel";
+			this.scrollablePanel.ScrollBarV = this.customScrollBarV;
+			this.scrollablePanel.Size = new System.Drawing.Size(890, 596);
+			this.scrollablePanel.TabIndex = 1;
+			// 
+			// customScrollBarV
+			// 
+			this.customScrollBarV.Dock = System.Windows.Forms.DockStyle.Right;
+			this.customScrollBarV.HandleClickColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
+			this.customScrollBarV.HandleColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(49)))), ((int)(((byte)(69)))));
+			this.customScrollBarV.HandleHoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
+			this.customScrollBarV.InactiveWidth = 12;
+			this.customScrollBarV.Location = new System.Drawing.Point(890, 0);
+			this.customScrollBarV.Name = "customScrollBarV";
+			this.customScrollBarV.ScrollValue = 0F;
+			this.customScrollBarV.Size = new System.Drawing.Size(0, 636);
+			this.customScrollBarV.TabIndex = 0;
+			this.customScrollBarV.Target = this.scrollablePanel;
+			this.customScrollBarV.VisiblePercent = 100F;
+			// 
 			// panelSessionsHeader
 			// 
 			this.panelSessionsHeader.Controls.Add(this.labelHeaderArtist);
@@ -132,7 +293,7 @@ namespace WRMC.Windows {
 			this.panelSessionsHeader.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panelSessionsHeader.Location = new System.Drawing.Point(0, 0);
 			this.panelSessionsHeader.Name = "panelSessionsHeader";
-			this.panelSessionsHeader.Size = new System.Drawing.Size(884, 40);
+			this.panelSessionsHeader.Size = new System.Drawing.Size(890, 40);
 			this.panelSessionsHeader.TabIndex = 2;
 			// 
 			// labelHeaderArtist
@@ -229,136 +390,6 @@ namespace WRMC.Windows {
 			this.toolStripButtonExit.Size = new System.Drawing.Size(161, 22);
 			this.toolStripButtonExit.Text = "Exit";
 			// 
-			// scrollablePanel
-			// 
-			this.scrollablePanel.BackColor = System.Drawing.Color.Transparent;
-			this.scrollablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.scrollablePanel.Location = new System.Drawing.Point(0, 40);
-			this.scrollablePanel.Margin = new System.Windows.Forms.Padding(0);
-			this.scrollablePanel.Name = "scrollablePanel";
-			this.scrollablePanel.ScrollBarV = this.customScrollBarV;
-			this.scrollablePanel.Size = new System.Drawing.Size(884, 596);
-			this.scrollablePanel.TabIndex = 1;
-			// 
-			// customScrollBarV
-			// 
-			this.customScrollBarV.Dock = System.Windows.Forms.DockStyle.Right;
-			this.customScrollBarV.HandleClickColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
-			this.customScrollBarV.HandleColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(49)))), ((int)(((byte)(69)))));
-			this.customScrollBarV.HandleHoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
-			this.customScrollBarV.InactiveWidth = 12;
-			this.customScrollBarV.Location = new System.Drawing.Point(884, 0);
-			this.customScrollBarV.Name = "customScrollBarV";
-			this.customScrollBarV.ScrollValue = 0F;
-			this.customScrollBarV.Size = new System.Drawing.Size(6, 636);
-			this.customScrollBarV.TabIndex = 0;
-			this.customScrollBarV.Target = this.scrollablePanel;
-			this.customScrollBarV.VisiblePercent = 100F;
-			// 
-			// comboBoxCloseAction
-			// 
-			this.comboBoxCloseAction.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
-			this.comboBoxCloseAction.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-			this.comboBoxCloseAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBoxCloseAction.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.comboBoxCloseAction.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.comboBoxCloseAction.ForeColor = System.Drawing.Color.White;
-			this.comboBoxCloseAction.FormattingEnabled = true;
-			this.comboBoxCloseAction.ItemHighlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
-			this.comboBoxCloseAction.Location = new System.Drawing.Point(154, 14);
-			this.comboBoxCloseAction.Name = "comboBoxCloseAction";
-			this.comboBoxCloseAction.Size = new System.Drawing.Size(121, 26);
-			this.comboBoxCloseAction.TabIndex = 0;
-			this.comboBoxCloseAction.SelectionChangeCommitted += new System.EventHandler(this.comboBoxCloseAction_SelectionChangeCommitted);
-			// 
-			// buttonSettings
-			// 
-			this.buttonSettings.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonSettings.FlatAppearance.BorderSize = 0;
-			this.buttonSettings.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(232)))), ((int)(((byte)(166)))));
-			this.buttonSettings.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
-			this.buttonSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonSettings.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonSettings.ForeColor = System.Drawing.Color.White;
-			this.buttonSettings.Location = new System.Drawing.Point(0, 170);
-			this.buttonSettings.Name = "buttonSettings";
-			this.buttonSettings.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
-			this.buttonSettings.Size = new System.Drawing.Size(200, 50);
-			this.buttonSettings.TabIndex = 1;
-			this.buttonSettings.Target = this.panelSettings;
-			this.buttonSettings.Text = "Settings";
-			this.buttonSettings.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonSettings.UseVisualStyleBackColor = true;
-			// 
-			// buttonDevices
-			// 
-			this.buttonDevices.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonDevices.FlatAppearance.BorderSize = 0;
-			this.buttonDevices.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(232)))), ((int)(((byte)(166)))));
-			this.buttonDevices.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
-			this.buttonDevices.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonDevices.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonDevices.ForeColor = System.Drawing.Color.White;
-			this.buttonDevices.Location = new System.Drawing.Point(0, 120);
-			this.buttonDevices.Name = "buttonDevices";
-			this.buttonDevices.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
-			this.buttonDevices.Size = new System.Drawing.Size(200, 50);
-			this.buttonDevices.TabIndex = 2;
-			this.buttonDevices.Target = this.panelDevices;
-			this.buttonDevices.Text = "Devices";
-			this.buttonDevices.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonDevices.UseVisualStyleBackColor = true;
-			// 
-			// buttonSessions
-			// 
-			this.buttonSessions.Dock = System.Windows.Forms.DockStyle.Top;
-			this.buttonSessions.FlatAppearance.BorderSize = 0;
-			this.buttonSessions.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(232)))), ((int)(((byte)(166)))));
-			this.buttonSessions.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
-			this.buttonSessions.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonSessions.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonSessions.ForeColor = System.Drawing.Color.White;
-			this.buttonSessions.Location = new System.Drawing.Point(0, 70);
-			this.buttonSessions.Name = "buttonSessions";
-			this.buttonSessions.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
-			this.buttonSessions.Size = new System.Drawing.Size(200, 50);
-			this.buttonSessions.TabIndex = 0;
-			this.buttonSessions.Target = this.panelSessions;
-			this.buttonSessions.Text = "Sessions";
-			this.buttonSessions.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonSessions.UseVisualStyleBackColor = true;
-			// 
-			// buttonMinimize
-			// 
-			this.buttonMinimize.ButtonType = WRMC.Windows.Controls.WindowsDefaultTitleBarButton.Type.Minimize;
-			this.buttonMinimize.ClickColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(46)))), ((int)(((byte)(65)))));
-			this.buttonMinimize.ClickIconColor = System.Drawing.Color.White;
-			this.buttonMinimize.Dock = System.Windows.Forms.DockStyle.Right;
-			this.buttonMinimize.HoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
-			this.buttonMinimize.HoverIconColor = System.Drawing.Color.White;
-			this.buttonMinimize.IconColor = System.Drawing.Color.White;
-			this.buttonMinimize.Location = new System.Drawing.Point(1000, 0);
-			this.buttonMinimize.Name = "buttonMinimize";
-			this.buttonMinimize.Size = new System.Drawing.Size(45, 29);
-			this.buttonMinimize.TabIndex = 1;
-			this.buttonMinimize.Text = "windowsDefaultTitleBarButton2";
-			this.buttonMinimize.UseVisualStyleBackColor = true;
-			// 
-			// buttonClose
-			// 
-			this.buttonClose.ClickColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(112)))), ((int)(((byte)(122)))));
-			this.buttonClose.ClickIconColor = System.Drawing.Color.White;
-			this.buttonClose.Dock = System.Windows.Forms.DockStyle.Right;
-			this.buttonClose.HoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(17)))), ((int)(((byte)(35)))));
-			this.buttonClose.HoverIconColor = System.Drawing.Color.White;
-			this.buttonClose.IconColor = System.Drawing.Color.White;
-			this.buttonClose.Location = new System.Drawing.Point(1045, 0);
-			this.buttonClose.Name = "buttonClose";
-			this.buttonClose.Size = new System.Drawing.Size(45, 29);
-			this.buttonClose.TabIndex = 0;
-			this.buttonClose.Text = "windowsDefaultTitleBarButton1";
-			this.buttonClose.UseVisualStyleBackColor = true;
-			// 
 			// formDragControl
 			// 
 			this.formDragControl.Target = this.panelTitleBar;
@@ -369,8 +400,8 @@ namespace WRMC.Windows {
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
 			this.ClientSize = new System.Drawing.Size(1090, 665);
-			this.Controls.Add(this.panelSessions);
 			this.Controls.Add(this.panelSettings);
+			this.Controls.Add(this.panelSessions);
 			this.Controls.Add(this.panelDevices);
 			this.Controls.Add(this.panelMenu);
 			this.Controls.Add(this.panelTitleBar);
@@ -419,5 +450,7 @@ namespace WRMC.Windows {
 		private System.Windows.Forms.Label labelHeaderProcessName;
 		private System.Windows.Forms.Label labelHeaderProcessID;
 		private System.Windows.Forms.Panel panelMenuPlaceHolder;
+		private System.Windows.Forms.Label labelSessionExtractor;
+		private Controls.CustomComboBox customComboBoxSessionExtractor;
 	}
 }

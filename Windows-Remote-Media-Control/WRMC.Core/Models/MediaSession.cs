@@ -12,6 +12,11 @@ namespace WRMC.Core.Models {
 			Playing
 		}
 
+		public enum ApplicationType {
+			UWP,
+			Other
+		}
+
 		/// <summary>
 		/// The ids of the corresponding processes.
 		/// </summary>
@@ -32,7 +37,17 @@ namespace WRMC.Core.Models {
 		/// </summary>
 		public string Artist { get; set; }
 
+		/// <summary>
+		/// The current state of the media playback
+		/// </summary>
 		public PlaybackState State { get; set; }
+
+		/// <summary>
+		/// The type of the application playing back.
+		/// </summary>
+		public ApplicationType AppType { get; set; }
+
+		public string AUMID { get; set; }
 
 		public bool Equals(MediaSession other) => this.ProcessIDs.Equals(other.ProcessIDs) && this.Title.Equals(other.Title) && this.Artist.Equals(other.Artist);
 	}

@@ -75,6 +75,9 @@ namespace WRMC.Windows.Controls {
 			set {
 				this._visiblePercent = Math.Max(Math.Min(100.0f, value), 0.0f);
 				this.SetHandleByVisiblePercent();
+
+				if (this.VisiblePercent.Equals(100.0f))
+					this.Width = 0;
 			}
 		}
 
@@ -157,14 +160,17 @@ namespace WRMC.Windows.Controls {
 
 		private void CustomScrollBarV_Resize(object sender, EventArgs e) {
 			this.panelHandle.Width = this.Width;
+			this.Refresh();
 		}
 
 		private void CustomScrollBarV_MouseEnter(object sender, EventArgs e) {
 			this.Width = this.ActiveWidth;
+			this.Refresh();
 		}
 
 		private void CustomScrollBarV_MouseLeave(object sender, EventArgs e) {
 			this.Width = this.InactiveWidth;
+			this.Refresh();
 		}
 
 		private void panelHandle_MouseDown(object sender, MouseEventArgs e) {

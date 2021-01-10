@@ -3,6 +3,7 @@
 using Newtonsoft.Json;
 
 using WRMC.Core.Networking;
+using WRMC.Windows.Media;
 
 namespace WRMC.Windows {
 	public class Settings {
@@ -11,9 +12,11 @@ namespace WRMC.Windows {
 		public static Settings Current { get; set; }
 
 		public FormCloseAction CloseAction { get; set; }
+		public MediaSessionExtractor SessionExtractor { get; set; }
 
 		public Settings() {
 			this.CloseAction = FormCloseAction.Minimize;
+			this.SessionExtractor = new TransportControlsMediaSessionExtractor();
 		}
 
 		public static void Save() {
