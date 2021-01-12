@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NAudio.CoreAudioApi;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -9,6 +10,7 @@ using System.Windows.Forms;
 using WRMC.Core.Models;
 using WRMC.Windows.Controls;
 using WRMC.Windows.Media;
+using WRMC.Windows.Native;
 
 namespace WRMC.Windows {
 	public partial class Form1 : Form {

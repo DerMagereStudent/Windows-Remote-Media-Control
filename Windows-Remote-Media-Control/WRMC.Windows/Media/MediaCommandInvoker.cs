@@ -28,6 +28,13 @@ namespace WRMC.Windows.Media {
 		public abstract void SkipPrevious(MediaSession session);
 		public abstract void MoveToScreen(MediaSession session, string screen);
 		public abstract void SetAudioEndpoint(MediaSession session, AudioEndpoint endpoint);
+		public abstract void SetMasterVolume(int volume);
 		public abstract void SetVolume(MediaSession session, int volume);
+
+		public abstract List<string> GetScreens();
+		public abstract List<AudioEndpoint> GetAudioEndpoints();
+		public abstract int GetMasterVolume();
+		public abstract int GetVolume(MediaSession session);
+		public abstract Tuple<List<string>, List<string>> GetDirectoryContent(string directory);
 	}
 }

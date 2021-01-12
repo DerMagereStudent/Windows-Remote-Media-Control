@@ -27,6 +27,9 @@ namespace WRMC.Windows.Native {
 		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern int GetClassName(IntPtr hwnd, StringBuilder lpClassName, int nMaxCount);
 
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetForegroundWindow();
+
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool GetPackageFamilyName(IntPtr hProcess, ref uint packageFamilyNameLength, StringBuilder packageFullName);
 

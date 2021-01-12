@@ -33,6 +33,19 @@ namespace WRMC.Windows.Native {
 			return new IntPtr(newep.ihWnd);
 		}
 
+		public static IntPtr GetHwndsForUWPFSApp(string aumid) {
+			IntPtr hwnd = NativeMethods.GetForegroundWindow();
+
+			StringBuilder sbClassName = new StringBuilder(256);
+			NativeMethods.GetClassName(hwnd, sbClassName, sbClassName.Capacity);
+			string className = sbClassName.ToString();
+
+			if (className.Equals("ApplicationFrameWindow"))
+				return hwnd;
+
+			return IntPtr.Zero;
+		}
+
 		private static bool CheckWindow(IntPtr hwnd, IntPtr lParam, List<IntPtr> hwds, List<int> pids) {
 			if (IsHwndOfProcesses(hwnd, pids))
 				hwds.Add(hwnd);
@@ -52,8 +65,6 @@ namespace WRMC.Windows.Native {
 				NativeInterfaces.IPropertyStore pPropertyStore;
 				Guid guid = new Guid("{886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99}");
 				NativeEnums.HRESULT hr = NativeMethods.SHGetPropertyStoreForWindow(hwnd, ref guid, out pPropertyStore);
-				//if (hr != HRESULT.S_OK)
-				//    throw Marshal.GetExceptionForHR((int)hr);
 				if (hr == NativeEnums.HRESULT.S_OK) {
 					NativeStructs.PROPVARIANT propVar = new NativeStructs.PROPVARIANT();
 					hr = pPropertyStore.GetValue(ref NativeDefinitions.PKEY_AppUserModel_ID, out propVar);

@@ -1,4 +1,6 @@
-﻿namespace WRMC.Windows.Native {
+﻿using System;
+
+namespace WRMC.Windows.Native {
 	public class NativeEnums {
 		public enum HRESULT : int {
 			S_OK = 0,
@@ -13,6 +15,35 @@
 			E_HANDLE = unchecked((int)0x80070006),
 			E_OUTOFMEMORY = unchecked((int)0x8007000E),
 			E_INVALIDARG = unchecked((int)0x80070057)
+		}
+
+		[Flags]
+		public enum EDataFlow {
+			eRender,
+			eCapture,
+			eAll,
+		}
+
+		[Flags]
+		public enum ERole : uint {
+			eConsole,
+			eMultimedia,
+			eCommunications
+		}
+
+		public enum AudioSessionState {
+			Inactive = 0,
+			Active = 1,
+			Expired = 2
+		}
+
+		public enum AudioSessionDisconnectReason {
+			DisconnectReasonDeviceRemoval = 0,
+			DisconnectReasonServerShutdown = 1,
+			DisconnectReasonFormatChanged = 2,
+			DisconnectReasonSessionLogoff = 3,
+			DisconnectReasonSessionDisconnected = 4,
+			DisconnectReasonExclusiveModeOverride = 5
 		}
 	}
 }
