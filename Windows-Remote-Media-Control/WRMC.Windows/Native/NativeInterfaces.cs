@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace WRMC.Windows.Native {
 	public static class NativeInterfaces {
@@ -616,6 +617,71 @@ namespace WRMC.Windows.Native {
 			[PreserveSig]
 			void OnSessionDisconnected(
 				NativeEnums.AudioSessionDisconnectReason DisconnectReason
+			);
+		}
+
+		[ComImport]
+		[Guid(NativeGuids.I_APPLICATION_ACTIVATION_MANAGER)]
+		[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+		public interface IApplicationActivationManager {
+			[PreserveSig]
+			NativeEnums.HRESULT ActivateApplication(
+				[In, MarshalAs(UnmanagedType.LPWStr)] string appUserModelId,
+				[In, MarshalAs(UnmanagedType.LPWStr)] string arguments,
+				[In] NativeEnums.ActivateOptions options,
+				[Out, MarshalAs(UnmanagedType.U4)] out uint processId
+			);
+
+			[PreserveSig]
+			NativeEnums.HRESULT ActivateForFile(
+				[In, MarshalAs(UnmanagedType.LPWStr)] string appUserModelId,
+				[In] IntPtr itemArray,
+				[In, MarshalAs(UnmanagedType.LPWStr)] string verb,
+				[Out, MarshalAs(UnmanagedType.U4)] out uint processId
+			);
+
+			[PreserveSig]
+			NativeEnums.HRESULT ActivateForProtocol(
+				[In, MarshalAs(UnmanagedType.LPWStr)] string appUserModelId,
+				[In] IntPtr itemArray,
+				[Out, MarshalAs(UnmanagedType.U4)] out uint processId
+			);
+		}
+
+		[ComImport]
+		[Guid(NativeGuids.I_SHELL_ITEM)]
+		[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+		public interface IShellItem {
+			[PreserveSig]
+			NativeEnums.HRESULT BindToHandler(
+				[In] IBindCtx pbc,
+				[In] Guid bhid,
+				[In] Guid riid,
+				[Out] out object ppv
+			);
+
+			[PreserveSig]
+			NativeEnums.HRESULT GetParent(
+				[Out] out IShellItem ppsi
+			);
+
+			[PreserveSig]
+			 NativeEnums.HRESULT GetDisplayName(
+				[In] NativeEnums.SIGDN sigdnName,
+				[Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszName
+			);
+
+			[PreserveSig]
+			NativeEnums.HRESULT Compare(
+				[In] IShellItem psi,
+				[In] NativeEnums.SICHINTF hint,
+				[Out] out int piOrder
+			);
+
+			[PreserveSig]
+			NativeEnums.HRESULT GetAttributes(
+				[In] NativeEnums.SFGAOF sfgaoMask,
+				[Out] out NativeEnums.SFGAOF psggaoAttribs
 			);
 		}
 	}

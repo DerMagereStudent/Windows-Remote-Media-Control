@@ -30,6 +30,9 @@ namespace WRMC.Windows.Media {
 		public abstract void SetAudioEndpoint(MediaSession session, AudioEndpoint endpoint);
 		public abstract void SetMasterVolume(int volume);
 		public abstract void SetVolume(MediaSession session, int volume);
+		public abstract void SetConfiguration(MediaSession session, Configuration configuration);
+
+		public abstract void PlayFile(string filePath);
 
 		public abstract List<string> GetScreens();
 		public abstract List<AudioEndpoint> GetAudioEndpoints();

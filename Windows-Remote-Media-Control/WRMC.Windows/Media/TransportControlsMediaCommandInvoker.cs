@@ -134,6 +134,25 @@ namespace WRMC.Windows.Media {
 			}
 		}
 
+		public override void SetConfiguration(MediaSession session, Configuration configuration) {
+			this.MoveToScreen(session, configuration.Screen);
+			this.SetAudioEndpoint(session, configuration.AudioEndpoint);
+		}
+
+		public override void PlayFile(string filePath) {
+			//NativeInterfaces.IApplicationActivationManager applicationActivationManager = NativeClasses.ComObjectFactory.CreateInstance(new Guid(NativeGuids.APPLICATION_ACTIVATION_MANAGER)) as NativeInterfaces.IApplicationActivationManager;
+
+			//NativeMethods.SHCreateItemFromParsingName(filePath, IntPtr.Zero, new Guid(NativeGuids.I_SHELL_ITEM), out NativeInterfaces.IShellItem shellItem);
+
+			ProcessStartInfo startInfo = new ProcessStartInfo() {
+				FileName = filePath,
+				UseShellExecute = true,
+				WindowStyle = ProcessWindowStyle.Maximized
+			};
+
+			Process.Start(startInfo);
+		}
+
 		public override List<string> GetScreens() => Screen.AllScreens.Select(s => s.DeviceName).ToList();
 
 		public override List<AudioEndpoint> GetAudioEndpoints() {

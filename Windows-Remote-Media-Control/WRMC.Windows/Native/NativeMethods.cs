@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
 namespace WRMC.Windows.Native {
@@ -18,7 +19,7 @@ namespace WRMC.Windows.Native {
 		public delegate bool WNDENUMPROC(IntPtr hwnd, IntPtr lParam);
 		public delegate bool WNDENUMPROCR(IntPtr hwnd, ref IntPtr lParam);
 
-		[DllImport("User32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
 
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -56,14 +57,17 @@ namespace WRMC.Windows.Native {
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
-		[DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool QueryFullProcessImageName(IntPtr hProcess, int dwFlags, StringBuilder lpExeName, ref uint lpdwSize);
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
-		[DllImport("Shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+		[DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+		public static extern NativeEnums.HRESULT SHCreateItemFromParsingName([In, MarshalAs(UnmanagedType.LPWStr)] string pszPath, [In] IntPtr pbc, [In, MarshalAs(UnmanagedType.Struct)] Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out NativeInterfaces.IShellItem ppv);
+
+		[DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern NativeEnums.HRESULT SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [Out(), MarshalAs(UnmanagedType.Interface)] out NativeInterfaces.IPropertyStore propertyStore);
 
 		[DllImport("user32.dll")]
@@ -76,7 +80,7 @@ namespace WRMC.Windows.Native {
 			return title.ToString();
 		}
 
-		[DllImport("User32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, [In, Out] ref NativeStructs.RECT pvParam, uint fWinIni);
 	}
 }
