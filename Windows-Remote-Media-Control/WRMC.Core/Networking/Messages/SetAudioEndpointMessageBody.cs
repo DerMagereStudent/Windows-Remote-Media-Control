@@ -4,7 +4,7 @@ namespace WRMC.Core.Networking {
 	/// <summary>
 	/// Represents the data body for a command to set the audio output device for a media session on the server device.
 	/// </summary>
-	public class SetAudioEndpointMessageBody : AuthenticatedMessageBody {
+	public class SetAudioEndpointMessageBody : AuthenticatedMessageBody, IMediaSessionMessageBody {
 		/// <summary>
 		/// The media session whose audio output should be set to the specified audio output device.
 		/// </summary>

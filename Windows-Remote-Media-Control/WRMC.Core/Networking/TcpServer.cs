@@ -139,6 +139,35 @@ namespace WRMC.Core.Networking {
 		}
 
 		/// <summary>
+		/// Closes the specified connection.
+		/// </summary>
+		/// <param name="client">The TCP client which should be closed.</param>
+		/// <param name="clientDevice">The device informationen.</param>
+		/// <param name="notifyClient">True if this side of the connection initiated the close and the client should be notified. False if the client initiated.</param>
+		public void CloseConnection(System.Net.Sockets.TcpClient client, ClientDevice clientDevice, bool notifyClient) {
+			lock (this.clientsLock) {
+				if (!this.clients.ContainsKey(client))
+					return;
+
+				if (notifyClient) {
+					Message message = new Message() {
+						Method = Message.Type.Disconnect,
+						Body = null
+					};
+
+					byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultSerializationOptions));
+					client.GetStream().Write(data, 0, data.Length);
+					client.GetStream().Flush();
+				}
+
+				client.GetStream().Close();
+				client.Close();
+
+				this.OnConnectionClosed(this, new ClientEventArgs(client, clientDevice));
+			}
+		}
+
+		/// <summary>
 		/// Sends a message to a specified client.
 		/// </summary>
 		/// <param name="message">The message to send.</param>
@@ -163,7 +192,7 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		/// <param name="response">The response to send.</param>
 		/// <param name="receiver">The receiver client of the response.</param>
-		public void SendRequest(Response response, ClientDevice receiver) {
+		public void SendResponse(Response response, ClientDevice receiver) {
 			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions));
 			this.SendData(data, receiver);
 		}

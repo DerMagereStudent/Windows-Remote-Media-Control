@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 using Newtonsoft.Json;
 
 using WRMC.Core.Networking;
 using WRMC.Windows.Media;
+using WRMC.Windows.Networking;
 
 namespace WRMC.Windows {
 	public class Settings {
@@ -12,11 +14,13 @@ namespace WRMC.Windows {
 		public static Settings Current { get; set; }
 
 		public FormCloseAction CloseAction { get; set; }
-		public MediaSessionExtractor SessionExtractor { get; set; }
+		public ConnectionRequestHandlingMethod RequestHandlingMethod { get; set; }
+		public Type SessionExtractor { get; set; }
 
 		public Settings() {
 			this.CloseAction = FormCloseAction.Minimize;
-			this.SessionExtractor = new TransportControlsMediaSessionExtractor();
+			this.RequestHandlingMethod = ConnectionRequestHandlingMethod.AcceptAll;
+			this.SessionExtractor = typeof(TransportControlsMediaSessionExtractor);
 		}
 
 		public static void Save() {

@@ -121,6 +121,8 @@
     <Compile Include="Native\NativeInterfaces.cs" />
     <Compile Include="Native\NativeMethods.cs" />
     <Compile Include="Native\NativeStructs.cs" />
+    <Compile Include="Networking\ConnectionManager.cs" />
+    <Compile Include="Networking\ConnectionRequestHandlingMethod.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using WRMC.Core.Models;
 using WRMC.Windows.Controls;
 using WRMC.Windows.Media;
-using WRMC.Windows.Native;
+using WRMC.Windows.Networking;
 
 namespace WRMC.Windows {
 	public partial class Form1 : Form {
@@ -29,7 +29,7 @@ namespace WRMC.Windows {
 
 			Settings.Load();
 
-			MediaSessionExtractor.Default = Settings.Current.SessionExtractor;
+			MediaSessionExtractor.Default = Activator.CreateInstance(Settings.Current.SessionExtractor) as MediaSessionExtractor;
 			MediaSessionExtractor.Default.OnSessionsChanged += (s, e) => this.UpdateSessionList();
 
 			MediaCommandInvoker.SetInvoker(MediaSessionExtractor.Default.GetType());
@@ -37,8 +37,11 @@ namespace WRMC.Windows {
 			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
-			this.comboBoxCloseAction.DataSource = Enum.GetValues(typeof(FormCloseAction));
-			this.comboBoxCloseAction.SelectedItem = Settings.Current.CloseAction;
+			this.customComboBoxCloseAction.DataSource = Enum.GetValues(typeof(FormCloseAction));
+			this.customComboBoxCloseAction.SelectedItem = Settings.Current.CloseAction;
+
+			this.customComboBoxConnectionRequestHandlingMethod.DataSource = Enum.GetValues(typeof(ConnectionRequestHandlingMethod));
+			this.customComboBoxConnectionRequestHandlingMethod.SelectedItem = Settings.Current.RequestHandlingMethod;
 
 			this.customComboBoxSessionExtractor.DisplayMember = "Name";
 			this.customComboBoxSessionExtractor.DataSource = MediaCommandInvoker.RegisteredExtractors;
@@ -103,11 +106,16 @@ namespace WRMC.Windows {
 		private void customComboBoxSessionExtractor_SelectionChangeCommitted(object sender, EventArgs e) {
 			Type type = (Type)(sender as CustomComboBox).SelectedItem;
 
-			Settings.Current.SessionExtractor = Activator.CreateInstance(type) as MediaSessionExtractor;
+			Settings.Current.SessionExtractor = type;
 
-			MediaSessionExtractor.Default = Settings.Current.SessionExtractor;
+			MediaSessionExtractor.Default = Activator.CreateInstance(Settings.Current.SessionExtractor) as MediaSessionExtractor;
 			MediaCommandInvoker.SetInvoker(type);
 
+			Settings.Save();
+		}
+
+		private void customComboBoxConnectionRequestHandlingMethod_SelectionChangeCommitted(object sender, EventArgs e) {
+			Settings.Current.RequestHandlingMethod = (ConnectionRequestHandlingMethod)(sender as CustomComboBox).SelectedItem;
 			Settings.Save();
 		}
 	}

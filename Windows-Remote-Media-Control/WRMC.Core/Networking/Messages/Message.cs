@@ -17,7 +17,8 @@
 			ResumeSuspendedProcess,
 			SetAudioEndpoint,
 			SetConfiguration,
-			SetScreen
+			SetScreen,
+			SetVolume
 		}
 
 		/// <summary>

@@ -4,7 +4,7 @@ namespace WRMC.Core.Networking {
 	/// <summary>
 	/// Represents the data body for a command to set the screen for a media session on the server device.
 	/// </summary>
-	public class SetScreenMessageBody : AuthenticatedMessageBody {
+	public class SetScreenMessageBody : AuthenticatedMessageBody, IMediaSessionMessageBody {
 		/// <summary>
 		/// The media session whose process should be moved to the specified screen.
 		/// </summary>
