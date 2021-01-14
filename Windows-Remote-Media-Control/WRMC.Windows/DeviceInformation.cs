@@ -1,15 +1,27 @@
 ﻿using System;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Text;
 
-using Windows.System.UserProfile;
+using Windows.System;
+using Windows.System.Profile;
+using Windows.Storage.Streams;
 
 using WRMC.Core.Networking;
 
 namespace WRMC.Windows {
 	public static class DeviceInformation {
 		public static string DeviceName => Environment.MachineName;
-		public static string DevideId => AdvertisingManager.AdvertisingId;
+
+		public static string DevideId {
+			get {
+				IBuffer iBuffer = SystemIdentification.GetSystemIdForUser(null).Id;
+				byte[] buffer = new byte[iBuffer.Length];
+				DataReader.FromBuffer(iBuffer).ReadBytes(buffer);
+				return Convert.ToBase64String(buffer, Base64FormattingOptions.None);
+			}
+		}
+
 		public static IPAddress IPAddress {
 			get {
 				foreach (NetworkInterface nInterface in NetworkInterface.GetAllNetworkInterfaces()) {

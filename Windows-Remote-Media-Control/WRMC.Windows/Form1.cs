@@ -1,5 +1,4 @@
-﻿using NAudio.CoreAudioApi;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -59,6 +58,11 @@ namespace WRMC.Windows {
 
 				this.toolStripButtonShowHide.Text = this.Visible ? "Minimize to Tray" : "Show Window";
 			};
+
+			ConnectionManager.OnClientsChanged += (s, e) => this.UpdateDeviceList();
+			ConnectionManager.OnConnectionRequestReceived += this.ConnectionManager_OnConnectionRequestReceived;
+
+			Trace.WriteLine(DeviceInformation.IPAddress);
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {
@@ -79,12 +83,12 @@ namespace WRMC.Windows {
 
 		private void UpdateSessionList() {
 			lock (this.updateSessionsLock) {
-				this.scrollablePanel.Controls.Clear();
+				this.scrollablePanelMediaSessions.Controls.Clear();
 
-				this.scrollablePanel.Invoke(new Action(() => {
+				this.scrollablePanelMediaSessions.Invoke(new Action(() => {
 					for (int i = 0; i < MediaSessionExtractor.Default.Sessions.Count; i++) {
 						try {
-							this.scrollablePanel.Controls.Add(new MediaSessionControl(MediaSessionExtractor.Default.Sessions[i]) {
+							this.scrollablePanelMediaSessions.Controls.Add(new MediaSessionControl(MediaSessionExtractor.Default.Sessions[i]) {
 								Location = new Point(0, i * 40),
 								Margin = new Padding(0),
 								Padding = new Padding(0)
@@ -93,9 +97,29 @@ namespace WRMC.Windows {
 						catch (ArgumentOutOfRangeException) { }
 					}
 
-					this.scrollablePanel.Invalidate();
+					this.scrollablePanelMediaSessions.Invalidate();
 				}));
 			}
+		}
+
+		private void UpdateDeviceList() {
+			this.scrollablePanelDevices.Controls.Clear();
+
+			this.scrollablePanelDevices.Invoke(new Action(() => {
+				for (int i = 0; i < ConnectionManager.Clients.Count; i++) {
+					try {
+						this.scrollablePanelDevices.Controls.Add(new ClientDeviceControl() {
+							ClientDevice = ConnectionManager.Clients[i],
+							Location = new Point(0, i * 40),
+							Margin = new Padding(0),
+							Padding = new Padding(0)
+						});
+					}
+					catch (ArgumentOutOfRangeException) { }
+				}
+
+				this.scrollablePanelDevices.Invalidate();
+			}));
 		}
 
 		private void comboBoxCloseAction_SelectionChangeCommitted(object sender, EventArgs e) {
@@ -117,6 +141,25 @@ namespace WRMC.Windows {
 		private void customComboBoxConnectionRequestHandlingMethod_SelectionChangeCommitted(object sender, EventArgs e) {
 			Settings.Current.RequestHandlingMethod = (ConnectionRequestHandlingMethod)(sender as CustomComboBox).SelectedItem;
 			Settings.Save();
+		}
+
+		private void ConnectionManager_OnConnectionRequestReceived(object sender, Core.Networking.ClientRequestEventArgs e) {
+			switch (Settings.Current.RequestHandlingMethod) {
+				case ConnectionRequestHandlingMethod.AcceptAll:
+					ConnectionManager.AcceptConnection(e.Client, e.ClientDevice);
+					break;
+
+				case ConnectionRequestHandlingMethod.Ask:
+					DialogResult dialogResult = MessageBox.Show("Do you want to accept the connection request from " + e.ClientDevice.Name + "?", "Connectio Requested", MessageBoxButtons.YesNo);
+					
+					if (dialogResult == DialogResult.Yes)
+						ConnectionManager.AcceptConnection(e.Client, e.ClientDevice);
+
+					break;
+
+				case ConnectionRequestHandlingMethod.RejectAll:
+					break;
+			}
 		}
 	}
 }

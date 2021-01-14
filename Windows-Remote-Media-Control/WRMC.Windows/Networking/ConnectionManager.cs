@@ -5,7 +5,6 @@ using System.IO;
 using Newtonsoft.Json;
 
 using WRMC.Core.Networking;
-using WRMC.Core.Networking.Messages;
 using WRMC.Windows.Media;
 
 namespace WRMC.Windows.Networking {
@@ -44,6 +43,10 @@ namespace WRMC.Windows.Networking {
 
 			clientDevice.SessionID = ConnectionManager.GetRandomSessionID();
 			ConnectionManager.tcpServer.AcceptConnection(client, clientDevice);
+		}
+
+		public static void CloseConnection(ClientDevice clientDevice) {
+			ConnectionManager.tcpServer.CloseConnection(clientDevice);
 		}
 
 		private static long GetRandomSessionID() {

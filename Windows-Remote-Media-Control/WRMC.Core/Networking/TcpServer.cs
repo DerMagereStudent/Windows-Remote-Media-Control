@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -136,6 +138,16 @@ namespace WRMC.Core.Networking {
 
 			client.GetStream().BeginWrite(data, 0, data.Length, this.OnWrite, client);
 			this.OnConnectionAccpeted?.Invoke(this, new ClientEventArgs(client, clientDevice));
+		}
+
+		public void CloseConnection(ClientDevice clientDevice) {
+			var kvPair = this.clients.Where(kp => kp.Value.Equals(clientDevice)).FirstOrDefault();
+			System.Net.Sockets.TcpClient client = kvPair.Key;
+
+			if (client == null)
+				return;
+
+			this.CloseConnection(client, clientDevice, true);
 		}
 
 		/// <summary>
@@ -308,6 +320,8 @@ namespace WRMC.Core.Networking {
 				lock (this.clientBuffersLock)
 					client.GetStream().BeginRead(this.clientBuffers[client], 0, this.clientBuffers[client].Length, this.OnDataReceived, client);
 			} catch(ObjectDisposedException) {
+				// Connection closed
+			} catch (IOException) {
 				// Connection closed
 			}
 		}

@@ -28,6 +28,7 @@ namespace WRMC.Windows {
 			this.panelTitleBar = new System.Windows.Forms.Panel();
 			this.panelMenu = new System.Windows.Forms.Panel();
 			this.panelSettings = new System.Windows.Forms.Panel();
+			this.labelConnectionRequestHandlingMethod = new System.Windows.Forms.Label();
 			this.labelSessionExtractor = new System.Windows.Forms.Label();
 			this.labelCloseAction = new System.Windows.Forms.Label();
 			this.panelDevices = new System.Windows.Forms.Panel();
@@ -43,24 +44,32 @@ namespace WRMC.Windows {
 			this.toolStripButtonShowHide = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripButtonExit = new System.Windows.Forms.ToolStripMenuItem();
-			this.labelConnectionRequestHandlingMethod = new System.Windows.Forms.Label();
+			this.scrollablePanelMediaSessions = new WRMC.Windows.Controls.ScrollablePanel();
+			this.customScrollBarVMediaSessions = new WRMC.Windows.Controls.CustomScrollBarV();
 			this.customComboBoxConnectionRequestHandlingMethod = new WRMC.Windows.Controls.CustomComboBox();
 			this.customComboBoxSessionExtractor = new WRMC.Windows.Controls.CustomComboBox();
 			this.customComboBoxCloseAction = new WRMC.Windows.Controls.CustomComboBox();
-			this.scrollablePanel = new WRMC.Windows.Controls.ScrollablePanel();
-			this.customScrollBarV = new WRMC.Windows.Controls.CustomScrollBarV();
 			this.buttonSettings = new WRMC.Windows.Controls.BringToFrontButton();
 			this.buttonDevices = new WRMC.Windows.Controls.BringToFrontButton();
 			this.buttonSessions = new WRMC.Windows.Controls.BringToFrontButton();
 			this.buttonMinimize = new WRMC.Windows.Controls.WindowsDefaultTitleBarButton();
 			this.buttonClose = new WRMC.Windows.Controls.WindowsDefaultTitleBarButton();
 			this.formDragControl = new WRMC.Windows.Controls.FormDragControl();
+			this.panelDevicesHeader = new System.Windows.Forms.Panel();
+			this.labelHeaderSessionID = new System.Windows.Forms.Label();
+			this.labelHeaderIPAddress = new System.Windows.Forms.Label();
+			this.labelDeviceName = new System.Windows.Forms.Label();
+			this.labelHeaderDeviceID = new System.Windows.Forms.Label();
+			this.scrollablePanelDevices = new WRMC.Windows.Controls.ScrollablePanel();
+			this.customScrollBarVDevices = new WRMC.Windows.Controls.CustomScrollBarV();
 			this.panelTitleBar.SuspendLayout();
 			this.panelMenu.SuspendLayout();
 			this.panelSettings.SuspendLayout();
+			this.panelDevices.SuspendLayout();
 			this.panelSessions.SuspendLayout();
 			this.panelSessionsHeader.SuspendLayout();
 			this.contextMenuStrip.SuspendLayout();
+			this.panelDevicesHeader.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panelTitleBar
@@ -101,6 +110,17 @@ namespace WRMC.Windows {
 			this.panelSettings.Size = new System.Drawing.Size(890, 636);
 			this.panelSettings.TabIndex = 4;
 			// 
+			// labelConnectionRequestHandlingMethod
+			// 
+			this.labelConnectionRequestHandlingMethod.AutoSize = true;
+			this.labelConnectionRequestHandlingMethod.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelConnectionRequestHandlingMethod.ForeColor = System.Drawing.Color.White;
+			this.labelConnectionRequestHandlingMethod.Location = new System.Drawing.Point(16, 87);
+			this.labelConnectionRequestHandlingMethod.Name = "labelConnectionRequestHandlingMethod";
+			this.labelConnectionRequestHandlingMethod.Size = new System.Drawing.Size(183, 17);
+			this.labelConnectionRequestHandlingMethod.TabIndex = 5;
+			this.labelConnectionRequestHandlingMethod.Text = "Connection Request Handling:";
+			// 
 			// labelSessionExtractor
 			// 
 			this.labelSessionExtractor.AutoSize = true;
@@ -125,6 +145,9 @@ namespace WRMC.Windows {
 			// 
 			// panelDevices
 			// 
+			this.panelDevices.Controls.Add(this.scrollablePanelDevices);
+			this.panelDevices.Controls.Add(this.panelDevicesHeader);
+			this.panelDevices.Controls.Add(this.customScrollBarVDevices);
 			this.panelDevices.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelDevices.Location = new System.Drawing.Point(200, 29);
 			this.panelDevices.Name = "panelDevices";
@@ -133,9 +156,9 @@ namespace WRMC.Windows {
 			// 
 			// panelSessions
 			// 
-			this.panelSessions.Controls.Add(this.scrollablePanel);
+			this.panelSessions.Controls.Add(this.scrollablePanelMediaSessions);
 			this.panelSessions.Controls.Add(this.panelSessionsHeader);
-			this.panelSessions.Controls.Add(this.customScrollBarV);
+			this.panelSessions.Controls.Add(this.customScrollBarVMediaSessions);
 			this.panelSessions.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelSessions.Location = new System.Drawing.Point(200, 29);
 			this.panelSessions.Name = "panelSessions";
@@ -248,16 +271,31 @@ namespace WRMC.Windows {
 			this.toolStripButtonExit.Size = new System.Drawing.Size(161, 22);
 			this.toolStripButtonExit.Text = "Exit";
 			// 
-			// labelConnectionRequestHandlingMethod
+			// scrollablePanelMediaSessions
 			// 
-			this.labelConnectionRequestHandlingMethod.AutoSize = true;
-			this.labelConnectionRequestHandlingMethod.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelConnectionRequestHandlingMethod.ForeColor = System.Drawing.Color.White;
-			this.labelConnectionRequestHandlingMethod.Location = new System.Drawing.Point(16, 87);
-			this.labelConnectionRequestHandlingMethod.Name = "labelConnectionRequestHandlingMethod";
-			this.labelConnectionRequestHandlingMethod.Size = new System.Drawing.Size(183, 17);
-			this.labelConnectionRequestHandlingMethod.TabIndex = 5;
-			this.labelConnectionRequestHandlingMethod.Text = "Connection Request Handling:";
+			this.scrollablePanelMediaSessions.BackColor = System.Drawing.Color.Transparent;
+			this.scrollablePanelMediaSessions.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.scrollablePanelMediaSessions.Location = new System.Drawing.Point(0, 40);
+			this.scrollablePanelMediaSessions.Margin = new System.Windows.Forms.Padding(0);
+			this.scrollablePanelMediaSessions.Name = "scrollablePanelMediaSessions";
+			this.scrollablePanelMediaSessions.ScrollBarV = this.customScrollBarVMediaSessions;
+			this.scrollablePanelMediaSessions.Size = new System.Drawing.Size(890, 596);
+			this.scrollablePanelMediaSessions.TabIndex = 1;
+			// 
+			// customScrollBarVMediaSessions
+			// 
+			this.customScrollBarVMediaSessions.Dock = System.Windows.Forms.DockStyle.Right;
+			this.customScrollBarVMediaSessions.HandleClickColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
+			this.customScrollBarVMediaSessions.HandleColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(49)))), ((int)(((byte)(69)))));
+			this.customScrollBarVMediaSessions.HandleHoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
+			this.customScrollBarVMediaSessions.InactiveWidth = 12;
+			this.customScrollBarVMediaSessions.Location = new System.Drawing.Point(890, 0);
+			this.customScrollBarVMediaSessions.Name = "customScrollBarVMediaSessions";
+			this.customScrollBarVMediaSessions.ScrollValue = 0F;
+			this.customScrollBarVMediaSessions.Size = new System.Drawing.Size(0, 636);
+			this.customScrollBarVMediaSessions.TabIndex = 0;
+			this.customScrollBarVMediaSessions.Target = this.scrollablePanelMediaSessions;
+			this.customScrollBarVMediaSessions.VisiblePercent = 100F;
 			// 
 			// customComboBoxConnectionRequestHandlingMethod
 			// 
@@ -306,32 +344,6 @@ namespace WRMC.Windows {
 			this.customComboBoxCloseAction.Size = new System.Drawing.Size(121, 26);
 			this.customComboBoxCloseAction.TabIndex = 0;
 			this.customComboBoxCloseAction.SelectionChangeCommitted += new System.EventHandler(this.comboBoxCloseAction_SelectionChangeCommitted);
-			// 
-			// scrollablePanel
-			// 
-			this.scrollablePanel.BackColor = System.Drawing.Color.Transparent;
-			this.scrollablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.scrollablePanel.Location = new System.Drawing.Point(0, 40);
-			this.scrollablePanel.Margin = new System.Windows.Forms.Padding(0);
-			this.scrollablePanel.Name = "scrollablePanel";
-			this.scrollablePanel.ScrollBarV = this.customScrollBarV;
-			this.scrollablePanel.Size = new System.Drawing.Size(890, 596);
-			this.scrollablePanel.TabIndex = 1;
-			// 
-			// customScrollBarV
-			// 
-			this.customScrollBarV.Dock = System.Windows.Forms.DockStyle.Right;
-			this.customScrollBarV.HandleClickColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(57)))), ((int)(((byte)(80)))));
-			this.customScrollBarV.HandleColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(49)))), ((int)(((byte)(69)))));
-			this.customScrollBarV.HandleHoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
-			this.customScrollBarV.InactiveWidth = 12;
-			this.customScrollBarV.Location = new System.Drawing.Point(890, 0);
-			this.customScrollBarV.Name = "customScrollBarV";
-			this.customScrollBarV.ScrollValue = 0F;
-			this.customScrollBarV.Size = new System.Drawing.Size(0, 636);
-			this.customScrollBarV.TabIndex = 0;
-			this.customScrollBarV.Target = this.scrollablePanel;
-			this.customScrollBarV.VisiblePercent = 100F;
 			// 
 			// buttonSettings
 			// 
@@ -425,15 +437,103 @@ namespace WRMC.Windows {
 			// 
 			this.formDragControl.Target = this.panelTitleBar;
 			// 
+			// panelDevicesHeader
+			// 
+			this.panelDevicesHeader.Controls.Add(this.labelHeaderSessionID);
+			this.panelDevicesHeader.Controls.Add(this.labelHeaderIPAddress);
+			this.panelDevicesHeader.Controls.Add(this.labelDeviceName);
+			this.panelDevicesHeader.Controls.Add(this.labelHeaderDeviceID);
+			this.panelDevicesHeader.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panelDevicesHeader.Location = new System.Drawing.Point(0, 0);
+			this.panelDevicesHeader.Name = "panelDevicesHeader";
+			this.panelDevicesHeader.Size = new System.Drawing.Size(884, 40);
+			this.panelDevicesHeader.TabIndex = 8;
+			// 
+			// labelHeaderSessionID
+			// 
+			this.labelHeaderSessionID.AutoEllipsis = true;
+			this.labelHeaderSessionID.Dock = System.Windows.Forms.DockStyle.Left;
+			this.labelHeaderSessionID.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelHeaderSessionID.ForeColor = System.Drawing.Color.White;
+			this.labelHeaderSessionID.Location = new System.Drawing.Point(640, 0);
+			this.labelHeaderSessionID.Name = "labelHeaderSessionID";
+			this.labelHeaderSessionID.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.labelHeaderSessionID.Size = new System.Drawing.Size(160, 40);
+			this.labelHeaderSessionID.TabIndex = 7;
+			this.labelHeaderSessionID.Text = "Session ID";
+			this.labelHeaderSessionID.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// labelHeaderIPAddress
+			// 
+			this.labelHeaderIPAddress.AutoEllipsis = true;
+			this.labelHeaderIPAddress.Dock = System.Windows.Forms.DockStyle.Left;
+			this.labelHeaderIPAddress.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelHeaderIPAddress.ForeColor = System.Drawing.Color.White;
+			this.labelHeaderIPAddress.Location = new System.Drawing.Point(440, 0);
+			this.labelHeaderIPAddress.Name = "labelHeaderIPAddress";
+			this.labelHeaderIPAddress.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.labelHeaderIPAddress.Size = new System.Drawing.Size(200, 40);
+			this.labelHeaderIPAddress.TabIndex = 6;
+			this.labelHeaderIPAddress.Text = "IP Address";
+			this.labelHeaderIPAddress.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// labelDeviceName
+			// 
+			this.labelDeviceName.Dock = System.Windows.Forms.DockStyle.Left;
+			this.labelDeviceName.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelDeviceName.ForeColor = System.Drawing.Color.White;
+			this.labelDeviceName.Location = new System.Drawing.Point(200, 0);
+			this.labelDeviceName.Name = "labelDeviceName";
+			this.labelDeviceName.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.labelDeviceName.Size = new System.Drawing.Size(240, 40);
+			this.labelDeviceName.TabIndex = 5;
+			this.labelDeviceName.Text = "Device Name";
+			this.labelDeviceName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// labelHeaderDeviceID
+			// 
+			this.labelHeaderDeviceID.Dock = System.Windows.Forms.DockStyle.Left;
+			this.labelHeaderDeviceID.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelHeaderDeviceID.ForeColor = System.Drawing.Color.White;
+			this.labelHeaderDeviceID.Location = new System.Drawing.Point(0, 0);
+			this.labelHeaderDeviceID.Name = "labelHeaderDeviceID";
+			this.labelHeaderDeviceID.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.labelHeaderDeviceID.Size = new System.Drawing.Size(200, 40);
+			this.labelHeaderDeviceID.TabIndex = 4;
+			this.labelHeaderDeviceID.Text = "Device ID";
+			this.labelHeaderDeviceID.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// scrollablePanelDevices
+			// 
+			this.scrollablePanelDevices.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.scrollablePanelDevices.Location = new System.Drawing.Point(0, 40);
+			this.scrollablePanelDevices.Margin = new System.Windows.Forms.Padding(0);
+			this.scrollablePanelDevices.Name = "scrollablePanelDevices";
+			this.scrollablePanelDevices.Size = new System.Drawing.Size(884, 596);
+			this.scrollablePanelDevices.TabIndex = 9;
+			// 
+			// customScrollBarVDevices
+			// 
+			this.customScrollBarVDevices.Dock = System.Windows.Forms.DockStyle.Right;
+			this.customScrollBarVDevices.HandleClickColor = System.Drawing.Color.Empty;
+			this.customScrollBarVDevices.HandleColor = System.Drawing.Color.Empty;
+			this.customScrollBarVDevices.HandleHoverColor = System.Drawing.Color.Empty;
+			this.customScrollBarVDevices.Location = new System.Drawing.Point(884, 0);
+			this.customScrollBarVDevices.Name = "customScrollBarVDevices";
+			this.customScrollBarVDevices.ScrollValue = 0F;
+			this.customScrollBarVDevices.Size = new System.Drawing.Size(6, 636);
+			this.customScrollBarVDevices.TabIndex = 10;
+			this.customScrollBarVDevices.VisiblePercent = 0F;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
 			this.ClientSize = new System.Drawing.Size(1090, 665);
+			this.Controls.Add(this.panelDevices);
 			this.Controls.Add(this.panelSessions);
 			this.Controls.Add(this.panelSettings);
-			this.Controls.Add(this.panelDevices);
 			this.Controls.Add(this.panelMenu);
 			this.Controls.Add(this.panelTitleBar);
 			this.DoubleBuffered = true;
@@ -446,9 +546,11 @@ namespace WRMC.Windows {
 			this.panelMenu.ResumeLayout(false);
 			this.panelSettings.ResumeLayout(false);
 			this.panelSettings.PerformLayout();
+			this.panelDevices.ResumeLayout(false);
 			this.panelSessions.ResumeLayout(false);
 			this.panelSessionsHeader.ResumeLayout(false);
 			this.contextMenuStrip.ResumeLayout(false);
+			this.panelDevicesHeader.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -473,8 +575,8 @@ namespace WRMC.Windows {
 		private System.Windows.Forms.Panel panelSettings;
 		private Controls.CustomComboBox customComboBoxCloseAction;
 		private System.Windows.Forms.Label labelCloseAction;
-		private Controls.ScrollablePanel scrollablePanel;
-		private Controls.CustomScrollBarV customScrollBarV;
+		private Controls.ScrollablePanel scrollablePanelMediaSessions;
+		private Controls.CustomScrollBarV customScrollBarVMediaSessions;
 		private System.Windows.Forms.Panel panelSessionsHeader;
 		private System.Windows.Forms.Label labelHeaderArtist;
 		private System.Windows.Forms.Label labelHeaderTitle;
@@ -485,5 +587,12 @@ namespace WRMC.Windows {
 		private Controls.CustomComboBox customComboBoxSessionExtractor;
 		private System.Windows.Forms.Label labelConnectionRequestHandlingMethod;
 		private Controls.CustomComboBox customComboBoxConnectionRequestHandlingMethod;
+		private System.Windows.Forms.Panel panelDevicesHeader;
+		private System.Windows.Forms.Label labelHeaderSessionID;
+		private System.Windows.Forms.Label labelHeaderIPAddress;
+		private System.Windows.Forms.Label labelDeviceName;
+		private System.Windows.Forms.Label labelHeaderDeviceID;
+		private Controls.ScrollablePanel scrollablePanelDevices;
+		private Controls.CustomScrollBarV customScrollBarVDevices;
 	}
 }
