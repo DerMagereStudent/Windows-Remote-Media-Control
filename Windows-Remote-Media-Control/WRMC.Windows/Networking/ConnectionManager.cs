@@ -11,6 +11,7 @@ namespace WRMC.Windows.Networking {
 	public static class ConnectionManager {
 		private const string KNOWN_CLIENTS_FILE_NAME = "clients.json";
 
+		private static UdpServer udpServer;
 		private static TcpServer tcpServer;
 
 		public static List<ClientDevice> Clients { get; set; }
@@ -22,6 +23,10 @@ namespace WRMC.Windows.Networking {
 		static ConnectionManager() {
 			ConnectionManager.Clients = new List<ClientDevice>();
 			ConnectionManager.KnownClients = LoadKnownCLients();
+
+			ConnectionManager.udpServer = new UdpServer();
+			ConnectionManager.udpServer.OnFindServerRequestReceived += UdpServer_OnFindServerRequestReceived;
+			ConnectionManager.udpServer.Start();
 
 			ConnectionManager.tcpServer = new TcpServer();
 			ConnectionManager.tcpServer.OnConnectionAccpeted += TcpServer_OnConnectionAccpeted;
@@ -60,6 +65,10 @@ namespace WRMC.Windows.Networking {
 				if (!KnownClients.ContainsValue(l))
 					return l;
 			}
+		}
+
+		private static void UdpServer_OnFindServerRequestReceived(UdpServer sender, EventArgs e) {
+			sender.SendServerInformation(DeviceInformation.ServerDevice);
 		}
 
 		private static void TcpServer_OnConnectionAccpeted(TcpServer sender, ClientEventArgs e) {
@@ -178,7 +187,7 @@ namespace WRMC.Windows.Networking {
 						break;
 
 					MediaCommandInvoker.Default.MoveToScreen(screenMessageBody.MediaSession, screenMessageBody.Screen);
-					break;
+					break; 
 
 				case Message.Type.SetVolume:
 					SetVolumeMessageBody volumeMessageBody = e.Message.Body as SetVolumeMessageBody;
