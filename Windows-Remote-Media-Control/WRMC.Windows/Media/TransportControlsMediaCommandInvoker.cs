@@ -139,6 +139,26 @@ namespace WRMC.Windows.Media {
 			this.SetAudioEndpoint(session, configuration.AudioEndpoint);
 		}
 
+		public override void ResumeSuspendedProcess(SuspendedProcess suspendedProcess) {
+			Process p = null;
+
+			try {
+				p = Process.GetProcessById(suspendedProcess.ID);
+			} catch(ArgumentException) {
+				return;
+			}
+			
+			foreach (ProcessThread t in p.Threads) {
+				IntPtr threadHandle = NativeMethods.OpenThread(0x0002, false, (uint)t.Id);
+
+				if (threadHandle == IntPtr.Zero)
+					continue;
+
+				NativeMethods.ResumeThread(threadHandle);
+				NativeMethods.CloseHandle(threadHandle);
+			}
+		}
+
 		public override void PlayFile(string filePath) {
 			//NativeInterfaces.IApplicationActivationManager applicationActivationManager = NativeClasses.ComObjectFactory.CreateInstance(new Guid(NativeGuids.APPLICATION_ACTIVATION_MANAGER)) as NativeInterfaces.IApplicationActivationManager;
 
@@ -242,6 +262,29 @@ namespace WRMC.Windows.Media {
 			}
 
 			return -1;
+		}
+
+		public override List<SuspendedProcess> GetSuspendedProcesses() {
+			List<SuspendedProcess> processes = new List<SuspendedProcess>();
+
+			foreach (Process p in Process.GetProcesses()) {
+				bool suspended = true;
+
+				foreach (ProcessThread t in p.Threads) {
+					if (!(t.ThreadState == ThreadState.Wait && t.WaitReason == ThreadWaitReason.Suspended)) {
+						suspended = false;
+						break;
+					}
+				}
+
+				if (suspended)
+					processes.Add(new SuspendedProcess() {
+						ID = p.Id,
+						Name = p.ProcessName
+					});
+			}
+
+			return processes;
 		}
 
 		public override Tuple<List<string>, List<string>> GetDirectoryContent(string directory) {

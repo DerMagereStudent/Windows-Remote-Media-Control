@@ -216,5 +216,11 @@
   <ItemGroup>
     <None Include="Resources\disconnect-48-active.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\disconnect-200.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\disconnect-200-active.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

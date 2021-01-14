@@ -31,6 +31,7 @@ namespace WRMC.Windows.Media {
 		public abstract void SetMasterVolume(int volume);
 		public abstract void SetVolume(MediaSession session, int volume);
 		public abstract void SetConfiguration(MediaSession session, Configuration configuration);
+		public abstract void ResumeSuspendedProcess(SuspendedProcess suspendedProcess);
 
 		public abstract void PlayFile(string filePath);
 
@@ -38,6 +39,7 @@ namespace WRMC.Windows.Media {
 		public abstract List<AudioEndpoint> GetAudioEndpoints();
 		public abstract int GetMasterVolume();
 		public abstract int GetVolume(MediaSession session);
+		public abstract List<SuspendedProcess> GetSuspendedProcesses();
 		public abstract Tuple<List<string>, List<string>> GetDirectoryContent(string directory);
 	}
 }

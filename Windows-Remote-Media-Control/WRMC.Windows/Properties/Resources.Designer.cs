@@ -63,6 +63,26 @@ namespace WRMC.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap disconnect_200 {
+            get {
+                object obj = ResourceManager.GetObject("disconnect_200", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap disconnect_200_active {
+            get {
+                object obj = ResourceManager.GetObject("disconnect_200_active", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap disconnect_48 {
             get {
                 object obj = ResourceManager.GetObject("disconnect_48", resourceCulture);

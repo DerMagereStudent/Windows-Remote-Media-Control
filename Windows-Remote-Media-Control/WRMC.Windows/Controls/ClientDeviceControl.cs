@@ -14,8 +14,8 @@ using WRMC.Windows.Properties;
 
 namespace WRMC.Windows.Controls {
 	public partial class ClientDeviceControl : UserControl {
-		private static Image DISCONNECT_IMAGE = Resources.disconnect_48;
-		private static Image DISCONNECT_IMAGE_ACTIVE = Resources.disconnect_48_active;
+		private static Image DISCONNECT_IMAGE = Resources.disconnect_200;
+		private static Image DISCONNECT_IMAGE_ACTIVE = Resources.disconnect_200_active;
 
 		private ClientDevice _clientDevice = null;
 
@@ -36,6 +36,7 @@ namespace WRMC.Windows.Controls {
 
 		public ClientDeviceControl() {
 			this.InitializeComponent();
+			this.buttonDisconnect.BackgroundImage = DISCONNECT_IMAGE;
 
 			this.buttonDisconnect.Click += (s, e) => ConnectionManager.CloseConnection(this.ClientDevice);
 			this.buttonDisconnect.MouseEnter += (s, e) => { this.buttonDisconnect.BackgroundImage = DISCONNECT_IMAGE_ACTIVE; };

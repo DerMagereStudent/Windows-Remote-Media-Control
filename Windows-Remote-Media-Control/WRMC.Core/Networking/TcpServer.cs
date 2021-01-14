@@ -232,6 +232,10 @@ namespace WRMC.Core.Networking {
 				receiverClient.GetStream().BeginWrite(data, 0, data.Length, this.OnWrite, receiverClient);
 			} catch(ObjectDisposedException) {
 				// Connection closed
+			} catch (IOException) {
+				// Connection closed
+			} catch (InvalidOperationException) {
+
 			}
 		}
 
@@ -245,6 +249,10 @@ namespace WRMC.Core.Networking {
 				client.GetStream().EndWrite(ar);
 			} catch(ObjectDisposedException) {
 				// Connection closed
+			} catch (IOException) {
+				// Connection closed
+			} catch (InvalidOperationException) {
+
 			}
 		}
 
@@ -266,6 +274,10 @@ namespace WRMC.Core.Networking {
 				this.server.BeginAcceptTcpClient(this.OnConnectionRequestReceived, null);
 			} catch (ObjectDisposedException) {
 				// Connection closed or TcpListener stopped
+			} catch (IOException) {
+				// Connection closed
+			} catch (InvalidOperationException) {
+
 			}
 		}
 
@@ -323,6 +335,8 @@ namespace WRMC.Core.Networking {
 				// Connection closed
 			} catch (IOException) {
 				// Connection closed
+			} catch (InvalidOperationException) {
+
 			}
 		}
 
@@ -331,23 +345,28 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		private void ClientConnectionMonitoring() {
 			while (true) {
-				lock (this.clientsLock) {
-					List<System.Net.Sockets.TcpClient> clientsToClose = new List<System.Net.Sockets.TcpClient>();
+				try {
+					lock (this.clientsLock) {
+						List<System.Net.Sockets.TcpClient> clientsToClose = new List<System.Net.Sockets.TcpClient>();
 
-					foreach (System.Net.Sockets.TcpClient client in this.clients.Keys)
-						if (!client.IsConnected())
-							clientsToClose.Add(client);
+						foreach (System.Net.Sockets.TcpClient client in this.clients.Keys)
+							if (!client.IsConnected())
+								clientsToClose.Add(client);
 
-					foreach(System.Net.Sockets.TcpClient client in clientsToClose)
-						this.CloseConnection(client);
+						foreach (System.Net.Sockets.TcpClient client in clientsToClose)
+							this.CloseConnection(client);
+					}
+					Thread.Sleep(1000);
 				}
-				Thread.Sleep(1000);
+				catch (ObjectDisposedException) { }
+				catch (IOException) { }
+				catch (InvalidOperationException) { }
 			}
 		}
 
 		private void CloseConnection(System.Net.Sockets.TcpClient client) {
-			try { client.GetStream().Close(); } catch (ObjectDisposedException) { }
-			try { client.Close(); } catch (ObjectDisposedException) { }
+			try { client.GetStream().Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { }
+			try { client.Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { }
 
 			ClientDevice cd;
 

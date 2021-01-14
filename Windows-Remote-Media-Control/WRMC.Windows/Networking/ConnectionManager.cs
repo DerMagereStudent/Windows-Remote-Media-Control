@@ -144,6 +144,13 @@ namespace WRMC.Windows.Networking {
 					break;
 
 				case Message.Type.ResumeSuspendedProcess:
+					ResumeSuspendedProcessMessageBody resumeProcessMessageBody = e.Message.Body as ResumeSuspendedProcessMessageBody;
+
+					if (!ConnectionManager.Clients.Contains(resumeProcessMessageBody.ClientDevice))
+						break;
+
+					MediaCommandInvoker.Default.ResumeSuspendedProcess(resumeProcessMessageBody.Process);
+
 					break;
 
 				case Message.Type.SetAudioEndpoint:
@@ -258,6 +265,20 @@ namespace WRMC.Windows.Networking {
 					break;
 
 				case Request.Type.GetSuspendedMediaProcesses:
+					AuthenticatedMessageBody processAuthenticatedMessageBody = e.Request.Body as AuthenticatedMessageBody;
+
+					if (!ConnectionManager.Clients.Contains(processAuthenticatedMessageBody.ClientDevice))
+						break;
+
+					Response processResponse = new Response() {
+						Method = Response.Type.SuspendedProcesses,
+						Body = new SuspendedProcessesResponseBody() {
+							Processes = MediaCommandInvoker.Default.GetSuspendedProcesses()
+						}
+					};
+
+					ConnectionManager.tcpServer.SendResponse(processResponse, e.ClientDevice);
+
 					break;
 
 				case Request.Type.GetVolume:
