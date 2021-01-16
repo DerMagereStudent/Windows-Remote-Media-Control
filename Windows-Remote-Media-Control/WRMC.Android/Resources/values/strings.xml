@@ -1,4 +1,8 @@
 <resources>
-    <string name="app_name">WRMC.Android</string>
+    <string name="app_name">Windows Remote Media Control</string>
     <string name="action_settings">Settings</string>
+	
+	<string name="home_toolbar_title">Home</string>
+	<string name="home_recent_devices_header">Recent Devices</string>
+	<string name="home_current_device_header">Current Device</string>
 </resources>

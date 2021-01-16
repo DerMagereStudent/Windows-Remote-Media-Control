@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<menu
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+	<item
+		android:id="@+id/home_toolbar_item_find_server"
+		android:icon="@drawable/find_server"
+		android:title="Find Server"
+		app:showAsAction="always"/>
+	<item
+		android:id="@+id/home_toolbar_item_settings"
+		android:icon="@drawable/settings"
+		android:title="Settings"
+		app:showAsAction="always"/>
+</menu>
