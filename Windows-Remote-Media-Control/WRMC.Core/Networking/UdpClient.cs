@@ -24,6 +24,11 @@ namespace WRMC.Core.Networking {
 		public event TypedEventHandler<UdpClient, MessageBodyEventArgs<ServerResponseBody>> OnServersResponseReceived = null;
 
 		/// <summary>
+		/// Event handler which is called when the client finished the find server task.
+		/// </summary>
+		public event TypedEventHandler<UdpClient, EventArgs> OnFindServerFinished = null;
+
+		/// <summary>
 		/// Creates a new instance of the class <see cref="UdpClient"/>.
 		/// </summary>
 		public UdpClient() {
@@ -68,6 +73,8 @@ namespace WRMC.Core.Networking {
 					this.client.Send(datagram, datagram.Length, UdpOptions.DefaultClientSendingIPEndPoint);
 					Thread.Sleep(sendTimeout);
 				}
+
+				this.OnFindServerFinished?.Invoke(this, EventArgs.Empty);
 			}, this.cancellationTokenSource.Token);
 		}
 
@@ -112,6 +119,9 @@ namespace WRMC.Core.Networking {
 			}
 			catch (ObjectDisposedException) {
 				// Server was stopped
+			}
+			catch (NullReferenceException) {
+
 			}
 		}
 	}

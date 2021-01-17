@@ -29,7 +29,7 @@ namespace WRMC.Android.Views {
             for (int i = 0; i < childCount; i++) {
                 View child = parent.GetChildAt(i);
 
-                if (parent.GetChildAdapterPosition(child) == parent.GetAdapter().ItemCount - 1) {
+                if (child == null || parent.GetChildAdapterPosition(child) == parent.GetAdapter().ItemCount - 1) {
                     continue;
                 }
 

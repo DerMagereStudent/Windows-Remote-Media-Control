@@ -3,4 +3,6 @@
 	<dimen name="home_header_font_size">22dp</dimen>
 	<dimen name="home_recent_server_item_font_size">16dp</dimen>
 	<dimen name="home_current_server_action_item_font_size">16dp</dimen>
+
+	<dimen name="find_server_header_font_size">22dp</dimen>
 </resources>

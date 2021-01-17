@@ -9,6 +9,7 @@ using Xamarin.Essentials;
 
 using WRMC.Android.Views;
 using Android.Views;
+using WRMC.Android.Networking;
 
 namespace WRMC.Android {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
@@ -23,12 +24,15 @@ namespace WRMC.Android {
             this.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.main_fragment_container, new HomeFragment()).Commit();
         }
 
-		public override bool OnCreateOptionsMenu(IMenu menu) {
-            this.MenuInflater.Inflate(Resource.Menu.home_toolbar_menu, menu);
-            return true;
-		}
+		public void ChangeFragment(global::Android.Support.V4.App.Fragment fragment) {
+            global::Android.Support.V4.App.FragmentTransaction transaction = this.SupportFragmentManager.BeginTransaction();
+            transaction.SetCustomAnimations(Resource.Animation.enter_from_right, Resource.Animation.exit_to_left, Resource.Animation.enter_from_left, Resource.Animation.exit_to_right);
+            transaction.Replace(Resource.Id.main_fragment_container, fragment);
+            transaction.AddToBackStack(null);
+            transaction.Commit();
+        }
 
-		public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults) {
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults) {
             Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
