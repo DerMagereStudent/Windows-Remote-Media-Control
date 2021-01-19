@@ -10,7 +10,7 @@ namespace WRMC.Core.Networking {
 		/// <summary>
 		/// The default maximum tries to build a TCP connection.
 		/// </summary>
-		public static int DefaultMaxConnectTries = 10;
+		public static int DefaultMaxConnectTries = 3;
 
 		/// <summary>
 		/// The default IP address the server listens to.

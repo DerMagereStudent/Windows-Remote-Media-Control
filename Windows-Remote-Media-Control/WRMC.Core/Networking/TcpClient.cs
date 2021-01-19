@@ -19,6 +19,16 @@ namespace WRMC.Core.Networking {
 		private object clientLock = new object();
 
 		/// <summary>
+		/// Event which is called when the client could establish a TCP connection to a remote server.
+		/// </summary>
+		public event TypedEventHandler<TcpClient, ServerEventArgs> OnTcpConnectSuccess = null;
+
+		/// <summary>
+		/// Event which is called when the client could not establish a TCP connection to a remote server.
+		/// </summary>
+		public event TypedEventHandler<TcpClient, ServerEventArgs> OnTcpConnectFailure = null;
+
+		/// <summary>
 		/// Event which is called when the client receives a <see cref="Response.Type.ConnectSuccess"/> response from a remote server.
 		/// </summary>
 		public event TypedEventHandler<TcpClient, ClientEventArgs> OnConnectSuccess = null;
@@ -57,34 +67,53 @@ namespace WRMC.Core.Networking {
 		/// Connects to a given server. Closes the previous connection.
 		/// </summary>
 		/// <param name="serverDevice">The server to connect to.</param>
-		/// <returns>True if the connection was established.</returns>
 		public bool Start(ServerDevice serverDevice) {
 			lock (this.clientLock)
 				if (this.serverDevice != null && this.serverDevice.Equals(serverDevice) && this.client.IsConnected())
-					return true;
+					return false;
 
 			this.Stop();
 
 			lock (this.clientLock)
-				for (int i = 0; i < TcpOptions.DefaultMaxConnectTries; i++) {
-					try {
-						this.client.Connect(serverDevice.IPAddress, TcpOptions.DefaultPort);
-					} catch (SocketException) { }
-
-					if (this.client.IsConnected()) {
-						this.client.GetStream().BeginRead(this.buffer, 0, this.buffer.Length, this.OnDataReceived, null);
-						this.serverDevice = serverDevice;
-						return true;
-					}
-				}
-
-			return false;
+				try {
+					this.client.BeginConnect(serverDevice.IPAddress, TcpOptions.DefaultPort, this.OnConnect, new Tuple<ServerDevice, int>(serverDevice, 0));
+					return true;
+				} catch (SocketException) { return false; }
 		}
 
 		/// <summary>
 		/// Closes the current connection.
 		/// </summary>
 		public void Stop() {
+			lock (this.clientLock) {
+				try { this.client.GetStream().Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { } catch (IOException) { }
+				try { this.client.Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { } catch (IOException) { }
+				this.client = new System.Net.Sockets.TcpClient();
+			}
+
+			this.OnConnectionClosed?.Invoke(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Closes the current connection.
+		/// </summary>
+		public void Stop(ClientDevice clientDevice) {
+			try {
+				Message message = new Message() {
+					Method = Message.Type.Disconnect,
+					Body = new AuthenticatedMessageBody() {
+						ClientDevice = clientDevice
+					}
+				};
+
+				byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultSerializationOptions));
+				this.client.GetStream().Write(buffer, 0, buffer.Length);
+				this.client.GetStream().Flush();
+			}
+			catch (ObjectDisposedException) { }
+			catch (InvalidOperationException) { }
+			catch (IOException) { }
+
 			lock (this.clientLock) {
 				try { this.client.GetStream().Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { } catch (IOException) { }
 				try { this.client.Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { } catch (IOException) { }
@@ -135,6 +164,39 @@ namespace WRMC.Core.Networking {
 				// Connection closed
 			} catch (InvalidOperationException) {
 
+			}
+		}
+
+		/// <summary>
+		/// Callback called when writing to a TCP connection network stream.
+		/// </summary>
+		/// <param name="ar"></param>
+		private void OnConnect(IAsyncResult ar) {
+			Tuple<ServerDevice, int> state = ar.AsyncState as Tuple<ServerDevice, int>;
+			try {
+				lock (this.clientLock) {
+					this.client.EndConnect(ar);
+
+					if (this.client.IsConnected()) {
+						this.client.GetStream().BeginRead(this.buffer, 0, this.buffer.Length, this.OnDataReceived, null);
+						this.serverDevice = state.Item1;
+						this.OnTcpConnectSuccess?.Invoke(this, new ServerEventArgs(state.Item1));
+					}
+					else {
+						if (state.Item2 < TcpOptions.DefaultMaxConnectTries) {
+							state = new Tuple<ServerDevice, int>(state.Item1, state.Item2 + 1);
+							this.client.BeginConnect(state.Item1.IPAddress, TcpOptions.DefaultPort, this.OnConnect, state);
+						}
+						else
+							this.OnTcpConnectFailure?.Invoke(this, new ServerEventArgs(state.Item1));
+					}
+				}
+			} catch (SocketException) {
+				this.OnTcpConnectFailure?.Invoke(this, new ServerEventArgs(state.Item1));
+			} catch (ObjectDisposedException) {
+				this.OnTcpConnectFailure?.Invoke(this, new ServerEventArgs(state.Item1));
+			} catch (NullReferenceException) {
+				this.OnTcpConnectFailure?.Invoke(this, new ServerEventArgs(state.Item1));
 			}
 		}
 

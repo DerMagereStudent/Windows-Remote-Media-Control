@@ -23,7 +23,7 @@ namespace WRMC.Android.Views {
 
 			if (recentServerRecyclerView != null) {
 				recentServerRecyclerView.SetLayoutManager(new LinearLayoutManager(view.Context));
-				recentServerRecyclerView.SetAdapter(new ServersRecyclerAdapter(ConnectionManager.KnownServers, 3));
+				recentServerRecyclerView.SetAdapter(new ServersRecyclerAdapter(ConnectionManager.KnownServers.Keys.ToList(), 3, null));
 				recentServerRecyclerView.AddItemDecoration(new LineDividerItemDecoration(recentServerRecyclerView.Context));
 			}
 
@@ -63,16 +63,17 @@ namespace WRMC.Android.Views {
 
 	public class ServersRecyclerAdapter : RecyclerView.Adapter {
 		private List<ServerDevice> serverDevices;
+		private EventHandler<ServerEventArgs> onServerDeviceSelected;
 
 		public override int ItemCount => this.serverDevices.Count;
 
-		public ServersRecyclerAdapter(List<ServerDevice> serverDevices, int limit) {
+		public ServersRecyclerAdapter(List<ServerDevice> serverDevices, int limit, EventHandler<ServerEventArgs> onServerDeviceSelected) {
 			this.serverDevices = limit <= 0 ? serverDevices : serverDevices.TakeLast(3).Reverse().ToList();
+			this.onServerDeviceSelected = onServerDeviceSelected;
 		}
 
 		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
 			View view = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.server_recycler_view_item, parent, false);
-
 			TextView nameView = view.FindViewById<TextView>(Resource.Id.server_item_name);
 
 			ServerViewHolder viewHolder = new ServerViewHolder(view) {
@@ -84,6 +85,8 @@ namespace WRMC.Android.Views {
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 			ServerViewHolder viewHolder = holder as ServerViewHolder;
+
+			viewHolder.View.Click += (s, e) => this.onServerDeviceSelected?.Invoke(this, new ServerEventArgs(this.serverDevices[position]));
 
 			viewHolder.NameView.Text = this.serverDevices[position].Name;
 		}

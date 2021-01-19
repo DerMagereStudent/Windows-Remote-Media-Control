@@ -161,7 +161,7 @@ namespace WRMC.Core.Networking {
 				if (!this.clients.ContainsKey(client))
 					return;
 
-				if (notifyClient) {
+				if (notifyClient && client.IsConnected()) {
 					Message message = new Message() {
 						Method = Message.Type.Disconnect,
 						Body = null
@@ -172,10 +172,10 @@ namespace WRMC.Core.Networking {
 					client.GetStream().Flush();
 				}
 
-				client.GetStream().Close();
-				client.Close();
+				try { client.GetStream().Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { } catch (IOException) { } catch (NullReferenceException) { }
+				try { client.Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { } catch (IOException) { } catch (NullReferenceException) { }
 
-				this.OnConnectionClosed(this, new ClientEventArgs(client, clientDevice));
+				this.OnConnectionClosed?.Invoke(this, new ClientEventArgs(client, clientDevice));
 			}
 		}
 
@@ -300,8 +300,6 @@ namespace WRMC.Core.Networking {
 				
 				lock (this.clientBuffersLock)
 					dataString = Encoding.UTF8.GetString(this.clientBuffers[client], 0, received);
-
-				Trace.WriteLine(dataString);
 				
 				object dataObject = JsonConvert.DeserializeObject(dataString, SerializationOptions.DefaultSerializationOptions);
 
@@ -332,11 +330,14 @@ namespace WRMC.Core.Networking {
 				lock (this.clientBuffersLock)
 					client.GetStream().BeginRead(this.clientBuffers[client], 0, this.clientBuffers[client].Length, this.OnDataReceived, client);
 			} catch(ObjectDisposedException) {
+				;
 				// Connection closed
 			} catch (IOException) {
+				;
 				// Connection closed
 			} catch (InvalidOperationException) {
-
+				;
+				// Connection closed
 			}
 		}
 
@@ -356,6 +357,7 @@ namespace WRMC.Core.Networking {
 						foreach (System.Net.Sockets.TcpClient client in clientsToClose)
 							this.CloseConnection(client);
 					}
+
 					Thread.Sleep(1000);
 				}
 				catch (ObjectDisposedException) { }

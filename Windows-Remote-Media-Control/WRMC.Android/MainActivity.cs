@@ -3,12 +3,10 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.Runtime;
-using Android.Widget;
 
 using Xamarin.Essentials;
 
 using WRMC.Android.Views;
-using Android.Views;
 using WRMC.Android.Networking;
 
 namespace WRMC.Android {
@@ -23,6 +21,11 @@ namespace WRMC.Android {
 
             this.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.main_fragment_container, new HomeFragment()).Commit();
         }
+
+		protected override void OnStop() {
+            ConnectionManager.CloseConnection(DeviceInformation.GetClientDevice(this.ApplicationContext));
+            base.OnStop();
+		}
 
 		public void ChangeFragment(global::Android.Support.V4.App.Fragment fragment) {
             global::Android.Support.V4.App.FragmentTransaction transaction = this.SupportFragmentManager.BeginTransaction();

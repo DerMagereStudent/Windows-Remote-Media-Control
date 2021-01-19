@@ -28,13 +28,9 @@ namespace WRMC.Core.Networking {
 			if (this.ID == null && other.ID != null || this.ID != null && other.ID == null)
 				return false;
 
-			if (this.Name == null && other.Name != null || this.Name != null && other.Name == null)
-				return false;
-
-			if (this.IPAddress == null && other.IPAddress != null || this.IPAddress != null && other.IPAddress == null)
-				return false;
-
-			return this.ID.Equals(other.ID) && this.IPAddress.Equals(other.IPAddress);
+			return this.ID.Equals(other.ID);
 		}
+
+		public override int GetHashCode() => this.ID.GetHashCode();
 	}
 }

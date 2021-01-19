@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Newtonsoft.Json;
 
@@ -101,11 +102,15 @@ namespace WRMC.Windows.Networking {
 		}
 
 		private static void TcpServer_OnMessageReceived(TcpServer sender, ClientMessageEventArgs e) {
+			ClientDevice device;
+
 			switch (e.Message.Method) {
 				case Message.Type.Disconnect:
 					AuthenticatedMessageBody disconnectAuthenticatedMessageBody = e.Message.Body as AuthenticatedMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(disconnectAuthenticatedMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(disconnectAuthenticatedMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != disconnectAuthenticatedMessageBody.ClientDevice.SessionID)
 						break;
 
 					ConnectionManager.tcpServer.CloseConnection(e.Client, disconnectAuthenticatedMessageBody.ClientDevice, false);
@@ -115,7 +120,9 @@ namespace WRMC.Windows.Networking {
 				case Message.Type.NextMedia:
 					MediaSessionMessageBody nextMediaSessionMessageBody = e.Message.Body as MediaSessionMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(nextMediaSessionMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(nextMediaSessionMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != nextMediaSessionMessageBody.ClientDevice.SessionID)
 						break;
 
 					MediaCommandInvoker.Default.SkipNext(nextMediaSessionMessageBody.MediaSession);
@@ -124,7 +131,9 @@ namespace WRMC.Windows.Networking {
 				case Message.Type.PlayFile:
 					PlayFileMessageBody playFileMediaSessionMessageBody = e.Message.Body as PlayFileMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(playFileMediaSessionMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(playFileMediaSessionMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != playFileMediaSessionMessageBody.ClientDevice.SessionID)
 						break;
 
 					MediaCommandInvoker.Default.PlayFile(playFileMediaSessionMessageBody.FilePath);
@@ -133,7 +142,9 @@ namespace WRMC.Windows.Networking {
 				case Message.Type.PlayPause:
 					MediaSessionMessageBody playPauseFileMediaSessionMessageBody = e.Message.Body as MediaSessionMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(playPauseFileMediaSessionMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(playPauseFileMediaSessionMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != playPauseFileMediaSessionMessageBody.ClientDevice.SessionID)
 						break;
 
 					if (playPauseFileMediaSessionMessageBody.MediaSession.State == Core.Models.MediaSession.PlaybackState.Playing)
@@ -146,7 +157,9 @@ namespace WRMC.Windows.Networking {
 				case Message.Type.PreviousMedia:
 					MediaSessionMessageBody previousFileMediaSessionMessageBody = e.Message.Body as MediaSessionMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(previousFileMediaSessionMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(previousFileMediaSessionMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != previousFileMediaSessionMessageBody.ClientDevice.SessionID)
 						break;
 
 					MediaCommandInvoker.Default.SkipPrevious(previousFileMediaSessionMessageBody.MediaSession);
@@ -155,7 +168,9 @@ namespace WRMC.Windows.Networking {
 				case Message.Type.ResumeSuspendedProcess:
 					ResumeSuspendedProcessMessageBody resumeProcessMessageBody = e.Message.Body as ResumeSuspendedProcessMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(resumeProcessMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(resumeProcessMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != resumeProcessMessageBody.ClientDevice.SessionID)
 						break;
 
 					MediaCommandInvoker.Default.ResumeSuspendedProcess(resumeProcessMessageBody.Process);
@@ -165,7 +180,9 @@ namespace WRMC.Windows.Networking {
 				case Message.Type.SetAudioEndpoint:
 					SetAudioEndpointMessageBody audioEndpointMessageBody = e.Message.Body as SetAudioEndpointMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(audioEndpointMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(audioEndpointMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != audioEndpointMessageBody.ClientDevice.SessionID)
 						break;
 
 					MediaCommandInvoker.Default.SetAudioEndpoint(audioEndpointMessageBody.MediaSession, audioEndpointMessageBody.AudioEndpoint);
@@ -174,7 +191,9 @@ namespace WRMC.Windows.Networking {
 				case Message.Type.SetConfiguration:
 					SetConfigurationMessageBody configurationMessageBody = e.Message.Body as SetConfigurationMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(configurationMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(configurationMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != configurationMessageBody.ClientDevice.SessionID)
 						break;
 
 					MediaCommandInvoker.Default.SetConfiguration(configurationMessageBody.MediaSession, configurationMessageBody.Configuration);
@@ -183,7 +202,9 @@ namespace WRMC.Windows.Networking {
 				case Message.Type.SetScreen:
 					SetScreenMessageBody screenMessageBody = e.Message.Body as SetScreenMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(screenMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(screenMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != screenMessageBody.ClientDevice.SessionID)
 						break;
 
 					MediaCommandInvoker.Default.MoveToScreen(screenMessageBody.MediaSession, screenMessageBody.Screen);
@@ -192,7 +213,9 @@ namespace WRMC.Windows.Networking {
 				case Message.Type.SetVolume:
 					SetVolumeMessageBody volumeMessageBody = e.Message.Body as SetVolumeMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(volumeMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(volumeMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != volumeMessageBody.ClientDevice.SessionID)
 						break;
 
 					MediaCommandInvoker.Default.SetMasterVolume(volumeMessageBody.Volume);
@@ -201,11 +224,15 @@ namespace WRMC.Windows.Networking {
 		}
 
 		private static void TcpServer_OnRequestReceived(TcpServer sender, ClientRequestEventArgs e) {
+			ClientDevice device;
+
 			switch (e.Request.Method) {
 				case Request.Type.GetAudioEndpoints:
 					AuthenticatedMessageBody audioEndpointsAuthenticatedMessageBody = e.Request.Body as AuthenticatedMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(audioEndpointsAuthenticatedMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(audioEndpointsAuthenticatedMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != audioEndpointsAuthenticatedMessageBody.ClientDevice.SessionID)
 						break;
 
 					Response audoEndpointsResponse = new Response() {
@@ -222,7 +249,9 @@ namespace WRMC.Windows.Networking {
 				case Request.Type.GetDirectoryContent:
 					DirectoryContentRequestBody directoryAuthenticatedMessageBody = e.Request.Body as DirectoryContentRequestBody;
 
-					if (!ConnectionManager.Clients.Contains(directoryAuthenticatedMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(directoryAuthenticatedMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != directoryAuthenticatedMessageBody.ClientDevice.SessionID)
 						break;
 
 					Tuple<List<string>, List<string>> directoryContent = MediaCommandInvoker.Default.GetDirectoryContent(directoryAuthenticatedMessageBody.Directory);
@@ -242,7 +271,9 @@ namespace WRMC.Windows.Networking {
 				case Request.Type.GetMediaSessions:
 					AuthenticatedMessageBody mediaSessionsAuthenticatedMessageBody = e.Request.Body as AuthenticatedMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(mediaSessionsAuthenticatedMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(mediaSessionsAuthenticatedMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != mediaSessionsAuthenticatedMessageBody.ClientDevice.SessionID)
 						break;
 
 					Response mediaSessionsResponse = new Response() {
@@ -259,7 +290,9 @@ namespace WRMC.Windows.Networking {
 				case Request.Type.GetScreens:
 					AuthenticatedMessageBody screensAuthenticatedMessageBody = e.Request.Body as AuthenticatedMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(screensAuthenticatedMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(screensAuthenticatedMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != screensAuthenticatedMessageBody.ClientDevice.SessionID)
 						break;
 
 					Response screensResponse = new Response() {
@@ -276,7 +309,9 @@ namespace WRMC.Windows.Networking {
 				case Request.Type.GetSuspendedMediaProcesses:
 					AuthenticatedMessageBody processAuthenticatedMessageBody = e.Request.Body as AuthenticatedMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(processAuthenticatedMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(processAuthenticatedMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != processAuthenticatedMessageBody.ClientDevice.SessionID)
 						break;
 
 					Response processResponse = new Response() {
@@ -293,7 +328,9 @@ namespace WRMC.Windows.Networking {
 				case Request.Type.GetVolume:
 					AuthenticatedMessageBody volumeAuthenticatedMessageBody = e.Request.Body as AuthenticatedMessageBody;
 
-					if (!ConnectionManager.Clients.Contains(volumeAuthenticatedMessageBody.ClientDevice))
+					device = ConnectionManager.Clients.Where(d => d.Equals(volumeAuthenticatedMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != volumeAuthenticatedMessageBody.ClientDevice.SessionID)
 						break;
 
 					Response volumeResponse = new Response() {
