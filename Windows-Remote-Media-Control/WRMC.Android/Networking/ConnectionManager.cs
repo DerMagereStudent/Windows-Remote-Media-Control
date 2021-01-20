@@ -1,23 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Android;
+using Android.App;
+using Android.Content.PM;
+using Android.OS;
+using Android.Support.V4.Content;
 
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+
+using WRMC.Core;
 using WRMC.Core.Networking;
 
 using Newtonsoft.Json;
 
 namespace WRMC.Android.Networking {
 	public static class ConnectionManager {
-		private static readonly string KNOWN_SERVERS_FILE_NAME = Path.Combine("/Interner Speicher/Documents/WRMC.Android", "known_clients.json");
+		private static readonly string KNOWN_SERVERS_FILE_NAME = "known_servers.json";
+		private static readonly string KNOWN_SERVERS_DIRECTORY_NAME = Path.Combine(global::Android.OS.Environment.GetExternalStoragePublicDirectory(global::Android.OS.Environment.DirectoryDocuments).AbsolutePath, "WRMC.Android");
 
 		private static UdpClient udpClient;
 		private static TcpClient tcpClient;
 
 		private static ServerDevice pendingServerDevice;
 
-		public static Dictionary<ServerDevice, long> KnownServers { get; set; }
+		[JsonConverter(typeof(KeyedListJsonConverter<ServerDevice, long>))]
+		public static KeyedList<ServerDevice, long> KnownServers { get; set; }
+
 		public static bool IsSearchingServers { get; private set; }
 
 		public static ServerDevice CurrentServer { get; set; }
@@ -146,17 +155,32 @@ namespace WRMC.Android.Networking {
 		}
 
 		private static void LoadKnownServers() {
-			try {
-				ConnectionManager.KnownServers = File.Exists(ConnectionManager.KNOWN_SERVERS_FILE_NAME) ? JsonConvert.DeserializeObject<Dictionary<ServerDevice, long>>(File.ReadAllText(ConnectionManager.KNOWN_SERVERS_FILE_NAME), SerializationOptions.DefaultSerializationOptions) : new Dictionary<ServerDevice, long>();
-			} catch(IOException) {
-				ConnectionManager.KnownServers = new Dictionary<ServerDevice, long>();
+			if (ContextCompat.CheckSelfPermission(Application.Context, Manifest.Permission.ReadExternalStorage) == Permission.Granted) {
+				try {
+					if (File.Exists(Path.Combine(ConnectionManager.KNOWN_SERVERS_DIRECTORY_NAME, ConnectionManager.KNOWN_SERVERS_FILE_NAME))) {
+						string json = File.ReadAllText(Path.Combine(ConnectionManager.KNOWN_SERVERS_DIRECTORY_NAME, ConnectionManager.KNOWN_SERVERS_FILE_NAME));
+						ConnectionManager.KnownServers = JsonConvert.DeserializeObject<KeyedList<ServerDevice, long>>(json, SerializationOptions.DefaultSerializationOptions);
+					} else
+						ConnectionManager.KnownServers = new KeyedList<ServerDevice, long>();
+				}
+				catch (IOException e) {
+					ConnectionManager.KnownServers = new KeyedList<ServerDevice, long>();
+				}
+			} else {
+				ConnectionManager.KnownServers = new KeyedList<ServerDevice, long>();
 			}
 		}
 
 		private static void SaveKnownServers() {
+			if (ContextCompat.CheckSelfPermission(Application.Context, Manifest.Permission.WriteExternalStorage) != Permission.Granted)
+				return;
+
 			try {
-				File.WriteAllText(ConnectionManager.KNOWN_SERVERS_FILE_NAME, JsonConvert.SerializeObject(ConnectionManager.KnownServers, SerializationOptions.DefaultSerializationOptions));
-			} catch (IOException) { }
+				if (!Directory.Exists(ConnectionManager.KNOWN_SERVERS_DIRECTORY_NAME))
+					Directory.CreateDirectory(ConnectionManager.KNOWN_SERVERS_DIRECTORY_NAME);
+
+				File.WriteAllText(Path.Combine(ConnectionManager.KNOWN_SERVERS_DIRECTORY_NAME, ConnectionManager.KNOWN_SERVERS_FILE_NAME), JsonConvert.SerializeObject(ConnectionManager.KnownServers, SerializationOptions.DefaultSerializationOptions));
+			} catch (IOException e) { }
 		}
 	}
 }

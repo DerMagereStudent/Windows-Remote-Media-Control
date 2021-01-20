@@ -252,7 +252,7 @@ namespace WRMC.Core.Networking {
 				// Connection closed
 			} catch (IOException) {
 				// Connection closed
-			} catch (InvalidOperationException) {
+			} catch (InvalidOperationException e) {
 
 			}
 		}

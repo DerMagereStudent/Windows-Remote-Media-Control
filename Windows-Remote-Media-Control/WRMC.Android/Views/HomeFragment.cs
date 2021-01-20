@@ -1,16 +1,22 @@
 ﻿using Android.OS;
 using Android.Support.V4.App;
+using Android.Support.V7.App;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using WRMC.Android.Networking;
 using WRMC.Core.Networking;
 
 namespace WRMC.Android.Views {
 	public class HomeFragment : Fragment {
+		private AlertDialog.Builder connectDialogBuilder;
+		private AlertDialog connectDialog;
+
 		public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View view = inflater.Inflate(Resource.Layout.home, container, false);
 
@@ -23,7 +29,7 @@ namespace WRMC.Android.Views {
 
 			if (recentServerRecyclerView != null) {
 				recentServerRecyclerView.SetLayoutManager(new LinearLayoutManager(view.Context));
-				recentServerRecyclerView.SetAdapter(new ServersRecyclerAdapter(ConnectionManager.KnownServers.Keys.ToList(), 3, null));
+				recentServerRecyclerView.SetAdapter(new ServersRecyclerAdapter(ConnectionManager.KnownServers.Keys.ToList(), 3, this.CurrentServerActionsRecyclerAdapter_OnServerDeviceSelected));
 				recentServerRecyclerView.AddItemDecoration(new LineDividerItemDecoration(recentServerRecyclerView.Context));
 			}
 
@@ -58,6 +64,71 @@ namespace WRMC.Android.Views {
 				default:
 					return base.OnOptionsItemSelected(item);
 			}
+		}
+
+		private void CurrentServerActionsRecyclerAdapter_OnServerDeviceSelected(object sender, ServerEventArgs e) {
+			this.connectDialogBuilder = new AlertDialog.Builder(this.Context, Resource.Style.CustomDialog);
+			this.connectDialogBuilder.SetView(this.LayoutInflater.Inflate(Resource.Layout.alert_dialog_connecting, null));
+			this.connectDialogBuilder.SetTitle("Connecting...");
+
+			this.connectDialogBuilder.SetCancelable(false).SetNegativeButton("Cancel", (s, e) => {
+				ConnectionManager.StopConnect();
+				this.connectDialog.Cancel();
+			});
+
+			this.connectDialog = this.connectDialogBuilder.Create();
+			this.connectDialog.Show();
+
+			ConnectionManager.OnTcpConnectSuccess += this.ConnectionManager_OnTcpConnectSuccess;
+			ConnectionManager.OnTcpConnectFailure += this.ConnectionManager_OnTcpConnectFailure;
+			ConnectionManager.OnConnectSuccess += this.ConnectionManager_OnConnectSuccess;
+			ConnectionManager.OnConnectFailure += this.ConnectionManager_OnConnectFailure;
+
+			if (!ConnectionManager.StartConnect(e.ServerDevice)) {
+				ConnectionManager.OnTcpConnectSuccess -= this.ConnectionManager_OnTcpConnectSuccess;
+				ConnectionManager.OnTcpConnectFailure -= this.ConnectionManager_OnTcpConnectFailure;
+				ConnectionManager.OnConnectSuccess -= this.ConnectionManager_OnConnectSuccess;
+				ConnectionManager.OnConnectFailure -= this.ConnectionManager_OnConnectFailure;
+
+				this.connectDialog.Cancel();
+			}
+		}
+
+		private void ConnectionManager_OnTcpConnectSuccess(object sender, EventArgs e) {
+			ConnectionManager.OnTcpConnectSuccess -= this.ConnectionManager_OnTcpConnectSuccess;
+			ConnectionManager.OnTcpConnectFailure -= this.ConnectionManager_OnTcpConnectFailure;
+
+			ClientDevice clientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext);
+			ConnectionManager.SendConnectRequest(clientDevice);
+		}
+
+		private void ConnectionManager_OnTcpConnectFailure(object sender, EventArgs e) {
+			ConnectionManager.OnTcpConnectSuccess -= this.ConnectionManager_OnTcpConnectSuccess;
+			ConnectionManager.OnTcpConnectFailure -= this.ConnectionManager_OnTcpConnectFailure;
+			ConnectionManager.OnConnectSuccess -= this.ConnectionManager_OnConnectSuccess;
+			ConnectionManager.OnConnectFailure -= this.ConnectionManager_OnConnectFailure;
+
+			this.Activity.RunOnUiThread(() => {
+				this.connectDialog.Cancel();
+				Toast.MakeText(this.Context, "TcpConnect", ToastLength.Long).Show();
+			});
+		}
+
+		private void ConnectionManager_OnConnectSuccess(object sender, EventArgs e) {
+			ConnectionManager.OnConnectSuccess -= this.ConnectionManager_OnConnectSuccess;
+			ConnectionManager.OnConnectFailure -= this.ConnectionManager_OnConnectFailure;
+
+			this.Activity.RunOnUiThread(() => this.connectDialog.Cancel());
+		}
+
+		private void ConnectionManager_OnConnectFailure(object sender, EventArgs e) {
+			ConnectionManager.OnConnectSuccess -= this.ConnectionManager_OnConnectSuccess;
+			ConnectionManager.OnConnectFailure -= this.ConnectionManager_OnConnectFailure;
+
+			this.Activity.RunOnUiThread(() => {
+				this.connectDialog.Cancel();
+				Toast.MakeText(this.Context, "Connect", ToastLength.Long).Show();
+			});
 		}
 	}
 
