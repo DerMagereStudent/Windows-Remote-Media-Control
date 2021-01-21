@@ -38,6 +38,7 @@ namespace WRMC.Android.Networking {
 		public static event EventHandler<EventArgs> OnTcpConnectFailure = null;
 		public static event EventHandler<EventArgs> OnConnectSuccess = null;
 		public static event EventHandler<EventArgs> OnConnectFailure = null;
+		public static event EventHandler<EventArgs> OnConnectionClosed = null;
 
 		static ConnectionManager() {
 			//ConnectionManager.KnownServers = new Dictionary<ServerDevice, long>() {
@@ -119,7 +120,8 @@ namespace WRMC.Android.Networking {
 		}
 
 		private static void TcpClient_OnConnectionClosed(TcpClient sender, EventArgs e) {
-
+			ConnectionManager.CurrentServer = null;
+			ConnectionManager.OnConnectionClosed?.Invoke(null, e);
 		}
 
 		private static void TcpClient_OnTcpConnectSuccess(TcpClient sender, ServerEventArgs e) {
@@ -136,6 +138,7 @@ namespace WRMC.Android.Networking {
 			else
 				ConnectionManager.KnownServers.Add(ConnectionManager.pendingServerDevice, e.ClientDevice.SessionID);
 
+			ConnectionManager.KnownServers.MoveToEnd(ConnectionManager.pendingServerDevice);
 			ConnectionManager.SaveKnownServers();
 
 			ConnectionManager.CurrentServer = ConnectionManager.pendingServerDevice;

@@ -30,5 +30,15 @@ namespace WRMC.Core {
 		public void Add(TKey key, TValue value) {
 			this[key] = value;
 		}
+
+		public void MoveToEnd(TKey key) {
+			var element = this.Select((kvp, i) => new { kvp, i }).FirstOrDefault(e => EqualityComparer<TKey>.Default.Equals(key, e.kvp.Key));
+
+			if (element == null || element.i < 0)
+				return;
+
+			this.RemoveAt(element.i);
+			this.Add(new KeyValuePair<TKey, TValue>(element.kvp.Key, element.kvp.Value));
+		}
 	}
 }

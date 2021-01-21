@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -117,12 +118,9 @@ namespace WRMC.Core.Networking {
 
 				this.client.BeginReceive(this.OnResponseReceived, null);
 			}
-			catch (ObjectDisposedException) {
-				// Server was stopped
-			}
-			catch (NullReferenceException) {
-
-			}
+			catch (ObjectDisposedException) { }
+			catch (NullReferenceException) { }
+			catch (SocketException) { }
 		}
 	}
 }

@@ -91,6 +91,8 @@ namespace WRMC.Core.Networking {
 				this.client = new System.Net.Sockets.TcpClient();
 			}
 
+			this.serverDevice = null;
+
 			this.OnConnectionClosed?.Invoke(this, EventArgs.Empty);
 		}
 
@@ -114,13 +116,7 @@ namespace WRMC.Core.Networking {
 			catch (InvalidOperationException) { }
 			catch (IOException) { }
 
-			lock (this.clientLock) {
-				try { this.client.GetStream().Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { } catch (IOException) { }
-				try { this.client.Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { } catch (IOException) { }
-				this.client = new System.Net.Sockets.TcpClient();
-			}
-
-			this.OnConnectionClosed?.Invoke(this, EventArgs.Empty);
+			this.Stop();
 		}
 
 		/// <summary>
@@ -252,7 +248,7 @@ namespace WRMC.Core.Networking {
 				// Connection closed
 			} catch (IOException) {
 				// Connection closed
-			} catch (InvalidOperationException e) {
+			} catch (InvalidOperationException) {
 
 			}
 		}
@@ -264,7 +260,7 @@ namespace WRMC.Core.Networking {
 			while (true) {
 				try {
 					lock (this.clientLock)
-						if (!this.client.IsConnected())
+						if (this.serverDevice != null && !this.client.IsConnected())
 							this.Stop();
 
 					Thread.Sleep(1000);

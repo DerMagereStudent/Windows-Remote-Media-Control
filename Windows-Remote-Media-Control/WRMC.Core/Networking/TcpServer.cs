@@ -141,7 +141,7 @@ namespace WRMC.Core.Networking {
 		}
 
 		public void CloseConnection(ClientDevice clientDevice) {
-			var kvPair = this.clients.Where(kp => kp.Value.Equals(clientDevice)).FirstOrDefault();
+			var kvPair = this.clients.Where(kp => kp.Value != null && kp.Value.Equals(clientDevice)).FirstOrDefault();
 			System.Net.Sockets.TcpClient client = kvPair.Key;
 
 			if (client == null)

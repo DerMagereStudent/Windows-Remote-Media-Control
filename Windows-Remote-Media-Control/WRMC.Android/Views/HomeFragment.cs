@@ -17,6 +17,8 @@ namespace WRMC.Android.Views {
 		private AlertDialog.Builder connectDialogBuilder;
 		private AlertDialog connectDialog;
 
+		private ServersRecyclerAdapter recentDevicesAdapter;
+
 		public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View view = inflater.Inflate(Resource.Layout.home, container, false);
 
@@ -29,7 +31,9 @@ namespace WRMC.Android.Views {
 
 			if (recentServerRecyclerView != null) {
 				recentServerRecyclerView.SetLayoutManager(new LinearLayoutManager(view.Context));
-				recentServerRecyclerView.SetAdapter(new ServersRecyclerAdapter(ConnectionManager.KnownServers.Keys.ToList(), 3, this.CurrentServerActionsRecyclerAdapter_OnServerDeviceSelected));
+
+				this.recentDevicesAdapter = new ServersRecyclerAdapter(ConnectionManager.KnownServers.Keys.ToList(), 3, this.CurrentServerActionsRecyclerAdapter_OnServerDeviceSelected);
+				recentServerRecyclerView.SetAdapter(this.recentDevicesAdapter);
 				recentServerRecyclerView.AddItemDecoration(new LineDividerItemDecoration(recentServerRecyclerView.Context));
 			}
 
@@ -49,24 +53,16 @@ namespace WRMC.Android.Views {
 
 			this.HasOptionsMenu = true;
 
-			return view;
-		}
+			LinearLayout linearLayout = view.FindViewById<LinearLayout>(Resource.Id.home_current_device_layout);
+			
+			if (linearLayout != null)
+				linearLayout.Visibility = ConnectionManager.CurrentServer != null ? ViewStates.Visible : ViewStates.Gone;
 
-		public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater) {
-			inflater.Inflate(Resource.Menu.home_toolbar_menu, menu);
-		}
+			Button buttonDisconnect = view.FindViewById<Button>(Resource.Id.home_button_disconnect);
 
-		public override bool OnOptionsItemSelected(IMenuItem item) {
-			switch (item.ItemId) {
-				case Resource.Id.home_toolbar_item_find_server:
-					(this.Activity as MainActivity).ChangeFragment(new FindServerFragment());
-					return true;
-				default:
-					return base.OnOptionsItemSelected(item);
-			}
-		}
+			if (buttonDisconnect != null)
+				buttonDisconnect.Click += (s, e) => ConnectionManager.CloseConnection(DeviceInformation.GetClientDevice(this.Activity.ApplicationContext));
 
-		private void CurrentServerActionsRecyclerAdapter_OnServerDeviceSelected(object sender, ServerEventArgs e) {
 			this.connectDialogBuilder = new AlertDialog.Builder(this.Context, Resource.Style.CustomDialog);
 			this.connectDialogBuilder.SetView(this.LayoutInflater.Inflate(Resource.Layout.alert_dialog_connecting, null));
 			this.connectDialogBuilder.SetTitle("Connecting...");
@@ -77,6 +73,34 @@ namespace WRMC.Android.Views {
 			});
 
 			this.connectDialog = this.connectDialogBuilder.Create();
+
+			return view;
+		}
+
+		public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater) {
+			inflater.Inflate(Resource.Menu.home_toolbar_menu, menu);
+		}
+
+		public override bool OnOptionsItemSelected(IMenuItem item) {
+			switch (item.ItemId) {
+				case Resource.Id.home_toolbar_item_find_server:
+					this.DetachEventHandlers();
+					(this.Activity as MainActivity).ChangeFragment(new FindServerFragment());
+					return true;
+				default:
+					return base.OnOptionsItemSelected(item);
+			}
+		}
+
+		public void DetachEventHandlers() {
+			ConnectionManager.OnTcpConnectSuccess -= this.ConnectionManager_OnTcpConnectSuccess;
+			ConnectionManager.OnTcpConnectFailure -= this.ConnectionManager_OnTcpConnectFailure;
+			ConnectionManager.OnConnectSuccess -= this.ConnectionManager_OnConnectSuccess;
+			ConnectionManager.OnConnectFailure -= this.ConnectionManager_OnConnectFailure;
+			ConnectionManager.OnConnectionClosed -= this.ConnectionManager_OnConnectionClosed;
+		}
+
+		private void CurrentServerActionsRecyclerAdapter_OnServerDeviceSelected(object sender, ServerEventArgs e) {
 			this.connectDialog.Show();
 
 			ConnectionManager.OnTcpConnectSuccess += this.ConnectionManager_OnTcpConnectSuccess;
@@ -85,11 +109,7 @@ namespace WRMC.Android.Views {
 			ConnectionManager.OnConnectFailure += this.ConnectionManager_OnConnectFailure;
 
 			if (!ConnectionManager.StartConnect(e.ServerDevice)) {
-				ConnectionManager.OnTcpConnectSuccess -= this.ConnectionManager_OnTcpConnectSuccess;
-				ConnectionManager.OnTcpConnectFailure -= this.ConnectionManager_OnTcpConnectFailure;
-				ConnectionManager.OnConnectSuccess -= this.ConnectionManager_OnConnectSuccess;
-				ConnectionManager.OnConnectFailure -= this.ConnectionManager_OnConnectFailure;
-
+				this.DetachEventHandlers();
 				this.connectDialog.Cancel();
 			}
 		}
@@ -103,10 +123,7 @@ namespace WRMC.Android.Views {
 		}
 
 		private void ConnectionManager_OnTcpConnectFailure(object sender, EventArgs e) {
-			ConnectionManager.OnTcpConnectSuccess -= this.ConnectionManager_OnTcpConnectSuccess;
-			ConnectionManager.OnTcpConnectFailure -= this.ConnectionManager_OnTcpConnectFailure;
-			ConnectionManager.OnConnectSuccess -= this.ConnectionManager_OnConnectSuccess;
-			ConnectionManager.OnConnectFailure -= this.ConnectionManager_OnConnectFailure;
+			this.DetachEventHandlers();
 
 			this.Activity.RunOnUiThread(() => {
 				this.connectDialog.Cancel();
@@ -118,6 +135,10 @@ namespace WRMC.Android.Views {
 			ConnectionManager.OnConnectSuccess -= this.ConnectionManager_OnConnectSuccess;
 			ConnectionManager.OnConnectFailure -= this.ConnectionManager_OnConnectFailure;
 
+			ConnectionManager.OnConnectionClosed += this.ConnectionManager_OnConnectionClosed;
+
+			this.UpdateRecentDevicesLayout();
+			this.UpdateCurrentDeviceLayout();
 			this.Activity.RunOnUiThread(() => this.connectDialog.Cancel());
 		}
 
@@ -130,16 +151,42 @@ namespace WRMC.Android.Views {
 				Toast.MakeText(this.Context, "Connect", ToastLength.Long).Show();
 			});
 		}
+
+		private void ConnectionManager_OnConnectionClosed(object sender, EventArgs e) {
+			this.UpdateCurrentDeviceLayout();
+			ConnectionManager.OnConnectionClosed -= this.ConnectionManager_OnConnectionClosed;
+		}
+
+		private void UpdateRecentDevicesLayout() {
+			this.Activity.RunOnUiThread(() => {
+				this.recentDevicesAdapter.ServerDevices = ConnectionManager.KnownServers.Keys;
+				this.recentDevicesAdapter.NotifyDataSetChanged();
+			});
+		}
+
+		private void UpdateCurrentDeviceLayout() {
+			this.Activity.RunOnUiThread(() => {
+				this.View.FindViewById<LinearLayout>(Resource.Id.home_current_device_layout).Visibility = ConnectionManager.CurrentServer != null ? ViewStates.Visible : ViewStates.Gone;
+			});
+		}
 	}
 
 	public class ServersRecyclerAdapter : RecyclerView.Adapter {
-		private List<ServerDevice> serverDevices;
+		private List<ServerDevice> _serverDevices;
 		private EventHandler<ServerEventArgs> onServerDeviceSelected;
+		private int limit;
 
-		public override int ItemCount => this.serverDevices.Count;
+		private Dictionary<View, int> viewPositions = new Dictionary<View, int>();
+
+		public List<ServerDevice> ServerDevices {
+			get => this._serverDevices;
+			set => this._serverDevices = this.limit <= 0 ? value : value.TakeLast(3).Reverse().ToList();
+		}
+		public override int ItemCount => this.ServerDevices.Count;
 
 		public ServersRecyclerAdapter(List<ServerDevice> serverDevices, int limit, EventHandler<ServerEventArgs> onServerDeviceSelected) {
-			this.serverDevices = limit <= 0 ? serverDevices : serverDevices.TakeLast(3).Reverse().ToList();
+			this.limit = limit;
+			this.ServerDevices = serverDevices;
 			this.onServerDeviceSelected = onServerDeviceSelected;
 		}
 
@@ -156,10 +203,15 @@ namespace WRMC.Android.Views {
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 			ServerViewHolder viewHolder = holder as ServerViewHolder;
+			viewHolder.View.Click -= this.OnClick;
+			viewHolder.View.Click += this.OnClick;
+			this.viewPositions[viewHolder.View] = position;
+			viewHolder.NameView.Text = this.ServerDevices[position].Name;
+		}
 
-			viewHolder.View.Click += (s, e) => this.onServerDeviceSelected?.Invoke(this, new ServerEventArgs(this.serverDevices[position]));
-
-			viewHolder.NameView.Text = this.serverDevices[position].Name;
+		public void OnClick(object sender, EventArgs e) {
+			if (this.viewPositions.ContainsKey(sender as View))
+				this.onServerDeviceSelected?.Invoke(this, new ServerEventArgs(this.ServerDevices[this.viewPositions[sender as View]]));
 		}
 	}
 
