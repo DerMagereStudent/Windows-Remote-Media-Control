@@ -59,10 +59,19 @@ namespace WRMC.Android {
                 if (!grantResults.All(p => p == Permission.Granted)) {
                     ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.ReadExternalStorage, Manifest.Permission.WriteExternalStorage }, READ_WRITE_STORAGE_REQUEST_CODE);
                 }
-            }            
+            }
             
             //Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             //base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-    }
+
+		public override void OnBackPressed() {
+            global::Android.Support.V4.App.Fragment fragment = this.SupportFragmentManager.FindFragmentById(Resource.Id.main_fragment_container);
+
+            if (fragment is BackButtonNotifiableFragment)
+                (fragment as BackButtonNotifiableFragment).OnBackButton();
+
+            base.OnBackPressed();
+		}
+	}
 }

@@ -9,14 +9,13 @@ using Android.Widget;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using WRMC.Android.Networking;
+using WRMC.Android.Views.Adapters;
 using WRMC.Core.Networking;
 
 namespace WRMC.Android.Views {
-	public class FindServerFragment : Fragment {
+	public class FindServerFragment : BackButtonNotifiableFragment {
 		private List<ServerDevice> knownServers = new List<ServerDevice>();
 		private List<ServerDevice> availableServers = new List<ServerDevice>();
 
@@ -43,7 +42,7 @@ namespace WRMC.Android.Views {
 				(this.Activity as MainActivity).SupportActionBar.SetDisplayShowHomeEnabled(true);
 
 				toolbar.SetNavigationIcon(Resource.Drawable.chevron_left);
-				toolbar.NavigationClick += (s, e) => this.OnBackButton();
+				toolbar.NavigationClick += (s, e) => this.Activity.OnBackPressed();
 			}
 
 			this.knownServersLayout = view.FindViewById<LinearLayout>(Resource.Id.find_server_known_layout);
@@ -80,11 +79,10 @@ namespace WRMC.Android.Views {
 			return view;
 		}
 
-		private void OnBackButton() {
+		public override void OnBackButton() {
 			ConnectionManager.OnFindServerResponseReceived -= this.ConnectionManager_OnFindServerResponseReceived;
 			ConnectionManager.OnFindServerFinished -= this.ConnectionManager_OnFindServerFinished;
 			ConnectionManager.StopFindServer();
-			(this.Activity as MainActivity).OnBackPressed();
 		}
 
 		private void CurrentServerActionsRecyclerAdapter_OnServerDeviceSelected(object sender, ServerEventArgs e) {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 
 using Newtonsoft.Json;
-
+using WRMC.Core.Models;
 using WRMC.Core.Networking;
 using WRMC.Windows.Media;
 
@@ -66,6 +66,30 @@ namespace WRMC.Windows.Networking {
 				if (!KnownClients.ContainsValue(l))
 					return l;
 			}
+		}
+
+		public static void SendMediaSessionsChanged(List<MediaSession> mediaSessions) {
+			Message message = new Message() {
+				Method = Message.Type.MediaSessionListChanged,
+				Body = new MediaSessionListChangedMessageBody() {
+					MediaSessions = mediaSessions
+				}
+			};
+
+			foreach (var client in ConnectionManager.Clients)
+				ConnectionManager.tcpServer.SendMessage(message, client);
+		}
+
+		public static void SendMediaSessionChanged(MediaSession mediaSession) {
+			Message message = new Message() {
+				Method = Message.Type.MediaSessionChanged,
+				Body = new MediaSessionChangedMessageBody() {
+					MediaSession = mediaSession
+				}
+			};
+
+			foreach (var client in ConnectionManager.Clients)
+				ConnectionManager.tcpServer.SendMessage(message, client);
 		}
 
 		private static void UdpServer_OnFindServerRequestReceived(UdpServer sender, EventArgs e) {

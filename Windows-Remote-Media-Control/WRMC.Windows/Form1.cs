@@ -29,7 +29,16 @@ namespace WRMC.Windows {
 			Settings.Load();
 
 			MediaSessionExtractor.Default = Activator.CreateInstance(Settings.Current.SessionExtractor) as MediaSessionExtractor;
-			MediaSessionExtractor.Default.OnSessionsChanged += (s, e) => this.UpdateSessionList();
+			
+			MediaSessionExtractor.Default.OnSessionsChanged += (s, e) => {
+				this.UpdateSessionList();
+				ConnectionManager.SendMediaSessionsChanged(MediaSessionExtractor.Default.Sessions);
+			};
+
+			MediaSessionExtractor.Default.OnSessionChanged += (s, e) => {
+				this.UpdateSessionList();
+				ConnectionManager.SendMediaSessionChanged(e.Data);
+			};
 
 			MediaCommandInvoker.SetInvoker(MediaSessionExtractor.Default.GetType());
 

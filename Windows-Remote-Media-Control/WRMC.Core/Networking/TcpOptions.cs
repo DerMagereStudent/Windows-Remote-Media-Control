@@ -12,6 +12,8 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		public static int DefaultMaxConnectTries = 3;
 
+		public static int BufferSize = 4096;
+
 		/// <summary>
 		/// The default IP address the server listens to.
 		/// </summary>

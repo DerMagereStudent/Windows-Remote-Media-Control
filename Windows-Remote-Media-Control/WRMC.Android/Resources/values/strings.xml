@@ -5,8 +5,11 @@
 	<string name="home_toolbar_title">Home</string>
 	<string name="home_recent_devices_header">Recent Devices</string>
 	<string name="home_current_device_header">Current Device</string>
+	<string name="home_disconnect_text">Disconnect</string>
 
 	<string name="find_server_toolbar_title">Find Server</string>
 	<string name="find_server_known_header">Known Servers</string>
 	<string name="find_server_available_header">Available Servers</string>
+
+	<string name="media_sessions_toolbar_title">Media Sessions</string>
 </resources>

@@ -13,6 +13,7 @@ namespace WRMC.Windows.Media {
 		public abstract List<MediaSession> Sessions { get; }
 
 		public abstract event TypedEventHandler<MediaSessionExtractor, EventArgs> OnSessionsChanged;
+		public abstract event TypedEventHandler<MediaSessionExtractor, EventArgs<MediaSession>> OnSessionChanged;
 
 		public abstract void Initialise();
 	}

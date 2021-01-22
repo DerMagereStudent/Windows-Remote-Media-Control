@@ -267,7 +267,7 @@ namespace WRMC.Core.Networking {
 					this.clients.Add(client, null);
 				
 				lock (this.clientBuffersLock) {
-					this.clientBuffers.Add(client, new byte[1024]);
+					this.clientBuffers.Add(client, new byte[TcpOptions.BufferSize]);
 					client.GetStream().BeginRead(this.clientBuffers[client], 0, this.clientBuffers[client].Length, this.OnDataReceived, client);
 				}
 

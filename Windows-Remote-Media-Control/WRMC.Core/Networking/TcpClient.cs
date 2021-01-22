@@ -58,7 +58,7 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		public TcpClient() {
 			this.client = new System.Net.Sockets.TcpClient();
-			this.buffer = new byte[1024];
+			this.buffer = new byte[TcpOptions.BufferSize];
 
 			Task.Factory.StartNew(() => this.ClientConnectionMonitoring());
 		}

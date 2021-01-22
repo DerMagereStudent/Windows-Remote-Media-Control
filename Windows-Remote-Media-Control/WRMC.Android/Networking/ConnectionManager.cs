@@ -10,6 +10,7 @@ using System.Collections.Specialized;
 using System.IO;
 
 using WRMC.Core;
+using WRMC.Core.Models;
 using WRMC.Core.Networking;
 
 using Newtonsoft.Json;
@@ -39,6 +40,9 @@ namespace WRMC.Android.Networking {
 		public static event EventHandler<EventArgs> OnConnectSuccess = null;
 		public static event EventHandler<EventArgs> OnConnectFailure = null;
 		public static event EventHandler<EventArgs> OnConnectionClosed = null;
+
+		public static event EventHandler<EventArgs<List<MediaSession>>> OnMediaSessionsReceived = null;
+		public static event EventHandler<EventArgs<MediaSession>> OnMediaSessionChanged = null;
 
 		static ConnectionManager() {
 			//ConnectionManager.KnownServers = new Dictionary<ServerDevice, long>() {
@@ -107,6 +111,9 @@ namespace WRMC.Android.Networking {
 		}
 
 		public static void SendRequest(Request request) {
+			if (request.Body is AuthenticatedMessageBody)
+				(request.Body as AuthenticatedMessageBody).ClientDevice.SessionID = ConnectionManager.KnownServers.ContainsKey(ConnectionManager.CurrentServer) ? ConnectionManager.KnownServers[ConnectionManager.CurrentServer] : 0;
+			
 			ConnectionManager.tcpClient.SendRequest(request);
 		}
 
@@ -146,15 +153,48 @@ namespace WRMC.Android.Networking {
 		}
 
 		private static void TcpClient_OnMessageReceived(TcpClient sender, ServerMessageEventArgs e) {
+			switch (e.Message.Method) {
+				case WRMC.Core.Networking.Message.Type.MediaSessionChanged:
+					ConnectionManager.OnMediaSessionChanged?.Invoke(null, new EventArgs<MediaSession>((e.Message.Body as MediaSessionChangedMessageBody).MediaSession));
+					break;
 
+				case WRMC.Core.Networking.Message.Type.MediaSessionListChanged:
+					ConnectionManager.OnMediaSessionsReceived?.Invoke(null, new EventArgs<List<MediaSession>>((e.Message.Body as MediaSessionListChangedMessageBody).MediaSessions));
+					break;
+			}
 		}
 
 		private static void TcpClient_OnRequestReceived(TcpClient sender, ServerRequestEventArgs e) {
-
+			
 		}
 
 		private static void TcpClient_OnResponseReceived(TcpClient sender, ServerResponseEventArgs e) {
+			switch (e.Response.Method) {
+				case Response.Type.AudioEndpoints:
+					break;
 
+				case Response.Type.ConnectSuccess:
+					break;
+
+				case Response.Type.DirectoryContent:
+					break;
+
+				case Response.Type.MediaSessions:
+					ConnectionManager.OnMediaSessionsReceived?.Invoke(null, new EventArgs<List<MediaSession>>((e.Response.Body as MediaSessionsResponseBody).MediaSessions));
+					break;
+
+				case Response.Type.Screens:
+					break;
+
+				case Response.Type.Servers:
+					break;
+
+				case Response.Type.SuspendedProcesses:
+					break;
+
+				case Response.Type.Volume:
+					break;
+			}
 		}
 
 		private static void LoadKnownServers() {

@@ -17,6 +17,7 @@ namespace WRMC.Windows.Media {
 		public override List<MediaSession> Sessions => new List<MediaSession>(this.sessions.Values);
 
 		public override event TypedEventHandler<MediaSessionExtractor, EventArgs> OnSessionsChanged = null;
+		public override event TypedEventHandler<MediaSessionExtractor, EventArgs<MediaSession>> OnSessionChanged = null;
 
 		public TransportControlsMediaSessionExtractor() {
 			this.manager = GlobalSystemMediaTransportControlsSessionManager.RequestAsync().GetAwaiter().GetResult();
@@ -114,7 +115,7 @@ namespace WRMC.Windows.Media {
 			else
 				this.sessions.Add(session, ms);
 
-			this.OnSessionsChanged?.Invoke(this, EventArgs.Empty);
+			this.OnSessionChanged?.Invoke(this, new EventArgs<MediaSession>(ms));
 		}
 	}
 }

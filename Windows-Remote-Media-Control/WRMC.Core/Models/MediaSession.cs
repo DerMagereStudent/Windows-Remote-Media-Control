@@ -49,6 +49,16 @@ namespace WRMC.Core.Models {
 
 		public string AUMID { get; set; }
 
-		public bool Equals(MediaSession other) => this.ProcessIDs.Equals(other.ProcessIDs) && this.Title.Equals(other.Title) && this.Artist.Equals(other.Artist);
+		public void Update(MediaSession session) {
+			this.AppType = session.AppType;
+			this.Artist = session.Artist;
+			this.AUMID = session.AUMID;
+			this.ProcessIDs = session.ProcessIDs;
+			this.ProcessName = session.ProcessName;
+			this.State = session.State;
+			this.Title = session.Title;
+		}
+
+		public bool Equals(MediaSession other) => /*this.ProcessIDs.Equals(other.ProcessIDs) && */this.ProcessName.Equals(other.ProcessName) && this.AUMID.Equals(other.AUMID);
 	}
 }
