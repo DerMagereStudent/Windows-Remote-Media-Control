@@ -69,7 +69,7 @@ namespace WRMC.Android.Views {
 				linearLayout.Visibility = ConnectionManager.CurrentServer != null ? ViewStates.Visible : ViewStates.Gone;
 
 			Button buttonDisconnect = view.FindViewById<Button>(Resource.Id.home_button_disconnect);
-
+			 
 			if (buttonDisconnect != null)
 				buttonDisconnect.Click += (s, e) => ConnectionManager.CloseConnection(DeviceInformation.GetClientDevice(this.Activity.ApplicationContext));
 
@@ -83,6 +83,9 @@ namespace WRMC.Android.Views {
 			});
 
 			this.connectDialog = this.connectDialogBuilder.Create();
+
+			if (ConnectionManager.CurrentServer != null)
+				ConnectionManager.OnConnectionClosed += this.ConnectionManager_OnConnectionClosed;
 
 			return view;
 		}

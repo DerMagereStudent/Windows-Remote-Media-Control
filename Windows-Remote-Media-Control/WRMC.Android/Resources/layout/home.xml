@@ -65,7 +65,7 @@
 					android:layout_marginHorizontal="20dp"
 					android:layout_marginTop="30dp"
 					android:id="@+id/home_button_disconnect"
-					android:background="@drawable/rounded_button"
+					android:background="@drawable/home_button_disconnect_background"
 					android:text="@string/home_disconnect_text"
 					android:textColor="@color/textColorPrimary"
 					android:textSize="18dp"/>

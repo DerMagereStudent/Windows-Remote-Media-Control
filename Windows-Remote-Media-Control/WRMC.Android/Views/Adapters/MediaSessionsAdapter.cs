@@ -35,9 +35,9 @@ namespace WRMC.Android.Views.Adapters {
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 			MediaSessionViewHolder viewHolder = holder as MediaSessionViewHolder;
-			viewHolder.View.Click -= this.OnClick;
-			viewHolder.View.Click += this.OnClick;
-			this.viewPositions[viewHolder.View] = position;
+			viewHolder.TitleButton.Click -= this.OnClick;
+			viewHolder.TitleButton.Click += this.OnClick;
+			this.viewPositions[viewHolder.TitleButton] = position;
 			viewHolder.TitleButton.Text = this.MediaSessions[position].Title;
 		}
 

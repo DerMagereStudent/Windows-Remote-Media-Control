@@ -12,6 +12,12 @@ namespace WRMC.Core.Models {
 			Playing
 		}
 
+		public enum MediaType {
+			Video,
+			Audio,
+			Other
+		}
+
 		public enum ApplicationType {
 			UWP,
 			Other
@@ -33,14 +39,19 @@ namespace WRMC.Core.Models {
 		public string Title { get; set; }
 
 		/// <summary>
-		/// the artist of the media being played
+		/// the artist of the media being played.
 		/// </summary>
 		public string Artist { get; set; }
 
 		/// <summary>
-		/// The current state of the media playback
+		/// The current state of the media playback.
 		/// </summary>
 		public PlaybackState State { get; set; }
+
+		/// <summary>
+		/// The type of the media playing back.
+		/// </summary>
+		public MediaType Type { get; set; }
 
 		/// <summary>
 		/// The type of the application playing back.

@@ -61,7 +61,10 @@ namespace WRMC.Android.Views {
 		}
 
 		public void MediaSessionsAdapter_OnMediaSessionSelected(object sender, EventArgs<MediaSession> e) {
-
+			ConnectionManager.OnMediaSessionsReceived -= this.ConnectionManager_OnMediaSessionsReceived;
+			ConnectionManager.OnMediaSessionChanged -= this.ConnectionManager_OnMediaSessionChanged;
+			ConnectionManager.OnConnectionClosed -= this.ConnectionManager_OnConnectionClosed;
+			(this.Activity as MainActivity).ChangeFragment(new MediaSessionFragment(e.Data));
 		}
 
 		private void ConnectionManager_OnMediaSessionsReceived(object sender, EventArgs<List<MediaSession>> e) {

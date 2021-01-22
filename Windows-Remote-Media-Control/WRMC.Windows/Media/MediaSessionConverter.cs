@@ -61,6 +61,8 @@ namespace WRMC.Windows.Media {
 					Artist = mediaProperties.Artist,
 					State = playbackInfo.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing ? MediaSession.PlaybackState.Playing :
 							(playbackInfo.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused ? MediaSession.PlaybackState.Paused : MediaSession.PlaybackState.None),
+					Type = playbackInfo.PlaybackType == global::Windows.Media.MediaPlaybackType.Video ? MediaSession.MediaType.Video :
+							(playbackInfo.PlaybackType == global::Windows.Media.MediaPlaybackType.Music ? MediaSession.MediaType.Audio : MediaSession.MediaType.Other),
 					AppType = type,
 					AUMID = session.SourceAppUserModelId
 				};

@@ -45,12 +45,6 @@ namespace WRMC.Android.Networking {
 		public static event EventHandler<EventArgs<MediaSession>> OnMediaSessionChanged = null;
 
 		static ConnectionManager() {
-			//ConnectionManager.KnownServers = new Dictionary<ServerDevice, long>() {
-			//	{ new ServerDevice() { ID = "a", Name = "Samsung S9" }, 0 },
-			//	{ new ServerDevice() { ID = "b", Name = "Desktop-MXTF6Z" }, 0 },
-			//	{ new ServerDevice() { ID = "c", Name = "PC-MaPa" }, 0 }
-			//};
-
 			ConnectionManager.LoadKnownServers();
 
 			ConnectionManager.udpClient = new UdpClient();
@@ -115,6 +109,13 @@ namespace WRMC.Android.Networking {
 				(request.Body as AuthenticatedMessageBody).ClientDevice.SessionID = ConnectionManager.KnownServers.ContainsKey(ConnectionManager.CurrentServer) ? ConnectionManager.KnownServers[ConnectionManager.CurrentServer] : 0;
 			
 			ConnectionManager.tcpClient.SendRequest(request);
+		}
+
+		public static void SendMessage(WRMC.Core.Networking.Message message) {
+			if (message.Body is AuthenticatedMessageBody)
+				(message.Body as AuthenticatedMessageBody).ClientDevice.SessionID = ConnectionManager.KnownServers.ContainsKey(ConnectionManager.CurrentServer) ? ConnectionManager.KnownServers[ConnectionManager.CurrentServer] : 0;
+
+			ConnectionManager.tcpClient.SendMessage(message);
 		}
 
 		private static void UdpClient_OnServersResponseReceived(UdpClient sender, MessageBodyEventArgs<ServerResponseBody> e) {
