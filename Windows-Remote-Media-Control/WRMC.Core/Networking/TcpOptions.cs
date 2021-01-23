@@ -23,5 +23,7 @@ namespace WRMC.Core.Networking {
 		/// The default IP end point the server listens to.
 		/// </summary>
 		public static IPEndPoint DefaultServerListenIPEndPoint = new IPEndPoint(IPAddress.Any, DefaultPort);
+
+		public static string MessageSeparator = "message_end;";
 	}
 }

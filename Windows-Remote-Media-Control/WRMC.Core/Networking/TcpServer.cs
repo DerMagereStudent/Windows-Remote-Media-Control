@@ -19,6 +19,7 @@ namespace WRMC.Core.Networking {
 
 		private Dictionary<System.Net.Sockets.TcpClient, ClientDevice> clients;
 		private Dictionary<System.Net.Sockets.TcpClient, byte[]> clientBuffers;
+		private Dictionary<System.Net.Sockets.TcpClient, string> clientRemainingData;
 
 		private object clientsLock = new object();
 		private object clientBuffersLock = new object();
@@ -65,6 +66,7 @@ namespace WRMC.Core.Networking {
 			this.server = new TcpListener(TcpOptions.DefaultListenIPAddress, TcpOptions.DefaultPort);
 			this.clients = new Dictionary<System.Net.Sockets.TcpClient, ClientDevice>();
 			this.clientBuffers = new Dictionary<System.Net.Sockets.TcpClient, byte[]>();
+			this.clientRemainingData = new Dictionary<System.Net.Sockets.TcpClient, string>();
 			Task.Factory.StartNew(() => this.ClientConnectionMonitoring());
 		}
 
@@ -136,7 +138,8 @@ namespace WRMC.Core.Networking {
 
 			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions));
 
-			client.GetStream().BeginWrite(data, 0, data.Length, this.OnWrite, client);
+			this.SendResponse(response, clientDevice);
+			//client.GetStream().BeginWrite(data, 0, data.Length, this.OnWrite, client);
 			this.OnConnectionAccpeted?.Invoke(this, new ClientEventArgs(client, clientDevice));
 		}
 
@@ -167,7 +170,7 @@ namespace WRMC.Core.Networking {
 						Body = null
 					};
 
-					byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultSerializationOptions));
+					byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultSerializationOptions) + TcpOptions.MessageSeparator);
 					client.GetStream().Write(data, 0, data.Length);
 					client.GetStream().Flush();
 				}
@@ -185,7 +188,7 @@ namespace WRMC.Core.Networking {
 		/// <param name="message">The message to send.</param>
 		/// <param name="receiver">The receiver client of the message.</param>
 		public void SendMessage(Message message, ClientDevice receiver) {
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultSerializationOptions));
+			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultSerializationOptions) + TcpOptions.MessageSeparator);
 			this.SendData(data, receiver);
 		}
 
@@ -195,7 +198,7 @@ namespace WRMC.Core.Networking {
 		/// <param name="request">The request to send.</param>
 		/// <param name="receiver">The receiver client of the message.</param>
 		public void SendRequest(Request request, ClientDevice receiver) {
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request, SerializationOptions.DefaultSerializationOptions));
+			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request, SerializationOptions.DefaultSerializationOptions) + TcpOptions.MessageSeparator);
 			this.SendData(data, receiver);
 		}
 
@@ -205,7 +208,7 @@ namespace WRMC.Core.Networking {
 		/// <param name="response">The response to send.</param>
 		/// <param name="receiver">The receiver client of the response.</param>
 		public void SendResponse(Response response, ClientDevice receiver) {
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions));
+			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions) + TcpOptions.MessageSeparator);
 			this.SendData(data, receiver);
 		}
 
@@ -263,8 +266,10 @@ namespace WRMC.Core.Networking {
 		private void OnConnectionRequestReceived(IAsyncResult ar) {
 			try {
 				System.Net.Sockets.TcpClient client = this.server.EndAcceptTcpClient(ar);
-				lock (this.clientsLock)
+				lock (this.clientsLock) {
 					this.clients.Add(client, null);
+					this.clientRemainingData.Add(client, "");
+				}
 				
 				lock (this.clientBuffersLock) {
 					this.clientBuffers.Add(client, new byte[TcpOptions.BufferSize]);
@@ -293,39 +298,46 @@ namespace WRMC.Core.Networking {
 				lock (this.clientsLock) {
 					if (!this.clients.ContainsKey(client))
 						return;
-				}
-				
+				}				
 
 				string dataString;
 				
 				lock (this.clientBuffersLock)
-					dataString = Encoding.UTF8.GetString(this.clientBuffers[client], 0, received);
-				
-				object dataObject = JsonConvert.DeserializeObject(dataString, SerializationOptions.DefaultSerializationOptions);
+					dataString = this.clientRemainingData[client] + Encoding.UTF8.GetString(this.clientBuffers[client], 0, received);
 
-				bool condition;
+				string remaining = "";
 
-				lock (this.clientsLock)
-					condition = this.clients[client] == null;
+				while (this.SplitReceivedString(dataString, out string message, out remaining)) {
+					object dataObject = JsonConvert.DeserializeObject(message, SerializationOptions.DefaultSerializationOptions);
 
-				if (condition) {
-					if (dataObject is Request) {
-						Request request = dataObject as Request;
+					bool condition;
 
-						if (request.Method == Request.Type.Connect) {
-							AuthenticatedMessageBody body = request.Body as AuthenticatedMessageBody;
-							this.OnConnectRequestReceived?.Invoke(this, new ClientRequestEventArgs(client, body.ClientDevice, request));
+					lock (this.clientsLock)
+						condition = this.clients[client] == null;
+
+					if (condition) {
+						if (dataObject is Request) {
+							Request request = dataObject as Request;
+
+							if (request.Method == Request.Type.Connect) {
+								AuthenticatedMessageBody body = request.Body as AuthenticatedMessageBody;
+								this.OnConnectRequestReceived?.Invoke(this, new ClientRequestEventArgs(client, body.ClientDevice, request));
+							}
 						}
 					}
+					else {
+						if (dataObject is Message)
+							this.OnMessageReceived?.Invoke(this, new ClientMessageEventArgs(client, this.clients[client], dataObject as Message));
+						else if (dataObject is Request)
+							this.OnRequestReceived?.Invoke(this, new ClientRequestEventArgs(client, this.clients[client], dataObject as Request));
+						else if (dataObject is Response)
+							this.OnResponseReceived?.Invoke(this, new ClientResponseEventArgs(client, this.clients[client], dataObject as Response));
+					}
+
+					dataString = remaining;
 				}
-				else {
-					if (dataObject is Message)
-						this.OnMessageReceived?.Invoke(this, new ClientMessageEventArgs(client, this.clients[client], dataObject as Message));
-					else if (dataObject is Request)
-						this.OnRequestReceived?.Invoke(this, new ClientRequestEventArgs(client, this.clients[client], dataObject as Request));
-					else if (dataObject is Response)
-						this.OnResponseReceived?.Invoke(this, new ClientResponseEventArgs(client, this.clients[client], dataObject as Response));
-				}
+
+				this.clientRemainingData[client] = remaining;
 
 				lock (this.clientBuffersLock)
 					client.GetStream().BeginRead(this.clientBuffers[client], 0, this.clientBuffers[client].Length, this.OnDataReceived, client);
@@ -339,6 +351,22 @@ namespace WRMC.Core.Networking {
 				;
 				// Connection closed
 			}
+		}
+
+		public bool SplitReceivedString(in string dataString, out string message, out string remainingData) {
+			if (!dataString.Contains(TcpOptions.MessageSeparator)) {
+				remainingData = dataString;
+				message = null;
+				return false;
+			}
+
+			int index = dataString.IndexOf(TcpOptions.MessageSeparator);
+			message = dataString.Substring(0, index);
+
+			int remainingIndex = index + TcpOptions.MessageSeparator.Length;
+			remainingData = dataString.Length > remainingIndex ? dataString.Substring(remainingIndex) : "";
+
+			return true;
 		}
 
 		/// <summary>
@@ -375,6 +403,7 @@ namespace WRMC.Core.Networking {
 			lock (this.clientsLock) {
 				cd = this.clients[client];
 				this.clients.Remove(client);
+				this.clientRemainingData.Remove(client);
 			}
 
 			this.OnConnectionClosed?.Invoke(this, new ClientEventArgs(client, cd));

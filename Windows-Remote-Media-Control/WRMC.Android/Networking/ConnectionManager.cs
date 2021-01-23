@@ -204,10 +204,13 @@ namespace WRMC.Android.Networking {
 					if (File.Exists(Path.Combine(ConnectionManager.KNOWN_SERVERS_DIRECTORY_NAME, ConnectionManager.KNOWN_SERVERS_FILE_NAME))) {
 						string json = File.ReadAllText(Path.Combine(ConnectionManager.KNOWN_SERVERS_DIRECTORY_NAME, ConnectionManager.KNOWN_SERVERS_FILE_NAME));
 						ConnectionManager.KnownServers = JsonConvert.DeserializeObject<KeyedList<ServerDevice, long>>(json, SerializationOptions.DefaultSerializationOptions);
+
+						if (ConnectionManager.KnownServers == null)
+							ConnectionManager.KnownServers = new KeyedList<ServerDevice, long>();
 					} else
 						ConnectionManager.KnownServers = new KeyedList<ServerDevice, long>();
 				}
-				catch (IOException e) {
+				catch (IOException) {
 					ConnectionManager.KnownServers = new KeyedList<ServerDevice, long>();
 				}
 			} else {
