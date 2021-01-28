@@ -11,5 +11,7 @@ namespace WRMC.Core {
 		public EventArgs(T data) {
 			this.Data = data;
 		}
+
+		public static implicit operator EventArgs<T>(T data) => new EventArgs<T>(data);
 	}
 }

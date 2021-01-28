@@ -23,4 +23,8 @@
 		<item name="android:windowNoTitle">true</item>
 		<item name="android:windowIsFloating">true</item>
 	</style>
+
+	<style name="SpinnerItemStyle" parent="Base.Widget.AppCompat.Spinner">
+		<item name="android:textColor">@color/textColorPrimary</item>
+	</style>
 </resources>

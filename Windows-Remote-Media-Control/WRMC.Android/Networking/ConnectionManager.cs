@@ -41,6 +41,10 @@ namespace WRMC.Android.Networking {
 		public static event EventHandler<EventArgs> OnConnectFailure = null;
 		public static event EventHandler<EventArgs> OnConnectionClosed = null;
 
+		public static event EventHandler<EventArgs<List<string>>> OnScreensReceived = null;
+		public static event EventHandler<EventArgs<List<AudioEndpoint>>> OnAudioDevicesReceived = null;
+		public static event EventHandler<EventArgs<int>> OnVolumeReceived = null;
+
 		public static event EventHandler<EventArgs<List<MediaSession>>> OnMediaSessionsReceived = null;
 		public static event EventHandler<EventArgs<MediaSession>> OnMediaSessionChanged = null;
 
@@ -172,9 +176,7 @@ namespace WRMC.Android.Networking {
 		private static void TcpClient_OnResponseReceived(TcpClient sender, ServerResponseEventArgs e) {
 			switch (e.Response.Method) {
 				case Response.Type.AudioEndpoints:
-					break;
-
-				case Response.Type.ConnectSuccess:
+					ConnectionManager.OnAudioDevicesReceived?.Invoke(null, new EventArgs<List<AudioEndpoint>>((e.Response.Body as AudioEndpointsResponseBody).AudioEndpoints));
 					break;
 
 				case Response.Type.DirectoryContent:
@@ -185,15 +187,14 @@ namespace WRMC.Android.Networking {
 					break;
 
 				case Response.Type.Screens:
-					break;
-
-				case Response.Type.Servers:
+					ConnectionManager.OnScreensReceived?.Invoke(null, new EventArgs<List<string>>((e.Response.Body as ScreensResponseBody).Screens));
 					break;
 
 				case Response.Type.SuspendedProcesses:
 					break;
 
 				case Response.Type.Volume:
+					ConnectionManager.OnVolumeReceived?.Invoke(null, new EventArgs<int>((e.Response.Body as VolumeResponseBody).Volume));
 					break;
 			}
 		}
@@ -227,7 +228,7 @@ namespace WRMC.Android.Networking {
 					Directory.CreateDirectory(ConnectionManager.KNOWN_SERVERS_DIRECTORY_NAME);
 
 				File.WriteAllText(Path.Combine(ConnectionManager.KNOWN_SERVERS_DIRECTORY_NAME, ConnectionManager.KNOWN_SERVERS_FILE_NAME), JsonConvert.SerializeObject(ConnectionManager.KnownServers, SerializationOptions.DefaultSerializationOptions));
-			} catch (IOException e) { }
+			} catch (IOException) { }
 		}
 	}
 }

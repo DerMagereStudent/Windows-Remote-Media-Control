@@ -41,7 +41,7 @@ namespace WRMC.Android {
 			}
 		}
 
-		protected override void OnStop() {
+		protected override void OnDestroy() {
             ConnectionManager.CloseConnection(DeviceInformation.GetClientDevice(this.ApplicationContext));
             base.OnStop();
 		}

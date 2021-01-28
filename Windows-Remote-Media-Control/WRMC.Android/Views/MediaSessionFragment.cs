@@ -1,4 +1,7 @@
 ﻿using Android.OS;
+using Android.Support.Design.Widget;
+using Android.Support.V7.App;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 
@@ -12,6 +15,9 @@ using WRMC.Core.Networking;
 
 namespace WRMC.Android.Views {
 	public class MediaSessionFragment : BackButtonNotifiableFragment {
+		private TextView textViewVolume;
+		private SeekBar seekBarVolume;
+
 		private ImageView imageViewMediaType;
 
 		private TextView textViewTitle;
@@ -20,6 +26,8 @@ namespace WRMC.Android.Views {
 		private ImageButton buttonPlayPause;
 		private ImageButton buttonSkipNext;
 		private ImageButton buttonSkipPrevious;
+
+		private ImageButton buttonCollapseExpand;
 
 		public MediaSession MediaSession { get; set; }
 
@@ -30,6 +38,8 @@ namespace WRMC.Android.Views {
 		public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View view = inflater.Inflate(Resource.Layout.media_session, container, false);
 
+			BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.From(view.FindViewById(Resource.Id.media_session_controls));
+
 			this.imageViewMediaType = view.FindViewById<ImageView>(Resource.Id.media_session_image_view_media_type);
 
 			this.textViewTitle = view.FindViewById<TextView>(Resource.Id.media_session_text_view_title);
@@ -39,9 +49,45 @@ namespace WRMC.Android.Views {
 			this.buttonSkipNext = view.FindViewById<ImageButton>(Resource.Id.media_session_controls_button_skip_next);
 			this.buttonSkipPrevious = view.FindViewById<ImageButton>(Resource.Id.media_session_controls_button_skip_previous);
 
+			this.buttonCollapseExpand = view.FindViewById<ImageButton>(Resource.Id.media_session_controls_button_expand_collapse);
+
+			int bottom = this.buttonPlayPause.Bottom;
+			bottomSheetBehavior.PeekHeight = (int)TypedValue.ApplyDimension(ComplexUnitType.Dip, 150, this.Resources.DisplayMetrics);
+
+			MultiBottomSheetCallback bottomSheetCallback = new MultiBottomSheetCallback();
+
+			bottomSheetCallback.OnSlideEvent += (s, e) => {
+				this.buttonCollapseExpand.Rotation = e.Data * -180.0f;
+			};
+
+			bottomSheetBehavior.SetBottomSheetCallback(bottomSheetCallback);
+
 			this.buttonPlayPause.Click += this.ButtonPlayPause_Click;
 			this.buttonSkipNext.Click += this.ButtonSkipNext_Click;
 			this.buttonSkipPrevious.Click += this.ButtonSkipPrevious_Click;
+
+			this.buttonCollapseExpand.Click += (s, e) => {
+				if (bottomSheetBehavior.State == BottomSheetBehavior.StateCollapsed)
+					bottomSheetBehavior.State = BottomSheetBehavior.StateExpanded;
+				else if (bottomSheetBehavior.State == BottomSheetBehavior.StateExpanded)
+					bottomSheetBehavior.State = BottomSheetBehavior.StateCollapsed;
+			};
+
+			ConnectionManager.OnScreensReceived += this.ConnectionManager_OnScreensReceived;
+			ConnectionManager.SendRequest(new Request() {
+				Method = Request.Type.GetScreens,
+				Body = new AuthenticatedMessageBody() {
+					ClientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext)
+				}
+			});
+
+			ConnectionManager.OnAudioDevicesReceived += this.ConnectionManager_OnAudioDevicesReceived;
+			ConnectionManager.SendRequest(new Request() {
+				Method = Request.Type.GetAudioEndpoints,
+				Body = new AuthenticatedMessageBody() {
+					ClientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext)
+				}
+			});
 
 			ConnectionManager.OnMediaSessionsReceived += this.ConnectionManager_OnMediaSessionsReceived;
 			ConnectionManager.OnMediaSessionChanged += this.ConnectionManager_OnMediaSessionChanged;
@@ -85,6 +131,9 @@ namespace WRMC.Android.Views {
 		public override void OnBackButton() {
 			ConnectionManager.OnMediaSessionsReceived -= this.ConnectionManager_OnMediaSessionsReceived;
 			ConnectionManager.OnMediaSessionChanged -= this.ConnectionManager_OnMediaSessionChanged;
+			ConnectionManager.OnScreensReceived -= this.ConnectionManager_OnScreensReceived;
+			ConnectionManager.OnAudioDevicesReceived -= this.ConnectionManager_OnAudioDevicesReceived;
+			ConnectionManager.OnVolumeReceived += this.ConnectionManager_OnVolumeReceived;
 			ConnectionManager.OnConnectionClosed -= this.ConnectionManager_OnConnectionClosed;
 		}
 
@@ -98,6 +147,101 @@ namespace WRMC.Android.Views {
 				this.MediaSession = e.Data;
 				this.UpdateUI();
 			}
+		}
+
+		private void ConnectionManager_OnScreensReceived(object sender, EventArgs<List<string>> e) {
+			this.Activity.RunOnUiThread(() => {
+				Spinner spinner = this.View.FindViewById<Spinner>(Resource.Id.spinner_screen_selection);
+
+				ArrayAdapter<string> adapter = new ArrayAdapter<string>(this.Context, Resource.Layout.spinner_item, e.Data);
+				spinner.Adapter = adapter;
+
+				ConnectionManager.OnScreensReceived -= this.ConnectionManager_OnScreensReceived;
+				spinner.SetSelection(0, false);
+				spinner.ItemSelected += this.SpinnerScreens_ItemSelected;
+			});
+		}
+
+		private void SpinnerScreens_ItemSelected(object sender, AdapterView.ItemSelectedEventArgs e) {
+			string screen = (sender as Spinner).SelectedItem.ToString();
+
+			ConnectionManager.SendMessage(new WRMC.Core.Networking.Message() {
+				Method = WRMC.Core.Networking.Message.Type.SetScreen,
+				Body = new SetScreenMessageBody() {
+					MediaSession = this.MediaSession,
+					Screen = screen,
+					ClientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext)
+				}
+			});
+		}
+
+		private void ConnectionManager_OnAudioDevicesReceived(object sender, EventArgs<List<AudioEndpoint>> e) {
+			this.Activity.RunOnUiThread(() => {
+				Spinner spinner = this.View.FindViewById<Spinner>(Resource.Id.spinner_audio_device_selection);
+				this.seekBarVolume = this.View.FindViewById<SeekBar>(Resource.Id.seek_bar_volume);
+				this.textViewVolume = this.View.FindViewById<TextView>(Resource.Id.text_view_volume);
+
+				ArrayAdapter<AudioEndpoint> adapter = new ArrayAdapter<AudioEndpoint>(this.Context, Resource.Layout.spinner_item, e.Data);
+				spinner.Adapter = adapter;
+
+				ConnectionManager.OnAudioDevicesReceived -= this.ConnectionManager_OnAudioDevicesReceived;
+				spinner.SetSelection(0, false);
+
+				ConnectionManager.OnVolumeReceived += this.ConnectionManager_OnVolumeReceived;
+
+				ConnectionManager.SendRequest(new Request() {
+					Method = Request.Type.GetVolume,
+					Body = new AuthenticatedMessageBody() {
+						ClientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext)
+					}
+				});
+
+				spinner.ItemSelected += delegate (object sender, AdapterView.ItemSelectedEventArgs args) {
+					if (args.Position < 0 || args.Position >= e.Data.Count)
+						return;
+
+					ConnectionManager.SendMessage(new WRMC.Core.Networking.Message() {
+						Method = WRMC.Core.Networking.Message.Type.SetAudioEndpoint,
+						Body = new SetAudioEndpointMessageBody() {
+							MediaSession = this.MediaSession,
+							AudioEndpoint = e.Data[args.Position],
+							ClientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext)
+						}
+					});
+
+					ConnectionManager.OnVolumeReceived += this.ConnectionManager_OnVolumeReceived;
+
+					ConnectionManager.SendRequest(new Request() {
+						Method = Request.Type.GetVolume,
+						Body = new AuthenticatedMessageBody() {
+							ClientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext)
+						}
+					});
+				};
+
+				if (this.seekBarVolume != null) {
+					this.seekBarVolume.ProgressChanged += (s, e) => {
+						this.textViewVolume.Text = "Volume: " + e.Progress;
+
+						ConnectionManager.SendMessage(new WRMC.Core.Networking.Message() {
+							Method = WRMC.Core.Networking.Message.Type.SetVolume,
+							Body = new SetVolumeMessageBody() {
+								Volume = e.Progress,
+								ClientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext)
+							}
+						});
+					};
+				}
+			});
+		}
+
+		private void ConnectionManager_OnVolumeReceived(object sender, EventArgs<int> e) {
+			this.Activity.RunOnUiThread(() => {
+				this.textViewVolume.Text = "Volume: " + e.Data;
+				this.seekBarVolume.Progress = e.Data;
+			});
+
+			ConnectionManager.OnVolumeReceived -= this.ConnectionManager_OnVolumeReceived;
 		}
 
 		private void ConnectionManager_OnConnectionClosed(object sender, EventArgs e) {
@@ -121,6 +265,19 @@ namespace WRMC.Android.Views {
 				this.textViewArtist.Text = this.MediaSession.Artist;
 				this.buttonPlayPause.SetImageResource(this.MediaSession.State == MediaSession.PlaybackState.Playing ? Resource.Drawable.pause : Resource.Drawable.play);
 			});
+		}
+	}
+
+	public class MultiBottomSheetCallback : BottomSheetBehavior.BottomSheetCallback {
+		public event EventHandler<EventArgs<int>> OnStateEvent = null;
+		public event EventHandler<EventArgs<float>> OnSlideEvent = null;
+
+		public override void OnSlide(View bottomSheet, float slideOffset) {
+			this.OnSlideEvent?.Invoke(null, slideOffset);
+		}
+
+		public override void OnStateChanged(View bottomSheet, int newState) {
+			this.OnStateEvent?.Invoke(null, newState);
 		}
 	}
 }

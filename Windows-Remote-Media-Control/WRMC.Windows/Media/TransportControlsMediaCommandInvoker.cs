@@ -77,7 +77,7 @@ namespace WRMC.Windows.Media {
 				if (string.IsNullOrEmpty(NativeMethods.GetWindowTitle(hwnd)))
 					continue;
 
-				NativeMethods.ShowWindow(hwnd, NativeDefinitions.SW_RESTORE);
+				NativeMethods.ShowWindow(hwnd, NativeDefinitions.SW_NORMAL);				
 				NativeMethods.SetWindowPos(hwnd, IntPtr.Zero, screen.Bounds.X, screen.Bounds.Y, 0, 0, NativeDefinitions.SWP_NOSIZE | NativeDefinitions.SWP_NOZORDER);
 			}
 		}
@@ -177,6 +177,28 @@ namespace WRMC.Windows.Media {
 
 		public override List<AudioEndpoint> GetAudioEndpoints() {
 			List<AudioEndpoint> endpoints = new List<AudioEndpoint>();
+
+			NativeInterfaces.IMMDeviceEnumerator enumerator = NativeClasses.ComObjectFactory.CreateInstance(new Guid(NativeGuids.MM_DEVICE_ENUMERATOR)) as NativeInterfaces.IMMDeviceEnumerator;
+			enumerator.EnumAudioEndpoints(NativeEnums.EDataFlow.eRender, 0x00000001, out NativeInterfaces.IMMDeviceCollection collection);
+			collection.GetCount(out uint count);
+
+			enumerator.GetDefaultAudioEndpoint(NativeEnums.EDataFlow.eRender, NativeEnums.ERole.eConsole | NativeEnums.ERole.eMultimedia, out NativeInterfaces.IMMDevice defaultIMMDevice);
+			AudioEndpoint defaultAudioEndpoint = this.IMMDeviceToAudioEndpoint(defaultIMMDevice);
+			
+			for (uint i = 0; i < count; i++) {
+				collection.Item(i, out NativeInterfaces.IMMDevice device);
+				AudioEndpoint endpoint = this.IMMDeviceToAudioEndpoint(device);
+
+				if (endpoint.Equals(defaultAudioEndpoint))
+					endpoints.Insert(0, endpoint);
+				else
+					endpoints.Add(endpoint); ;
+			}
+
+			return endpoints;
+		}
+
+		private AudioEndpoint IMMDeviceToAudioEndpoint(NativeInterfaces.IMMDevice device) {
 			NativeStructs.PROPERTYKEY PKEY_Device_FriendlyName = new NativeStructs.PROPERTYKEY(
 				new Guid(
 					0xa45c254e,
@@ -192,26 +214,16 @@ namespace WRMC.Windows.Media {
 					0x00e0)
 				, 14);
 
-			NativeInterfaces.IMMDeviceEnumerator enumerator = NativeClasses.ComObjectFactory.CreateInstance(new Guid(NativeGuids.MM_DEVICE_ENUMERATOR)) as NativeInterfaces.IMMDeviceEnumerator;
-			enumerator.EnumAudioEndpoints(NativeEnums.EDataFlow.eAll, 0x00000001, out NativeInterfaces.IMMDeviceCollection collection);
-			collection.GetCount(out uint count);
-			
-			for (uint i = 0; i < count; i++) {
-				collection.Item(i, out NativeInterfaces.IMMDevice device);
+			device.GetId(out string id);
 
-				device.GetId(out string id);
+			device.OpenPropertyStore(0, out NativeInterfaces.IPropertyStore properties);
+			properties.GetValue(PKEY_Device_FriendlyName, out NativeStructs.PROPVARIANT prop);
+			string name = Marshal.PtrToStringUni(prop.pwszVal);
 
-				device.OpenPropertyStore(0, out NativeInterfaces.IPropertyStore properties);
-				properties.GetValue(PKEY_Device_FriendlyName, out NativeStructs.PROPVARIANT prop);
-				string name = Marshal.PtrToStringUni(prop.pwszVal);
-
-				endpoints.Add(new AudioEndpoint() {
-					ID = id,
-					Name = name
-				});
-			}
-
-			return endpoints;
+			return new AudioEndpoint() {
+				ID = id,
+				Name = name
+			};
 		}
 
 		public override int GetMasterVolume() {

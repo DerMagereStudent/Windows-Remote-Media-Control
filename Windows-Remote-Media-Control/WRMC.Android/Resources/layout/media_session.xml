@@ -1,78 +1,173 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<android.support.constraint.ConstraintLayout
+<android.support.design.widget.CoordinatorLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
-	<ImageView
-		android:layout_width="150dp"
-		android:layout_height="150dp"
-		android:id="@+id/media_session_image_view_media_type"
-		android:src="@drawable/sound_waves"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintBottom_toTopOf="@id/media_session_controls"/>
-
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/media_session_text_view_title"
-		android:gravity="center"
-		android:text="Title"
-		android:textColor="@color/textColorPrimary"
-		android:textSize="22dp"
-		android:textStyle="bold"
-		app:layout_constraintTop_toBottomOf="@id/media_session_image_view_media_type"/>
-
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/media_session_text_view_artist"
-		android:gravity="center"
-		android:text="Artist"
-		android:textColor="@color/textColorPrimary"
-		android:textSize="18dp"
-		app:layout_constraintTop_toBottomOf="@id/media_session_text_view_title"/>
-
 	<android.support.constraint.ConstraintLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:paddingVertical="30dp"
+		android:layout_gravity="center">
+		<ImageView
+			android:layout_width="150dp"
+			android:layout_height="150dp"
+			android:id="@+id/media_session_image_view_media_type"
+			android:src="@drawable/sound_waves"
+			android:contentDescription=""
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"/>
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/media_session_text_view_title"
+			android:gravity="center"
+			android:text="Title"
+			android:textColor="@color/textColorPrimary"
+			android:textSize="22dp"
+			android:textStyle="bold"
+			app:layout_constraintTop_toBottomOf="@id/media_session_image_view_media_type"/>
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/media_session_text_view_artist"
+			android:gravity="center"
+			android:text="Artist"
+			android:textColor="@color/textColorPrimary"
+			android:textSize="18dp"
+			app:layout_constraintTop_toBottomOf="@id/media_session_text_view_title"/>
+	</android.support.constraint.ConstraintLayout>
+
+	<android.support.v4.widget.NestedScrollView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
 		android:id="@+id/media_session_controls"
 		android:background="@drawable/media_session_controls_background"
-		app:layout_constraintBottom_toBottomOf="parent">
-		<ImageButton
-			android:layout_width="60dp"
-			android:layout_height="60dp"
-			android:padding="12dp"
-			android:id="@+id/media_session_controls_button_play_pause"
-			android:background="@drawable/media_session_controls_button_play_pause_background"
-			android:src="@drawable/play"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"/>
-		<ImageButton
-			android:layout_width="45dp"
-			android:layout_height="45dp"
-			android:layout_marginStart="15dp"
-			android:padding="4dp"
-			android:id="@+id/media_session_controls_button_skip_next"
-			android:background="@drawable/media_session_controls_button_skip_next_previous_background"
-			android:src="@drawable/skip_next"
-			app:layout_constraintTop_toTopOf="@id/media_session_controls_button_play_pause"
-			app:layout_constraintStart_toEndOf="@id/media_session_controls_button_play_pause"
-			app:layout_constraintBottom_toBottomOf="@id/media_session_controls_button_play_pause"/>
-		<ImageButton
-			android:layout_width="45dp"
-			android:layout_height="45dp"
-			android:layout_marginEnd="15dp"
-			android:padding="4dp"
-			android:id="@+id/media_session_controls_button_skip_previous"
-			android:background="@drawable/media_session_controls_button_skip_next_previous_background"
-			android:src="@drawable/skip_previous"
-			app:layout_constraintTop_toTopOf="@id/media_session_controls_button_play_pause"
-			app:layout_constraintEnd_toStartOf="@id/media_session_controls_button_play_pause"
-			app:layout_constraintBottom_toBottomOf="@id/media_session_controls_button_play_pause"/>
-	</android.support.constraint.ConstraintLayout>
-</android.support.constraint.ConstraintLayout>
+		app:layout_behavior="@string/bottom_sheet_behavior">
+		<android.support.constraint.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingVertical="30dp"
+			app:layout_constraintBottom_toBottomOf="parent">
+			<ImageButton
+				android:layout_width="60dp"
+				android:layout_height="60dp"
+				android:padding="12dp"
+				android:id="@+id/media_session_controls_button_play_pause"
+				android:background="@drawable/media_session_controls_button_play_pause_background"
+				android:src="@drawable/play"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintEnd_toEndOf="parent"/>
+
+			<ImageButton
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:layout_marginStart="15dp"
+				android:padding="4dp"
+				android:id="@+id/media_session_controls_button_skip_next"
+				android:background="@drawable/media_session_controls_button_skip_next_previous_background"
+				android:src="@drawable/skip_next"
+				app:layout_constraintTop_toTopOf="@id/media_session_controls_button_play_pause"
+				app:layout_constraintStart_toEndOf="@id/media_session_controls_button_play_pause"
+				app:layout_constraintBottom_toBottomOf="@id/media_session_controls_button_play_pause"/>
+
+			<ImageButton
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:layout_marginEnd="15dp"
+				android:padding="4dp"
+				android:id="@+id/media_session_controls_button_skip_previous"
+				android:background="@drawable/media_session_controls_button_skip_next_previous_background"
+				android:src="@drawable/skip_previous"
+				app:layout_constraintTop_toTopOf="@id/media_session_controls_button_play_pause"
+				app:layout_constraintEnd_toStartOf="@id/media_session_controls_button_play_pause"
+				app:layout_constraintBottom_toBottomOf="@id/media_session_controls_button_play_pause"/>
+
+			<ImageButton
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:layout_marginVertical="10dp"
+				android:padding="4dp"
+				android:id="@+id/media_session_controls_button_expand_collapse"
+				android:src="@drawable/chevron_up"
+				android:background="@android:color/transparent"
+				android:scaleType="fitCenter"
+				app:layout_constraintTop_toBottomOf="@id/media_session_controls_button_play_pause"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintEnd_toEndOf="parent"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="25dp"
+				android:id="@+id/text_view_header_audio"
+				android:text="Audio"
+				android:textColor="@color/textColorPrimary"
+				android:textSize="20dp"
+				android:textStyle="bold"
+				app:layout_constraintTop_toBottomOf="@id/media_session_controls_button_expand_collapse"/>
+
+			<Spinner
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="20dp"
+				android:layout_marginTop="8dp"
+				android:id="@+id/spinner_audio_device_selection"
+				android:backgroundTint="@color/textColorPrimary"
+				android:foregroundTint="@color/textColorPrimary"
+				android:popupBackground="@color/colorPrimary"
+				app:layout_constraintTop_toBottomOf="@id/text_view_header_audio"
+				app:layout_constraintBottom_toTopOf="@id/text_view_volume"/>
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="15dp"
+				android:layout_marginHorizontal="25dp"
+				android:id="@+id/text_view_volume"
+				android:text="Volume: "
+				android:textColor="@color/textColorPrimary"
+				android:textSize="16dp"
+				app:layout_constraintTop_toBottomOf="@id/spinner_audio_device_selection"
+				app:layout_constraintBottom_toTopOf="@id/seek_bar_volume"/>
+			<SeekBar
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="10dp"
+				android:layout_marginHorizontal="15dp"
+				android:id="@+id/seek_bar_volume"
+				android:backgroundTint="@color/colorAccent"
+				android:foregroundTint="@color/colorAccent"
+				android:max="100"
+				app:layout_constraintTop_toBottomOf="@id/text_view_volume"
+				app:layout_constraintBottom_toTopOf="@id/text_view_header_video"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="15dp"
+				android:layout_marginHorizontal="25dp"
+				android:id="@+id/text_view_header_video"
+				android:text="Video"
+				android:textColor="@color/textColorPrimary"
+				android:textSize="20dp"
+				android:textStyle="bold"
+				app:layout_constraintTop_toBottomOf="@id/seek_bar_volume"
+				app:layout_constraintBottom_toTopOf="@id/spinner_screen_selection"/>
+
+			<Spinner
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginHorizontal="20dp"
+				android:layout_marginTop="8dp"
+				android:id="@+id/spinner_screen_selection"
+				android:backgroundTint="@color/textColorPrimary"
+				android:foregroundTint="@color/textColorPrimary"
+				android:popupBackground="@color/colorPrimary"
+				app:layout_constraintTop_toBottomOf="@id/text_view_header_video"
+				app:layout_constraintBottom_toBottomOf="parent"/>
+		</android.support.constraint.ConstraintLayout>
+	</android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>
