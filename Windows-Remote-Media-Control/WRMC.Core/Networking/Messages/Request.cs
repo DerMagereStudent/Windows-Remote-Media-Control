@@ -14,6 +14,7 @@
 			GetMediaSessions,
 			GetScreens,
 			GetSuspendedMediaProcesses,
+			GetThumbnail,
 			GetVolume
 		}
 

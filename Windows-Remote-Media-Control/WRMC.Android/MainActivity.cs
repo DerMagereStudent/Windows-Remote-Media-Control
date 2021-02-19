@@ -43,7 +43,7 @@ namespace WRMC.Android {
 
 		protected override void OnDestroy() {
             ConnectionManager.CloseConnection(DeviceInformation.GetClientDevice(this.ApplicationContext));
-            base.OnStop();
+            base.OnDestroy();
 		}
 
 		public void ChangeFragment(global::Android.Support.V4.App.Fragment fragment) {
@@ -69,7 +69,8 @@ namespace WRMC.Android {
             global::Android.Support.V4.App.Fragment fragment = this.SupportFragmentManager.FindFragmentById(Resource.Id.main_fragment_container);
 
             if (fragment is BackButtonNotifiableFragment)
-                (fragment as BackButtonNotifiableFragment).OnBackButton();
+                if ((fragment as BackButtonNotifiableFragment).OnBackButton())
+                        return;
 
             base.OnBackPressed();
 		}

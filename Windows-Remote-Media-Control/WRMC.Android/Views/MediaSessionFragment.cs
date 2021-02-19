@@ -1,4 +1,5 @@
-﻿using Android.OS;
+﻿using Android.Graphics;
+using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Util;
@@ -89,6 +90,15 @@ namespace WRMC.Android.Views {
 				}
 			});
 
+			ConnectionManager.OnThumbnailReceived += this.ConnectionManager_OnThumbnailReceived;
+			ConnectionManager.SendRequest(new Request() {
+				Method = Request.Type.GetThumbnail,
+				Body = new MediaSessionMessageBody() {
+					MediaSession = this.MediaSession,
+					ClientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext)
+				}
+			});
+
 			ConnectionManager.OnMediaSessionsReceived += this.ConnectionManager_OnMediaSessionsReceived;
 			ConnectionManager.OnMediaSessionChanged += this.ConnectionManager_OnMediaSessionChanged;
 			ConnectionManager.OnConnectionClosed += this.ConnectionManager_OnConnectionClosed;
@@ -128,13 +138,15 @@ namespace WRMC.Android.Views {
 			});
 		}
 
-		public override void OnBackButton() {
+		public override bool OnBackButton() {
 			ConnectionManager.OnMediaSessionsReceived -= this.ConnectionManager_OnMediaSessionsReceived;
 			ConnectionManager.OnMediaSessionChanged -= this.ConnectionManager_OnMediaSessionChanged;
 			ConnectionManager.OnScreensReceived -= this.ConnectionManager_OnScreensReceived;
 			ConnectionManager.OnAudioDevicesReceived -= this.ConnectionManager_OnAudioDevicesReceived;
-			ConnectionManager.OnVolumeReceived += this.ConnectionManager_OnVolumeReceived;
+			ConnectionManager.OnVolumeReceived -= this.ConnectionManager_OnVolumeReceived;
+			ConnectionManager.OnThumbnailReceived -= this.ConnectionManager_OnThumbnailReceived;
 			ConnectionManager.OnConnectionClosed -= this.ConnectionManager_OnConnectionClosed;
+			return false;
 		}
 
 		private void ConnectionManager_OnMediaSessionsReceived(object sender, EventArgs<List<MediaSession>> e) {
@@ -244,6 +256,26 @@ namespace WRMC.Android.Views {
 			ConnectionManager.OnVolumeReceived -= this.ConnectionManager_OnVolumeReceived;
 		}
 
+		private void ConnectionManager_OnThumbnailReceived(object sender, EventArgs<byte[]> e) {
+			this.Activity.RunOnUiThread(() => {
+				if (e.Data.Length == 0) {
+					this.imageViewMediaType.SetImageResource(
+						this.MediaSession.Type == MediaSession.MediaType.Video ? Resource.Drawable.video : Resource.Drawable.sound_waves
+					);
+					int dp = (int)TypedValue.ApplyDimension(ComplexUnitType.Dip, 25, this.Resources.DisplayMetrics);
+					this.imageViewMediaType.SetPadding(dp, 0, dp, 0);
+
+					return;
+				}
+
+				Bitmap bitmap = BitmapFactory.DecodeByteArray(e.Data, 0, e.Data.Length);
+				this.imageViewMediaType.SetImageBitmap(bitmap);
+				this.imageViewMediaType.SetPadding(0, 0, 0, 0);
+			});
+
+			ConnectionManager.OnThumbnailReceived -= this.ConnectionManager_OnThumbnailReceived;
+		}
+
 		private void ConnectionManager_OnConnectionClosed(object sender, EventArgs e) {
 			ConnectionManager.OnMediaSessionsReceived -= this.ConnectionManager_OnMediaSessionsReceived;
 			ConnectionManager.OnMediaSessionChanged -= this.ConnectionManager_OnMediaSessionChanged;
@@ -260,10 +292,18 @@ namespace WRMC.Android.Views {
 				if (this.MediaSession == null)
 					return;
 
-				this.imageViewMediaType.SetImageResource(this.MediaSession.Type == MediaSession.MediaType.Video ? Resource.Drawable.video : Resource.Drawable.sound_waves);
 				this.textViewTitle.Text = this.MediaSession.Title;
 				this.textViewArtist.Text = this.MediaSession.Artist;
 				this.buttonPlayPause.SetImageResource(this.MediaSession.State == MediaSession.PlaybackState.Playing ? Resource.Drawable.pause : Resource.Drawable.play);
+
+				ConnectionManager.OnThumbnailReceived += this.ConnectionManager_OnThumbnailReceived;
+				ConnectionManager.SendRequest(new Request() {
+					Method = Request.Type.GetThumbnail,
+					Body = new MediaSessionMessageBody() {
+						MediaSession = this.MediaSession,
+						ClientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext)
+					}
+				});
 			});
 		}
 	}

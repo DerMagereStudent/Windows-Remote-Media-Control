@@ -12,4 +12,9 @@
 	<string name="find_server_available_header">Available Servers</string>
 
 	<string name="media_sessions_toolbar_title">Media Sessions</string>
+	<string name="suspended_processes_toolbar_title">Suspended Processes</string>
+
+	<string name="play_media_toolbar_title">Play Media</string>
+	<string name="play_media_folders_header">Folders</string>
+	<string name="play_media_files_header">Files</string>
 </resources>

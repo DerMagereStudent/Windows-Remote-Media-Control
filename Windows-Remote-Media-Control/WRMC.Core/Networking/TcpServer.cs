@@ -208,7 +208,8 @@ namespace WRMC.Core.Networking {
 		/// <param name="response">The response to send.</param>
 		/// <param name="receiver">The receiver client of the response.</param>
 		public void SendResponse(Response response, ClientDevice receiver) {
-			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions) + TcpOptions.MessageSeparator);
+			string s = JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions) + TcpOptions.MessageSeparator;
+			byte[] data = Encoding.UTF8.GetBytes(s);
 			this.SendData(data, receiver);
 		}
 

@@ -14,6 +14,7 @@
 			Screens,
 			Servers,
 			SuspendedProcesses,
+			Thumbnail,
 			Volume
 		}
 

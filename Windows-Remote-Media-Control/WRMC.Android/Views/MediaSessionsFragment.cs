@@ -54,10 +54,11 @@ namespace WRMC.Android.Views {
 			return view;
 		}
 
-		public override void OnBackButton() {
+		public override bool OnBackButton() {
 			ConnectionManager.OnMediaSessionsReceived -= this.ConnectionManager_OnMediaSessionsReceived;
 			ConnectionManager.OnMediaSessionChanged -= this.ConnectionManager_OnMediaSessionChanged;
 			ConnectionManager.OnConnectionClosed -= this.ConnectionManager_OnConnectionClosed;
+			return false;
 		}
 
 		public void MediaSessionsAdapter_OnMediaSessionSelected(object sender, EventArgs<MediaSession> e) {

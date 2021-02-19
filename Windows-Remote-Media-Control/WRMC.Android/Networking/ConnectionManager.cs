@@ -44,6 +44,9 @@ namespace WRMC.Android.Networking {
 		public static event EventHandler<EventArgs<List<string>>> OnScreensReceived = null;
 		public static event EventHandler<EventArgs<List<AudioEndpoint>>> OnAudioDevicesReceived = null;
 		public static event EventHandler<EventArgs<int>> OnVolumeReceived = null;
+		public static event EventHandler<EventArgs<byte[]>> OnThumbnailReceived = null;
+		public static event EventHandler<EventArgs<List<SuspendedProcess>>> OnSuspendedProcessesReceived = null;
+		public static event EventHandler<EventArgs<Tuple<List<string>, List<string>>>> OnDirectoryContentReceived = null;
 
 		public static event EventHandler<EventArgs<List<MediaSession>>> OnMediaSessionsReceived = null;
 		public static event EventHandler<EventArgs<MediaSession>> OnMediaSessionChanged = null;
@@ -159,12 +162,15 @@ namespace WRMC.Android.Networking {
 
 		private static void TcpClient_OnMessageReceived(TcpClient sender, ServerMessageEventArgs e) {
 			switch (e.Message.Method) {
+				case WRMC.Core.Networking.Message.Type.Disconnect:
+					ConnectionManager.OnConnectionClosed?.Invoke(null, EventArgs.Empty);
+					break;
 				case WRMC.Core.Networking.Message.Type.MediaSessionChanged:
-					ConnectionManager.OnMediaSessionChanged?.Invoke(null, new EventArgs<MediaSession>((e.Message.Body as MediaSessionChangedMessageBody).MediaSession));
+					ConnectionManager.OnMediaSessionChanged?.Invoke(null, (e.Message.Body as MediaSessionChangedMessageBody).MediaSession);
 					break;
 
 				case WRMC.Core.Networking.Message.Type.MediaSessionListChanged:
-					ConnectionManager.OnMediaSessionsReceived?.Invoke(null, new EventArgs<List<MediaSession>>((e.Message.Body as MediaSessionListChangedMessageBody).MediaSessions));
+					ConnectionManager.OnMediaSessionsReceived?.Invoke(null, (e.Message.Body as MediaSessionListChangedMessageBody).MediaSessions);
 					break;
 			}
 		}
@@ -176,25 +182,32 @@ namespace WRMC.Android.Networking {
 		private static void TcpClient_OnResponseReceived(TcpClient sender, ServerResponseEventArgs e) {
 			switch (e.Response.Method) {
 				case Response.Type.AudioEndpoints:
-					ConnectionManager.OnAudioDevicesReceived?.Invoke(null, new EventArgs<List<AudioEndpoint>>((e.Response.Body as AudioEndpointsResponseBody).AudioEndpoints));
+					ConnectionManager.OnAudioDevicesReceived?.Invoke(null, (e.Response.Body as AudioEndpointsResponseBody).AudioEndpoints);
 					break;
 
 				case Response.Type.DirectoryContent:
+					DirectoryContentResponseBody responseBody = (e.Response.Body as DirectoryContentResponseBody);
+					ConnectionManager.OnDirectoryContentReceived?.Invoke(null, new Tuple<List<string>, List<string>>(responseBody.Folders, responseBody.Files));
 					break;
 
 				case Response.Type.MediaSessions:
-					ConnectionManager.OnMediaSessionsReceived?.Invoke(null, new EventArgs<List<MediaSession>>((e.Response.Body as MediaSessionsResponseBody).MediaSessions));
+					ConnectionManager.OnMediaSessionsReceived?.Invoke(null, (e.Response.Body as MediaSessionsResponseBody).MediaSessions);
 					break;
 
 				case Response.Type.Screens:
-					ConnectionManager.OnScreensReceived?.Invoke(null, new EventArgs<List<string>>((e.Response.Body as ScreensResponseBody).Screens));
+					ConnectionManager.OnScreensReceived?.Invoke(null, (e.Response.Body as ScreensResponseBody).Screens);
 					break;
 
 				case Response.Type.SuspendedProcesses:
+					ConnectionManager.OnSuspendedProcessesReceived?.Invoke(null, (e.Response.Body as SuspendedProcessesResponseBody).Processes);
+					break;
+
+				case Response.Type.Thumbnail:
+					ConnectionManager.OnThumbnailReceived?.Invoke(null, (e.Response.Body as ThumbnailResponseBody).Bytes);
 					break;
 
 				case Response.Type.Volume:
-					ConnectionManager.OnVolumeReceived?.Invoke(null, new EventArgs<int>((e.Response.Body as VolumeResponseBody).Volume));
+					ConnectionManager.OnVolumeReceived?.Invoke(null, (e.Response.Body as VolumeResponseBody).Volume);
 					break;
 			}
 		}

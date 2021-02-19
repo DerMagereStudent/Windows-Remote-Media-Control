@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Newtonsoft.Json;
 using WRMC.Core.Models;
 using WRMC.Core.Networking;
 using WRMC.Windows.Media;
+
+using Newtonsoft.Json;
 
 namespace WRMC.Windows.Networking {
 	public static class ConnectionManager {
@@ -346,6 +347,27 @@ namespace WRMC.Windows.Networking {
 					};
 
 					ConnectionManager.tcpServer.SendResponse(processResponse, e.ClientDevice);
+
+					break;
+
+				case Request.Type.GetThumbnail:
+					MediaSessionMessageBody thumbnailMediaSessionMessageBody = e.Request.Body as MediaSessionMessageBody;
+
+					device = ConnectionManager.Clients.Where(d => d.Equals(thumbnailMediaSessionMessageBody.ClientDevice)).FirstOrDefault();
+
+					if (device == null || device.SessionID != thumbnailMediaSessionMessageBody.ClientDevice.SessionID)
+						break;
+
+					byte[] bytes = MediaCommandInvoker.Default.GetThumbnail(thumbnailMediaSessionMessageBody.MediaSession);
+
+					Response thumbnailResponse = new Response() {
+						Method = Response.Type.Thumbnail,
+						Body = new ThumbnailResponseBody() {
+							Bytes = bytes
+						}
+					};
+
+					ConnectionManager.tcpServer.SendResponse(thumbnailResponse, e.ClientDevice);
 
 					break;
 

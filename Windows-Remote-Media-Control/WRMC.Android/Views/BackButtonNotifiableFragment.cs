@@ -11,6 +11,6 @@ using System.Text;
 
 namespace WRMC.Android.Views {
 	public abstract class BackButtonNotifiableFragment : Fragment {
-		public abstract void OnBackButton();
+		public abstract bool OnBackButton();
 	}
 }

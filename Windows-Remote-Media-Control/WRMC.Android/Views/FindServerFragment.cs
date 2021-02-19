@@ -79,10 +79,11 @@ namespace WRMC.Android.Views {
 			return view;
 		}
 
-		public override void OnBackButton() {
+		public override bool OnBackButton() {
 			ConnectionManager.OnFindServerResponseReceived -= this.ConnectionManager_OnFindServerResponseReceived;
 			ConnectionManager.OnFindServerFinished -= this.ConnectionManager_OnFindServerFinished;
 			ConnectionManager.StopFindServer();
+			return false;
 		}
 
 		private void CurrentServerActionsRecyclerAdapter_OnServerDeviceSelected(object sender, ServerEventArgs e) {
@@ -187,7 +188,10 @@ namespace WRMC.Android.Views {
 			ConnectionManager.OnConnectSuccess -= this.ConnectionManager_OnConnectSuccess;
 			ConnectionManager.OnConnectFailure -= this.ConnectionManager_OnConnectFailure;
 
+			ConnectionManager.StopFindServer();
+
 			this.Activity.RunOnUiThread(() => {
+				this.menu.GetItem(0).SetIcon((this.Activity as MainActivity).GetDrawable(Resource.Drawable.magnify));
 				this.connectDialog.Cancel();
 				this.OnBackButton();
 			});

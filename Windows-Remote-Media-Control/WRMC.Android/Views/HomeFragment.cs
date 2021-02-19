@@ -50,11 +50,13 @@ namespace WRMC.Android.Views {
 					}),
 
 					new Tuple<string, Action>("Suspended Processes", () => {
-					
+						this.DetachEventHandlers();
+						(this.Activity as MainActivity).ChangeFragment(new SuspendedProcessesFragment());
 					}),
 
 					new Tuple<string, Action>("Play Media", () => {
-					
+						this.DetachEventHandlers();
+						(this.Activity as MainActivity).ChangeFragment(new PlayMediaFragment());
 					})
 				}));
 

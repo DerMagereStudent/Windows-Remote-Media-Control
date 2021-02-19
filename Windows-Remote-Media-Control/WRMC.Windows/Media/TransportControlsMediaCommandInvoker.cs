@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using Windows.Media.Control;
+using Windows.Storage.Streams;
+using Windows.System;
 
 using WRMC.Core.Models;
 using WRMC.Windows.Native;
@@ -140,6 +142,19 @@ namespace WRMC.Windows.Media {
 		}
 
 		public override void ResumeSuspendedProcess(SuspendedProcess suspendedProcess) {
+			string aumid = MediaSessionConverter.GetAUMID(suspendedProcess.ID);
+			if (MediaSessionConverter.GetApplicationType(aumid) == MediaSession.ApplicationType.UWP) {
+				var diags = AppDiagnosticInfo.RequestInfoForPackageAsync(aumid.Substring(0, aumid.IndexOf("!"))).GetAwaiter().GetResult();
+				foreach (AppDiagnosticInfo diag in diags) {
+					var resourceGroups = diag.GetResourceGroups();
+
+					foreach (AppResourceGroupInfo groupInfo in resourceGroups)
+						groupInfo.StartResumeAsync().GetAwaiter().GetResult();
+				}
+
+				return;
+			}
+
 			Process p = null;
 
 			try {
@@ -276,6 +291,25 @@ namespace WRMC.Windows.Media {
 			return -1;
 		}
 
+		public override byte[] GetThumbnail(MediaSession session) {
+			TransportControlsMediaSessionExtractor sessionExtractor = MediaSessionExtractor.Default.TryCastOrDefault<TransportControlsMediaSessionExtractor>();
+			var thumbnailStream = sessionExtractor?.GetSystemSession(session)?.TryGetMediaPropertiesAsync().GetAwaiter().GetResult().Thumbnail?.OpenReadAsync().GetAwaiter().GetResult();
+
+			if (thumbnailStream == null)
+				return new byte[0];
+
+			IBuffer buffer = new global::Windows.Storage.Streams.Buffer((uint)thumbnailStream.Size);
+
+			if (!thumbnailStream.CanRead)
+				return new byte[0];
+
+			buffer = thumbnailStream.ReadAsync(buffer, (uint)thumbnailStream.Size, InputStreamOptions.None).GetAwaiter().GetResult();
+			byte[] bytes = new byte[buffer.Length];
+			DataReader.FromBuffer(buffer).ReadBytes(bytes);
+
+			return bytes;
+		}
+
 		public override List<SuspendedProcess> GetSuspendedProcesses() {
 			List<SuspendedProcess> processes = new List<SuspendedProcess>();
 
@@ -300,17 +334,24 @@ namespace WRMC.Windows.Media {
 		}
 
 		public override Tuple<List<string>, List<string>> GetDirectoryContent(string directory) {
-
 			if (string.IsNullOrWhiteSpace(directory)) {
-				DriveInfo[] drives = DriveInfo.GetDrives();
-				return new Tuple<List<string>, List<string>>(drives.Select(d => d.Name).ToList(), new List<string>());
+				DriveInfo[] driveInfos = DriveInfo.GetDrives();
+				List<string> drives = driveInfos.Select(d => d.Name).ToList();
+				drives.Sort();
+				return new Tuple<List<string>, List<string>>(drives, new List<string>());
 			}
+
+			if (directory.LastIndexOf(":") == directory.Length - 1)
+				directory += "\\";
 
 			if (!Directory.Exists(directory))
 				return new Tuple<List<string>, List<string>>(new List<string>(), new List<string>());
 
 			List<string> folders = Directory.GetDirectories(directory).ToList();
 			List<string> files = Directory.GetFiles(directory).Where(f => SUPPORTED_FILES.Contains(new FileInfo(f).Extension.ToUpper())).ToList();
+
+			folders.Sort();
+			files.Sort();
 
 			return new Tuple<List<string>, List<string>>(folders, files);
 		}

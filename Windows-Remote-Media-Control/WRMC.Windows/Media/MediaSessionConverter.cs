@@ -14,7 +14,7 @@ using WRMC.Windows.Native;
 namespace WRMC.Windows.Media {
 	public static class MediaSessionConverter {
 		public static MediaSession FromWindowsMediaTransportControls(GlobalSystemMediaTransportControlsSession session) {
-			MediaSession.ApplicationType type = GetApplicationType(session);
+			MediaSession.ApplicationType type = GetApplicationType(session.SourceAppUserModelId);
 
 			List<int> ids = new List<int>();
 			string name = null;
@@ -24,20 +24,12 @@ namespace WRMC.Windows.Media {
 			foreach (Process p in processes) {
 				try {
 					if (type == MediaSession.ApplicationType.UWP) {
-						IntPtr hProcess = NativeMethods.OpenProcess(NativeDefinitions.PROCESS_QUERY_LIMITED_INFORMATION, false, p.Id);
-						
-						uint sbc = 256;
-						StringBuilder sbApplicationUserModelId = new StringBuilder((int)sbc);
-						NativeMethods.GetApplicationUserModelId(hProcess, ref sbc, sbApplicationUserModelId);
-
-						string sApplicationUserModelId = sbApplicationUserModelId.ToString();
+						string sApplicationUserModelId = GetAUMID(p.Id);
 
 						if (sApplicationUserModelId.Equals(session.SourceAppUserModelId)) {
 							ids.Add(p.Id);
 							name = p.MainModule.FileName;
 						}
-
-						NativeMethods.CloseHandle(hProcess);
 					} else if (p.MainModule.FileName.Contains(session.SourceAppUserModelId)) {
 						ids.Add(p.Id);
 						name = p.MainModule.FileName;
@@ -73,13 +65,26 @@ namespace WRMC.Windows.Media {
 			}
 		}
 
-		private static MediaSession.ApplicationType GetApplicationType(GlobalSystemMediaTransportControlsSession session) {
+		public static string GetAUMID(int pid) {
+			IntPtr hProcess = NativeMethods.OpenProcess(NativeDefinitions.PROCESS_QUERY_LIMITED_INFORMATION, false, pid);
+
+			uint sbc = 256;
+			StringBuilder sbApplicationUserModelId = new StringBuilder((int)sbc);
+			NativeMethods.GetApplicationUserModelId(hProcess, ref sbc, sbApplicationUserModelId);
+
+			string s = sbApplicationUserModelId.ToString();
+			NativeMethods.CloseHandle(hProcess);
+
+			return s;
+		}
+
+		public static MediaSession.ApplicationType GetApplicationType(string aumid) {
 			PackageManager packageManager = new PackageManager();
 
 			foreach (Package package in packageManager.FindPackagesForUserWithPackageTypes("", PackageTypes.Main | PackageTypes.Optional)) {
 				IReadOnlyList<AppListEntry> entries = package.GetAppListEntries();
 				foreach (AppListEntry entry in entries)
-					if (entry.AppUserModelId.Equals(session.SourceAppUserModelId))
+					if (entry.AppUserModelId.Equals(aumid))
 						return MediaSession.ApplicationType.UWP;
 			}
 

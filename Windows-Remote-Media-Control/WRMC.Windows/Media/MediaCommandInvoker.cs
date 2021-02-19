@@ -39,6 +39,7 @@ namespace WRMC.Windows.Media {
 		public abstract List<AudioEndpoint> GetAudioEndpoints();
 		public abstract int GetMasterVolume();
 		public abstract int GetVolume(MediaSession session);
+		public abstract byte[] GetThumbnail(MediaSession session);
 		public abstract List<SuspendedProcess> GetSuspendedProcesses();
 		public abstract Tuple<List<string>, List<string>> GetDirectoryContent(string directory);
 	}
