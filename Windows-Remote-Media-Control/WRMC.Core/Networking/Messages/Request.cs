@@ -15,7 +15,8 @@
 			GetScreens,
 			GetSuspendedMediaProcesses,
 			GetThumbnail,
-			GetVolume
+			GetVolume,
+			Ping
 		}
 
 		/// <summary>

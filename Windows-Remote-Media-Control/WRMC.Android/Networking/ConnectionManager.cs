@@ -163,12 +163,12 @@ namespace WRMC.Android.Networking {
 		private static void TcpClient_OnMessageReceived(TcpClient sender, ServerMessageEventArgs e) {
 			switch (e.Message.Method) {
 				case WRMC.Core.Networking.Message.Type.Disconnect:
+					ConnectionManager.CurrentServer = null;
 					ConnectionManager.OnConnectionClosed?.Invoke(null, EventArgs.Empty);
 					break;
 				case WRMC.Core.Networking.Message.Type.MediaSessionChanged:
 					ConnectionManager.OnMediaSessionChanged?.Invoke(null, (e.Message.Body as MediaSessionChangedMessageBody).MediaSession);
 					break;
-
 				case WRMC.Core.Networking.Message.Type.MediaSessionListChanged:
 					ConnectionManager.OnMediaSessionsReceived?.Invoke(null, (e.Message.Body as MediaSessionListChangedMessageBody).MediaSessions);
 					break;

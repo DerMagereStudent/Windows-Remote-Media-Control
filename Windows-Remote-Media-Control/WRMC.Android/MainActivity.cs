@@ -13,6 +13,9 @@ using System.Linq;
 
 using WRMC.Android.Views;
 using WRMC.Android.Networking;
+using System;
+using System.IO;
+using System.Globalization;
 
 namespace WRMC.Android {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
@@ -20,6 +23,8 @@ namespace WRMC.Android {
         public const int READ_WRITE_STORAGE_REQUEST_CODE = 0x00000001;
 
         protected override void OnCreate(Bundle savedInstanceState) {
+            AppDomain.CurrentDomain.UnhandledException += (s, e) => this.LogException(e.ExceptionObject as Exception);
+
             base.OnCreate(savedInstanceState);
             Platform.Init(this, savedInstanceState);
 
@@ -74,5 +79,25 @@ namespace WRMC.Android {
 
             base.OnBackPressed();
 		}
-	}
+
+        private void LogException(Exception e) {
+            string filePath = Path.Combine(Path.Combine(global::Android.OS.Environment.GetExternalStoragePublicDirectory(global::Android.OS.Environment.DirectoryDocuments).AbsolutePath, "WRMC.Android"),"error_log.txt");
+
+            File.AppendAllText(filePath,
+                string.Format(
+                    "-----[{0}] {1}\r\n" +
+                    "Exception: {2}\r\n" +
+                    "Message: {3}\r\n" +
+                    "Stack: \r\n{4}" +
+                    "\r\n\r\n",
+
+                    DateTime.Now.ToString("F", CultureInfo.CreateSpecificCulture("en-US")),
+                    new string('-', 100),
+                    e.GetType(),
+                    e.Message,
+                    e.StackTrace
+                )
+            );
+        }
+    }
 }

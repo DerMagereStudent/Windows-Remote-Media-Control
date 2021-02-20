@@ -168,8 +168,8 @@ namespace WRMC.Android.Views {
 		}
 
 		private void ConnectionManager_OnConnectionClosed(object sender, EventArgs e) {
-			this.UpdateCurrentDeviceLayout();
 			ConnectionManager.OnConnectionClosed -= this.ConnectionManager_OnConnectionClosed;
+			this.UpdateCurrentDeviceLayout();
 		}
 
 		private void UpdateRecentDevicesLayout() {

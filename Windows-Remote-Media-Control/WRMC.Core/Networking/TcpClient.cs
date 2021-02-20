@@ -14,6 +14,7 @@ namespace WRMC.Core.Networking {
 	public class TcpClient {
 		private System.Net.Sockets.TcpClient client;
 		private ServerDevice serverDevice;
+		private int pingTries = 0;
 
 		private byte[] buffer;
 		private string remainingData;
@@ -234,17 +235,32 @@ namespace WRMC.Core.Networking {
 
 					if (dataObject is Message)
 						this.OnMessageReceived?.Invoke(this, new ServerMessageEventArgs(this.serverDevice, dataObject as Message));
-					else if (dataObject is Request)
-						this.OnRequestReceived?.Invoke(this, new ServerRequestEventArgs(this.serverDevice, dataObject as Request));
+					else if (dataObject is Request) {
+						Request request = dataObject as Request;
+
+						if (request.Method == Request.Type.Ping)
+							this.SendResponse(new Response() {
+								Method = Response.Type.Ping,
+								Body = null
+							});
+						else
+							this.OnRequestReceived?.Invoke(this, new ServerRequestEventArgs(this.serverDevice, request));
+					}
 					else if (dataObject is Response) {
 						Response response = dataObject as Response;
 
-						if (response.Method == Response.Type.ConnectSuccess) {
-							AuthenticatedMessageBody body = response.Body as AuthenticatedMessageBody;
-							this.OnConnectSuccess?.Invoke(this, new ClientEventArgs(null, body.ClientDevice));
+						switch (response.Method) {
+							case Response.Type.ConnectSuccess:
+								AuthenticatedMessageBody body = response.Body as AuthenticatedMessageBody;
+								this.OnConnectSuccess?.Invoke(this, new ClientEventArgs(null, body.ClientDevice));
+								break;
+							case Response.Type.Ping:
+								this.pingTries = 0;
+								break;
+							default:
+								this.OnResponseReceived?.Invoke(this, new ServerResponseEventArgs(this.serverDevice, response));
+								break;
 						}
-						else
-							this.OnResponseReceived?.Invoke(this, new ServerResponseEventArgs(this.serverDevice, response));
 					}
 
 					dataString = this.remainingData;
@@ -283,11 +299,21 @@ namespace WRMC.Core.Networking {
 		private void ClientConnectionMonitoring() {
 			while (true) {
 				try {
-					lock (this.clientLock)
-						if (this.serverDevice != null && !this.client.IsConnected())
-							this.Stop();
+					if (this.serverDevice == null)
+						continue;
 
-					Thread.Sleep(1000);
+					lock (this.clientLock) {
+
+						if (!this.client.IsConnected() || this.pingTries == MonitoringOptions.MaxPingTries)
+							this.Stop();
+						else
+							this.SendResponse(new Response() {
+								Method = Response.Type.Ping,
+								Body = null
+							});
+					}
+
+					Thread.Sleep(MonitoringOptions.Delay);
 				}
 				catch (ObjectDisposedException) { }
 				catch (IOException) { }

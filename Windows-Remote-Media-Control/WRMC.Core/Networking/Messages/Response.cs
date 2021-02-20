@@ -11,6 +11,7 @@
 			ConnectSuccess,
 			DirectoryContent,
 			MediaSessions,
+			Ping,
 			Screens,
 			Servers,
 			SuspendedProcesses,

@@ -20,6 +20,7 @@ namespace WRMC.Core.Networking {
 		private Dictionary<System.Net.Sockets.TcpClient, ClientDevice> clients;
 		private Dictionary<System.Net.Sockets.TcpClient, byte[]> clientBuffers;
 		private Dictionary<System.Net.Sockets.TcpClient, string> clientRemainingData;
+		private Dictionary<System.Net.Sockets.TcpClient, int> clientPingTries;
 
 		private object clientsLock = new object();
 		private object clientBuffersLock = new object();
@@ -67,6 +68,7 @@ namespace WRMC.Core.Networking {
 			this.clients = new Dictionary<System.Net.Sockets.TcpClient, ClientDevice>();
 			this.clientBuffers = new Dictionary<System.Net.Sockets.TcpClient, byte[]>();
 			this.clientRemainingData = new Dictionary<System.Net.Sockets.TcpClient, string>();
+			this.clientPingTries = new Dictionary<System.Net.Sockets.TcpClient, int>();
 			Task.Factory.StartNew(() => this.ClientConnectionMonitoring());
 		}
 
@@ -270,6 +272,7 @@ namespace WRMC.Core.Networking {
 				lock (this.clientsLock) {
 					this.clients.Add(client, null);
 					this.clientRemainingData.Add(client, "");
+					this.clientPingTries.Add(client, 0);
 				}
 				
 				lock (this.clientBuffersLock) {
@@ -329,10 +332,25 @@ namespace WRMC.Core.Networking {
 					else {
 						if (dataObject is Message)
 							this.OnMessageReceived?.Invoke(this, new ClientMessageEventArgs(client, this.clients[client], dataObject as Message));
-						else if (dataObject is Request)
-							this.OnRequestReceived?.Invoke(this, new ClientRequestEventArgs(client, this.clients[client], dataObject as Request));
-						else if (dataObject is Response)
-							this.OnResponseReceived?.Invoke(this, new ClientResponseEventArgs(client, this.clients[client], dataObject as Response));
+						else if (dataObject is Request) {
+							Request request = dataObject as Request;
+
+							if (request.Method == Request.Type.Ping)
+								this.SendRequest(new Request() {
+									Method = Request.Type.Ping,
+									Body = null
+								}, this.clients[client]);
+							else
+								this.OnRequestReceived?.Invoke(this, new ClientRequestEventArgs(client, this.clients[client], request));
+						}
+						else if (dataObject is Response) {
+							Response response = dataObject as Response;
+
+							if (response.Method == Response.Type.Ping)
+								this.clientPingTries[client]++;
+							else
+								this.OnResponseReceived?.Invoke(this, new ClientResponseEventArgs(client, this.clients[client], dataObject as Response));
+						}
 					}
 
 					dataString = remaining;
@@ -380,14 +398,19 @@ namespace WRMC.Core.Networking {
 						List<System.Net.Sockets.TcpClient> clientsToClose = new List<System.Net.Sockets.TcpClient>();
 
 						foreach (System.Net.Sockets.TcpClient client in this.clients.Keys)
-							if (!client.IsConnected())
+							if (!client.IsConnected() || this.clientPingTries[client] == MonitoringOptions.MaxPingTries)
 								clientsToClose.Add(client);
+							else
+								this.SendRequest(new Request() {
+									Method = Request.Type.Ping,
+									Body = null
+								}, this.clients[client]);
 
 						foreach (System.Net.Sockets.TcpClient client in clientsToClose)
 							this.CloseConnection(client);
 					}
 
-					Thread.Sleep(1000);
+					Thread.Sleep(MonitoringOptions.Delay);
 				}
 				catch (ObjectDisposedException) { }
 				catch (IOException) { }
@@ -405,6 +428,7 @@ namespace WRMC.Core.Networking {
 				cd = this.clients[client];
 				this.clients.Remove(client);
 				this.clientRemainingData.Remove(client);
+				this.clientPingTries.Remove(client);
 			}
 
 			this.OnConnectionClosed?.Invoke(this, new ClientEventArgs(client, cd));
