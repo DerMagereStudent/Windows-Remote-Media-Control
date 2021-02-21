@@ -225,11 +225,15 @@ namespace WRMC.Core.Networking {
 				System.Net.Sockets.TcpClient receiverClient = null;
 
 				lock (this.clientsLock) {
-					foreach (KeyValuePair<System.Net.Sockets.TcpClient, ClientDevice> client in this.clients)
+					foreach (KeyValuePair<System.Net.Sockets.TcpClient, ClientDevice> client in this.clients) {
+						if (client.Value == null)
+							continue;
+
 						if (client.Value.Equals(receiver)) {
 							receiverClient = client.Key;
 							break;
 						}
+					}
 				}
 
 				if (receiverClient == null)

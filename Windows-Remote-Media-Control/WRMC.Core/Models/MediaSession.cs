@@ -70,6 +70,6 @@ namespace WRMC.Core.Models {
 			this.Title = session.Title;
 		}
 
-		public bool Equals(MediaSession other) => /*this.ProcessIDs.Equals(other.ProcessIDs) && */this.ProcessName.Equals(other.ProcessName) && this.AUMID.Equals(other.AUMID);
+		public bool Equals(MediaSession other) => !(other is null) && this.ProcessName.Equals(other.ProcessName) && this.AUMID.Equals(other.AUMID);
 	}
 }

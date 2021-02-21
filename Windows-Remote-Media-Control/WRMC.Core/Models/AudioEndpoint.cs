@@ -17,7 +17,7 @@ namespace WRMC.Core.Models {
 		/// </summary>
 		public string Name { get; set; }
 
-		public bool Equals(AudioEndpoint other) => this.ID.Equals(other.ID);
+		public bool Equals(AudioEndpoint other) => !(other is null) && this.ID.Equals(other.ID);
 
 		public override string ToString() => this.Name;
 	}

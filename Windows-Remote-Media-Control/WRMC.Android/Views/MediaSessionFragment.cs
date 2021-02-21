@@ -104,6 +104,7 @@ namespace WRMC.Android.Views {
 			ConnectionManager.OnConnectionClosed += this.ConnectionManager_OnConnectionClosed;
 
 			this.UpdateUI();
+			MediaSessionNotificationManager.UpdateDisplayedSession(this.MediaSession);
 
 			return view;
 		}

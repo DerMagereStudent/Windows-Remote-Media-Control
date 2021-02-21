@@ -25,6 +25,9 @@ namespace WRMC.Core.Networking {
 		public IPAddress IPAddress { get; set; }
 
 		public bool Equals(ServerDevice other) {
+			if (other is null)
+				return false;
+
 			if (this.ID == null && other.ID != null || this.ID != null && other.ID == null)
 				return false;
 

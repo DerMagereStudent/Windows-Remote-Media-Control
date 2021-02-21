@@ -31,6 +31,8 @@ namespace WRMC.Android {
             this.SetContentView(Resource.Layout.activity_main);
             this.RequestedOrientation = ScreenOrientation.Portrait;
 
+            MediaSessionNotificationManager.Initialize(this);
+
             this.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.main_fragment_container, new HomeFragment()).Commit();
         }
 

@@ -83,6 +83,7 @@ namespace WRMC.Android.Views {
 			ConnectionManager.OnFindServerResponseReceived -= this.ConnectionManager_OnFindServerResponseReceived;
 			ConnectionManager.OnFindServerFinished -= this.ConnectionManager_OnFindServerFinished;
 			ConnectionManager.StopFindServer();
+			this.connectDialog?.Cancel();
 			return false;
 		}
 
@@ -141,9 +142,14 @@ namespace WRMC.Android.Views {
 				if (ConnectionManager.KnownServers.ContainsKey(e.DataBody.Server)) {
 					if (!this.knownServers.Contains(e.DataBody.Server)) {
 						this.knownServers.Add(e.DataBody.Server);
+
+						if (this.availableServers.Contains(e.DataBody.Server))
+							this.availableServers.Remove(e.DataBody.Server);
+
 						this.Activity.RunOnUiThread(() => {
 							this.knownServersAdapter.NotifyItemInserted(this.knownServers.Count - 1);
 							this.knownServersLayout.Visibility = ViewStates.Visible;
+							this.availableServersLayout.Visibility = this.availableServers.Count == 0 ? ViewStates.Gone : ViewStates.Visible;
 						});
 					}
 				} else {
@@ -192,8 +198,7 @@ namespace WRMC.Android.Views {
 
 			this.Activity.RunOnUiThread(() => {
 				this.menu.GetItem(0).SetIcon((this.Activity as MainActivity).GetDrawable(Resource.Drawable.magnify));
-				this.connectDialog.Cancel();
-				this.OnBackButton();
+				this.Activity.OnBackPressed();
 			});
 		}
 

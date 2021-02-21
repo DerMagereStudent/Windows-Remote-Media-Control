@@ -30,6 +30,9 @@ namespace WRMC.Core.Networking {
 		public long SessionID { get; set; }
 
 		public bool Equals(ClientDevice other) {
+			if (other is null)
+				return false;
+
 			if (this.ID == null && other.ID != null || this.ID != null && other.ID == null)
 				return false;
 
