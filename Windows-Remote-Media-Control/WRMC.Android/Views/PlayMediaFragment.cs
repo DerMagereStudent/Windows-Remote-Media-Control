@@ -18,8 +18,6 @@ namespace WRMC.Android.Views {
 	public class PlayMediaFragment : BackButtonNotifiableFragment {
 		private DirectoryRecyclerAdapter directoryAdapter;
 
-		private IMenu menu;
-
 		private string parentDir;
 		private string currentDir;
 
@@ -79,7 +77,6 @@ namespace WRMC.Android.Views {
 
 		public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater) {
 			inflater.Inflate(Resource.Menu.play_media_toolbar_menu, menu);
-			this.menu = menu;
 		}
 
 		public override bool OnOptionsItemSelected(IMenuItem item) {

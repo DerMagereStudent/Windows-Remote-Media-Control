@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using WRMC.Android.Networking;
+using WRMC.Android.Views.Controls;
 using WRMC.Core;
 using WRMC.Core.Models;
 using WRMC.Core.Networking;
@@ -164,7 +165,7 @@ namespace WRMC.Android.Views {
 
 		private void ConnectionManager_OnScreensReceived(object sender, EventArgs<List<string>> e) {
 			this.Activity.RunOnUiThread(() => {
-				Spinner spinner = this.View.FindViewById<Spinner>(Resource.Id.spinner_screen_selection);
+				ReselectableSpinner spinner = this.View.FindViewById<ReselectableSpinner>(Resource.Id.spinner_screen_selection);
 
 				ArrayAdapter<string> adapter = new ArrayAdapter<string>(this.Context, Resource.Layout.spinner_item, e.Data);
 				spinner.Adapter = adapter;
@@ -172,6 +173,7 @@ namespace WRMC.Android.Views {
 				ConnectionManager.OnScreensReceived -= this.ConnectionManager_OnScreensReceived;
 				spinner.SetSelection(0, false);
 				spinner.ItemSelected += this.SpinnerScreens_ItemSelected;
+				spinner.SameItemSelected += this.SpinnerScreens_ItemSelected;
 			});
 		}
 

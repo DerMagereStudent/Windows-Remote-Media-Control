@@ -11,6 +11,7 @@ namespace WRMC.Windows.Native {
 		}
 
 		private static string aumid = "";
+		private static List<IntPtr> currentUWPHwnds;
 
 		public static List<IntPtr> GetHwndsForPids(List<int> pids) {
 			List<IntPtr> hwnds = new List<IntPtr>();
@@ -18,19 +19,30 @@ namespace WRMC.Windows.Native {
 			return hwnds;
 		}
 
-		public static IntPtr GetHwndsForUWPApp(string aumid) {
+		public static List<IntPtr> GetHwndsForUWPApp(string aumid) {
 			NativeHWNDExtractor.aumid = aumid;
-			ENUMWINDOWPARAM ep = new ENUMWINDOWPARAM();
-			IntPtr eplParam = Marshal.AllocHGlobal(Marshal.SizeOf(ep));
-			Marshal.StructureToPtr(ep, eplParam, false);
+			NativeHWNDExtractor.currentUWPHwnds = new List<IntPtr>();
 
-			NativeMethods.EnumWindows(new NativeMethods.WNDENUMPROCR(CheckWindowUWP), ref eplParam);
+			//NativeMethods.EnumWindows(new NativeMethods.WNDENUMPROC(CheckWindowUWP), IntPtr.Zero);
 
-			object obj = Marshal.PtrToStructure(eplParam, typeof(ENUMWINDOWPARAM));
-			ENUMWINDOWPARAM newep = (ENUMWINDOWPARAM)obj;
-			Marshal.FreeHGlobal(eplParam);
+			IntPtr hWndChild = IntPtr.Zero;
+			hWndChild = NativeMethods.FindWindowEx(IntPtr.Zero, hWndChild, null, null);
+			while (hWndChild != IntPtr.Zero) {
+				NativeEnums.HRESULT hr = NativeMethods.SHGetPropertyStoreForWindow(hWndChild, new Guid(NativeGuids.I_PROPERTY_STORE), out NativeInterfaces.IPropertyStore pPropertyStore);
+				string sAUMID = null;
+				if (hr == NativeEnums.HRESULT.S_OK) {
+					hr = pPropertyStore.GetValue(ref NativeDefinitions.PKEY_AppUserModel_ID, out NativeStructs.PROPVARIANT propVar);
+					sAUMID = Marshal.PtrToStringUni(propVar.pwszVal);
+					Marshal.ReleaseComObject(pPropertyStore);
+				}
 
-			return new IntPtr(newep.ihWnd);
+				if (sAUMID != null && sAUMID.Equals(aumid))
+					NativeHWNDExtractor.currentUWPHwnds.Add(hWndChild);
+
+				hWndChild = NativeMethods.FindWindowEx(IntPtr.Zero, hWndChild, null, null);
+			}
+
+			return NativeHWNDExtractor.currentUWPHwnds;
 		}
 
 		public static IntPtr GetHwndsForUWPFSApp(string aumid) {
@@ -53,31 +65,30 @@ namespace WRMC.Windows.Native {
 			return true;
 		}
 
-		private static bool CheckWindowUWP(IntPtr hwnd, ref IntPtr lParam) {
-			ENUMWINDOWPARAM ep = (ENUMWINDOWPARAM)Marshal.PtrToStructure(lParam, typeof(ENUMWINDOWPARAM));
-			
+		private static bool CheckWindowUWP(IntPtr hwnd, IntPtr lParam) {
 			StringBuilder sbClassName = new StringBuilder(256);
 			NativeMethods.GetClassName(hwnd, sbClassName, sbClassName.Capacity);
 			string className = sbClassName.ToString();
 
-			if (className.Equals("ApplicationFrameWindow")) {
-				// get real hWnd
-				NativeInterfaces.IPropertyStore pPropertyStore;
-				Guid guid = new Guid("{886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99}");
-				NativeEnums.HRESULT hr = NativeMethods.SHGetPropertyStoreForWindow(hwnd, ref guid, out pPropertyStore);
+			//if (className.Equals("ApplicationFrameWindow")) {
+				NativeEnums.HRESULT hr = NativeMethods.SHGetPropertyStoreForWindow(
+					hwnd,
+					new Guid(NativeGuids.I_PROPERTY_STORE),
+					out NativeInterfaces.IPropertyStore  pPropertyStore
+				);
+
 				if (hr == NativeEnums.HRESULT.S_OK) {
-					NativeStructs.PROPVARIANT propVar = new NativeStructs.PROPVARIANT();
-					hr = pPropertyStore.GetValue(ref NativeDefinitions.PKEY_AppUserModel_ID, out propVar);
+					hr = pPropertyStore.GetValue(ref NativeDefinitions.PKEY_AppUserModel_ID, out NativeStructs.PROPVARIANT propVar);
 					string sAUMID = Marshal.PtrToStringUni(propVar.pwszVal);
+
 					if (sAUMID != null && sAUMID.Equals(aumid)) {
-						ep.ihWnd = hwnd.ToInt32();
-						Marshal.StructureToPtr(ep, lParam, false);
-						Marshal.ReleaseComObject(pPropertyStore);
-						return false;
+						NativeHWNDExtractor.currentUWPHwnds.Add(hwnd);
+						return true;
 					}
-					Marshal.ReleaseComObject(pPropertyStore);
 				}
-			}
+
+				Marshal.ReleaseComObject(pPropertyStore);
+			//}
 
 			return true;
 		}

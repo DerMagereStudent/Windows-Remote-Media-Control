@@ -42,6 +42,10 @@ namespace WRMC.Android {
 			ConnectionManager.OnConnectSuccess += ConnectionManager_OnConnectSuccess;
 		}
 
+		public static void Cancel() {
+			(context.GetSystemService(Context.NotificationService) as NotificationManager).Cancel(NOTIFICATION_ID);
+		}
+
 		private static void ConnectionManager_OnConnectSuccess(object sender, System.EventArgs e) {
 			ConnectionManager.OnConnectSuccess -= ConnectionManager_OnConnectSuccess;
 			ConnectionManager.OnMediaSessionsReceived += ConnectionManager_OnMediaSessionsReceived;
@@ -71,7 +75,7 @@ namespace WRMC.Android {
 			if (sessions.Count == 0) {
 				currentSession = null;
 				currentIndex = 0;
-				(context.GetSystemService(Context.NotificationService) as NotificationManager).Cancel(NOTIFICATION_ID);
+				Cancel();
 				return;
 			}
 
@@ -103,7 +107,7 @@ namespace WRMC.Android {
 			currentSession = session;
 
 			if (session == null) {
-				(context.GetSystemService(Context.NotificationService) as NotificationManager).Cancel(NOTIFICATION_ID);
+				Cancel();
 				return;
 			}
 
@@ -168,7 +172,7 @@ namespace WRMC.Android {
 
 		private static void DisplayNotification() {
 			Notification notification = new global::Android.Support.V4.App.NotificationCompat.Builder(context, CHANNEL_ID)
-				.SetSmallIcon(Resource.Drawable.play)
+				.SetSmallIcon(Resource.Drawable.ic_wrmc_foreground)
 				.SetContentTitle(currentSession.Title)
 				.SetContentText(currentSession.Artist)
 				.SetLargeIcon(currentThumbnail)

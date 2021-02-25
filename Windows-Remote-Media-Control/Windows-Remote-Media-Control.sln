@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRMC.Windows", "WRMC.Window
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRMC.Android", "WRMC.Android\WRMC.Android.csproj", "{45BA1BD2-2A91-495E-8316-F708E1856E91}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "WRMC.Windows.Setup", "WRMC.Windows.Setup\WRMC.Windows.Setup.vdproj", "{57F4A4BD-2832-40F8-87BF-94A794C846AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,8 @@ Global
 		{45BA1BD2-2A91-495E-8316-F708E1856E91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45BA1BD2-2A91-495E-8316-F708E1856E91}.Release|Any CPU.Build.0 = Release|Any CPU
 		{45BA1BD2-2A91-495E-8316-F708E1856E91}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{57F4A4BD-2832-40F8-87BF-94A794C846AB}.Debug|Any CPU.ActiveCfg = Debug
+		{57F4A4BD-2832-40F8-87BF-94A794C846AB}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

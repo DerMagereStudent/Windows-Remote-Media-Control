@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="15dp"
         android:id="@+id/process_name"
+        android:textStyle="bold"
         android:textColor="@color/textColorPrimary"
         android:textSize="@dimen/home_recent_server_item_font_size"/>
 </LinearLayout>

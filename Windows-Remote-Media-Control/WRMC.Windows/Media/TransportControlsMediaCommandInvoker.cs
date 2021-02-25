@@ -62,26 +62,81 @@ namespace WRMC.Windows.Media {
 				catch (ArgumentException) { }
 			}
 
-			List<IntPtr> wndHandles = session.AppType == MediaSession.ApplicationType.UWP ?
-				new List<IntPtr>(new[] { NativeHWNDExtractor.GetHwndsForUWPApp(session.AUMID) }) :
+			List<IntPtr> hwnds = session.AppType == MediaSession.ApplicationType.UWP ?
+				NativeHWNDExtractor.GetHwndsForUWPApp(session.AUMID) :
 				NativeHWNDExtractor.GetHwndsForPids(session.ProcessIDs);
 
-			foreach (IntPtr hwnd in wndHandles) {
+			foreach (IntPtr hwnd in hwnds) {
 				if (!NativeMethods.IsWindowVisible(hwnd))
 					continue;
 
-				NativeStructs.RECT rect = new NativeStructs.RECT();
-				NativeMethods.GetWindowRect(hwnd, out rect);
-
-				if (rect.Left == 0 && rect.Top == 0 && rect.Right == 0 && rect.Bottom == 0)
+				// if the window has no area continue
+				NativeMethods.GetWindowRect(hwnd, out NativeStructs.RECT rect);
+				if (this.GetArea(rect) == 0)
 					continue;
 
-				if (string.IsNullOrEmpty(NativeMethods.GetWindowTitle(hwnd)))
+				string title = NativeMethods.GetWindowTitle(hwnd);
+
+				if (string.IsNullOrEmpty(title))
 					continue;
 
-				NativeMethods.ShowWindow(hwnd, NativeDefinitions.SW_NORMAL);				
-				NativeMethods.SetWindowPos(hwnd, IntPtr.Zero, screen.Bounds.X, screen.Bounds.Y, 0, 0, NativeDefinitions.SWP_NOSIZE | NativeDefinitions.SWP_NOZORDER);
+				this.ShowWindow(hwnd, screen);
 			}
+		}
+
+		private void ShowWindow(IntPtr hwnd, Screen screen) {
+			// if the window is minimized, restore its actual state the get the correct window-rect
+			long style = NativeMethods.GetWindowLong(hwnd, NativeDefinitions.GWL_STYLE);
+			bool minimized = (style & NativeDefinitions.WS_MINIMIZE) == NativeDefinitions.WS_MINIMIZE;
+			if (minimized)
+				NativeMethods.ShowWindow(hwnd, NativeDefinitions.SW_RESTORE);
+
+			// Remove fullscreen mode if set
+			//style = NativeMethods.GetWindowLong(hwnd, NativeDefinitions.GWL_STYLE);
+			//bool fullscreen = (style & NativeDefinitions.WS_OVERLAPPEDWINDOW) != NativeDefinitions.WS_OVERLAPPEDWINDOW;
+			//if (fullscreen)
+			//	NativeMethods.SetWindowLong(hwnd, NativeDefinitions.GWL_STYLE, style | NativeDefinitions.WS_OVERLAPPEDWINDOW);
+
+			// Make window normal if maximized to move it
+			style = NativeMethods.GetWindowLong(hwnd, NativeDefinitions.GWL_STYLE);
+			bool maximized = (style & NativeDefinitions.WS_MAXIMIZE) == NativeDefinitions.WS_MAXIMIZE;
+			if (maximized)
+				NativeMethods.ShowWindow(hwnd, NativeDefinitions.SW_RESTORE);
+
+			// set window position. Remain relative screen position.
+			this.GetScreenPos(hwnd, out int x, out int y);
+			NativeMethods.SetWindowPos(
+				hwnd, IntPtr.Zero, screen.Bounds.X + x, screen.Bounds.Y + y, 0, 0,
+				NativeDefinitions.SWP_NOZORDER | NativeDefinitions.SWP_NOOWNERZORDER | NativeDefinitions.SWP_NOSIZE
+			);
+
+			// Restore fullscreen mode if it was set.
+			//if (fullscreen)
+			//	NativeMethods.SetWindowLong(hwnd, NativeDefinitions.GWL_STYLE, style | ~NativeDefinitions.WS_OVERLAPPEDWINDOW);
+
+			// make window maximized again after move
+			if (maximized)
+				NativeMethods.ShowWindow(hwnd, NativeDefinitions.SW_MAXIMIZE);
+
+			NativeMethods.SetForegroundWindow(hwnd);
+		}
+
+		private int GetArea(NativeStructs.RECT rect) => (rect.Right - rect.Left) * (rect.Bottom - rect.Top);
+
+		private void GetScreenPos(IntPtr hwnd, out int relativeX, out int relativeY) {
+			NativeMethods.GetWindowRect(hwnd, out NativeStructs.RECT rect);
+
+			foreach (Screen screen in Screen.AllScreens) {
+				if (!screen.Bounds.Contains(new System.Drawing.Point(rect.Left, rect.Top)))
+					continue;
+
+				relativeX = rect.Left - screen.Bounds.X;
+				relativeY = rect.Top - screen.Bounds.Y;
+				return;
+			}
+			
+			relativeX = 0;
+			relativeY = 0;
 		}
 
 		public override void SetAudioEndpoint(MediaSession session, AudioEndpoint endpoint) {

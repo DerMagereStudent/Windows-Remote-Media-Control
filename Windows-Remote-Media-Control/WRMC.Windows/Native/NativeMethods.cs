@@ -37,6 +37,9 @@ namespace WRMC.Windows.Native {
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool GetPackageFullName(IntPtr hProcess, ref uint packageFullNameLength, StringBuilder packageFullName);
 
+		[DllImport("user32.dll", SetLastError = true)]
+		public static extern long GetWindowLong(IntPtr hWnd, int nIndex);
+
 		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool GetWindowRect(IntPtr hWnd, out NativeStructs.RECT lpRect);
@@ -68,13 +71,20 @@ namespace WRMC.Windows.Native {
 
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+		[DllImport("user32.dll")]
+		public static extern int SetWindowLong(IntPtr hWnd, int nIndex, long dwNewLong);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
 		[DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern NativeEnums.HRESULT SHCreateItemFromParsingName([In, MarshalAs(UnmanagedType.LPWStr)] string pszPath, [In] IntPtr pbc, [In, MarshalAs(UnmanagedType.Struct)] Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out NativeInterfaces.IShellItem ppv);
 
 		[DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-		public static extern NativeEnums.HRESULT SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [Out(), MarshalAs(UnmanagedType.Interface)] out NativeInterfaces.IPropertyStore propertyStore);
+		public static extern NativeEnums.HRESULT SHGetPropertyStoreForWindow(IntPtr hwnd, Guid iid, [Out, MarshalAs(UnmanagedType.Interface)] out NativeInterfaces.IPropertyStore propertyStore);
 
 		[DllImport("user32.dll")]
 		public static extern int ShowWindow(IntPtr hWnd, int wFlags);

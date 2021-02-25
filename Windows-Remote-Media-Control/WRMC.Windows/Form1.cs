@@ -56,8 +56,6 @@ namespace WRMC.Windows {
 
 			this.customComboBoxSessionExtractor.SelectedItem = Settings.Current.SessionExtractor.GetType();
 
-			this.notifyIcon.Icon = SystemIcons.Application;
-
 			this.toolStripButtonExit.Click += (s, e) => { Application.Exit(); };
 			this.toolStripButtonShowHide.Click += (s, e) => {
 				if (this.Visible)
@@ -66,6 +64,10 @@ namespace WRMC.Windows {
 					this.Show();
 
 				this.toolStripButtonShowHide.Text = this.Visible ? "Minimize to Tray" : "Show Window";
+			};
+
+			Application.ApplicationExit += (s, e) => {
+				this.notifyIcon.Dispose();
 			};
 
 			ConnectionManager.OnClientsChanged += (s, e) => this.UpdateDeviceList();

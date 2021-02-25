@@ -23,8 +23,6 @@ namespace WRMC.Android.Views {
 		private SuspendedProcess processToResume;
 		private AlertDialog resumeDialog;
 
-		private IMenu menu;
-
 		public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View view = inflater.Inflate(Resource.Layout.suspended_processes, container, false);
 
@@ -87,7 +85,6 @@ namespace WRMC.Android.Views {
 
 		public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater) {
 			inflater.Inflate(Resource.Menu.suspended_processes_toolbar_menu, menu);
-			this.menu = menu;
 		}
 
 		public override bool OnOptionsItemSelected(IMenuItem item) {
