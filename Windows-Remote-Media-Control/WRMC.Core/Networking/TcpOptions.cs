@@ -10,7 +10,7 @@ namespace WRMC.Core.Networking {
 		/// <summary>
 		/// The default maximum tries to build a TCP connection.
 		/// </summary>
-		public static int DefaultMaxConnectTries = 3;
+		public static int DefaultMaxConnectTries = 4;
 
 		public static int BufferSize = 4096;
 

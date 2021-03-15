@@ -46,7 +46,7 @@ namespace WRMC.Android.Networking {
 		public static event EventHandler<EventArgs<int>> OnVolumeReceived = null;
 		public static event EventHandler<EventArgs<byte[]>> OnThumbnailReceived = null;
 		public static event EventHandler<EventArgs<List<SuspendedProcess>>> OnSuspendedProcessesReceived = null;
-		public static event EventHandler<EventArgs<Tuple<List<string>, List<string>>>> OnDirectoryContentReceived = null;
+		public static event EventHandler<EventArgs<List<DirectoryItem>>> OnDirectoryContentReceived = null;
 
 		public static event EventHandler<EventArgs<List<MediaSession>>> OnMediaSessionsReceived = null;
 		public static event EventHandler<EventArgs<MediaSession>> OnMediaSessionChanged = null;
@@ -73,7 +73,7 @@ namespace WRMC.Android.Networking {
 				return;
 
 			ConnectionManager.udpClient.StartListening();
-			ConnectionManager.udpClient.StartSending(100, 5000);
+			ConnectionManager.udpClient.StartSending(50, 10000, DeviceInformation.GetClientDevice(Application.Context));
 			ConnectionManager.IsSearchingServers = true;
 		}
 
@@ -187,7 +187,7 @@ namespace WRMC.Android.Networking {
 
 				case Response.Type.DirectoryContent:
 					DirectoryContentResponseBody responseBody = (e.Response.Body as DirectoryContentResponseBody);
-					ConnectionManager.OnDirectoryContentReceived?.Invoke(null, new Tuple<List<string>, List<string>>(responseBody.Folders, responseBody.Files));
+					ConnectionManager.OnDirectoryContentReceived?.Invoke(null, responseBody.Items);
 					break;
 
 				case Response.Type.MediaSessions:

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Text;
 
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ namespace WRMC.Core.Networking {
 		/// <summary>
 		/// Event handler which is called when the server received a <see cref="Request.Type.FindServer"/> request.
 		/// </summary>
-		public event TypedEventHandler<UdpServer, EventArgs> OnFindServerRequestReceived = null;
+		public event TypedEventHandler<UdpServer, EventArgs<ClientDevice>> OnFindServerRequestReceived = null;
 
 		/// <summary>
 		/// Creates a new instance of the class <see cref="UdpServer"/>.
@@ -58,7 +59,7 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		/// <param name="serverDevice">The device information which should be sent.</param>
 		/// <returns>True if the sending process was successful. False if sending was not possible or the server was not able to send all the data.</returns>
-		public bool SendServerInformation(ServerDevice serverDevice) {
+		public bool SendServerInformation(ServerDevice serverDevice, ClientDevice clientDevice) {
 			if (!this.Running || this.server.Client == null || serverDevice == null)
 				return false;
 
@@ -71,7 +72,12 @@ namespace WRMC.Core.Networking {
 
 			byte[] datagram = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions));
 
-			return this.server.Send(datagram, datagram.Length, UdpOptions.DefaultServerSendingIPEndPoint) == datagram.Length;
+			bool result = this.server.Send(datagram, datagram.Length, new IPEndPoint(clientDevice.IPAddress, UdpOptions.DefaultClientPort)) == datagram.Length;
+
+			//if (result)
+			//	Logging.Response(response, true);
+
+			return result;
 		}
 
 		/// <summary>
@@ -87,15 +93,19 @@ namespace WRMC.Core.Networking {
 
 				if (datagramObject is Request) {
 					Request request = datagramObject as Request;
+					//Logging.Request(request, false);
 
-					if (request.Method == Request.Type.FindServer)
-						this.OnFindServerRequestReceived?.Invoke(this, EventArgs.Empty);
+					if (request.Method == Request.Type.FindServer) {
+						AuthenticatedMessageBody body = request.Body as AuthenticatedMessageBody;
+						this.OnFindServerRequestReceived?.Invoke(this, body.ClientDevice);
+					}
 				}
 
 				this.server.BeginReceive(this.OnRequestReceived, null);
 			}
-			catch (ObjectDisposedException) {
+			catch (Exception e) {
 				// Server was stopped
+				Logging.HandledException(e);
 			}
 		}
 	}

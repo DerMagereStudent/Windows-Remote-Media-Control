@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace WRMC.Windows.Networking {
 	public enum ConnectionRequestHandlingMethod {
 		AcceptAll,
+		AcceptKnown,
 		Ask,
 		RejectAll
 	}

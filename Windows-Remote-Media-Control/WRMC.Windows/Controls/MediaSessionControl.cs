@@ -40,7 +40,6 @@ namespace WRMC.Windows.Controls {
 				if (value == null)
 					return;
 
-				this.labelProcessID.Text = string.Join(", ", this._mediaSession.ProcessIDs);
 				this.labelProcessName.Text = new FileInfo(this._mediaSession.ProcessName).Name;
 				this.labelTitle.Text = this._mediaSession.Title;
 				this.labelArtist.Text = this._mediaSession.Artist;

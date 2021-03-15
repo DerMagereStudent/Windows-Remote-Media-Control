@@ -115,5 +115,27 @@ namespace WRMC.Windows.Native {
 			SFGAO_CONTENTSMASK		= unchecked((int)0x80000000),
 			SFGAO_PKEYSFGAOMASK		= unchecked((int)0x81044000)
 		}
+
+		[Flags]
+		public enum SHGFI : uint {
+			Icon = 0x00000100,
+			DisplayName = 0x00000200,
+			TypeName = 0x00000400,
+			Attributes = 0x00000800,
+			IconLocation = 0x00001000,
+			ExeType = 0x00002000,
+			SysIconIndex = 0x00004000,
+			LinkOverlay = 0x00008000,
+			Selected = 0x00010000,
+			Attr_Specified = 0x00020000,
+			LargeIcon = 0x00000000,
+			SmallIcon = 0x00000001,
+			OpenIcon = 0x00000002,
+			ShellIconSize = 0x00000004,
+			PIDL = 0x00000008,
+			UseFileAttributes = 0x00000010,
+			AddOverlays = 0x00000020,
+			OverlayIndex = 0x00000040,
+		}
 	}
 }

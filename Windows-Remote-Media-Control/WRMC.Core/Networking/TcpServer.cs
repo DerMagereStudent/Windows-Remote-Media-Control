@@ -177,8 +177,8 @@ namespace WRMC.Core.Networking {
 					client.GetStream().Flush();
 				}
 
-				try { client.GetStream().Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { } catch (IOException) { } catch (NullReferenceException) { }
-				try { client.Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { } catch (IOException) { } catch (NullReferenceException) { }
+				try { client.GetStream().Close(); } catch (Exception e) { Logging.HandledException(e); }
+				try { client.Close(); } catch (Exception e) { Logging.HandledException(e); }
 
 				this.OnConnectionClosed?.Invoke(this, new ClientEventArgs(client, clientDevice));
 			}
@@ -192,6 +192,7 @@ namespace WRMC.Core.Networking {
 		public void SendMessage(Message message, ClientDevice receiver) {
 			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, SerializationOptions.DefaultSerializationOptions) + TcpOptions.MessageSeparator);
 			this.SendData(data, receiver);
+			Logging.Message(message, true);
 		}
 
 		/// <summary>
@@ -202,6 +203,7 @@ namespace WRMC.Core.Networking {
 		public void SendRequest(Request request, ClientDevice receiver) {
 			byte[] data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request, SerializationOptions.DefaultSerializationOptions) + TcpOptions.MessageSeparator);
 			this.SendData(data, receiver);
+			Logging.Request(request, true);
 		}
 
 		/// <summary>
@@ -213,6 +215,7 @@ namespace WRMC.Core.Networking {
 			string s = JsonConvert.SerializeObject(response, SerializationOptions.DefaultSerializationOptions) + TcpOptions.MessageSeparator;
 			byte[] data = Encoding.UTF8.GetBytes(s);
 			this.SendData(data, receiver);
+			Logging.Response(response, true);
 		}
 
 		/// <summary>
@@ -240,12 +243,8 @@ namespace WRMC.Core.Networking {
 					return;
 
 				receiverClient.GetStream().BeginWrite(data, 0, data.Length, this.OnWrite, receiverClient);
-			} catch(ObjectDisposedException) {
-				// Connection closed
-			} catch (IOException) {
-				// Connection closed
-			} catch (InvalidOperationException) {
-
+			} catch (Exception e) {
+				Logging.HandledException(e);
 			}
 		}
 
@@ -257,12 +256,8 @@ namespace WRMC.Core.Networking {
 			try {
 				System.Net.Sockets.TcpClient client = ar.AsyncState as System.Net.Sockets.TcpClient;
 				client.GetStream().EndWrite(ar);
-			} catch(ObjectDisposedException) {
-				// Connection closed
-			} catch (IOException) {
-				// Connection closed
-			} catch (InvalidOperationException) {
-
+			} catch (Exception e) {
+				Logging.HandledException(e);
 			}
 		}
 
@@ -285,12 +280,8 @@ namespace WRMC.Core.Networking {
 				}
 
 				this.server.BeginAcceptTcpClient(this.OnConnectionRequestReceived, null);
-			} catch (ObjectDisposedException) {
-				// Connection closed or TcpListener stopped
-			} catch (IOException) {
-				// Connection closed
-			} catch (InvalidOperationException) {
-
+			} catch (Exception e) {
+				Logging.HandledException(e);
 			}
 		}
 
@@ -326,6 +317,7 @@ namespace WRMC.Core.Networking {
 					if (condition) {
 						if (dataObject is Request) {
 							Request request = dataObject as Request;
+							Logging.Request(request, false);
 
 							if (request.Method == Request.Type.Connect) {
 								AuthenticatedMessageBody body = request.Body as AuthenticatedMessageBody;
@@ -334,10 +326,13 @@ namespace WRMC.Core.Networking {
 						}
 					}
 					else {
-						if (dataObject is Message)
+						if (dataObject is Message) {
 							this.OnMessageReceived?.Invoke(this, new ClientMessageEventArgs(client, this.clients[client], dataObject as Message));
+							Logging.Message(dataObject as Message, false);
+						}
 						else if (dataObject is Request) {
 							Request request = dataObject as Request;
+							Logging.Request(request, false);
 
 							if (request.Method == Request.Type.Ping)
 								this.SendRequest(new Request() {
@@ -349,6 +344,7 @@ namespace WRMC.Core.Networking {
 						}
 						else if (dataObject is Response) {
 							Response response = dataObject as Response;
+							Logging.Response(response, false);
 
 							if (response.Method == Response.Type.Ping)
 								this.clientPingTries[client]++;
@@ -364,15 +360,8 @@ namespace WRMC.Core.Networking {
 
 				lock (this.clientBuffersLock)
 					client.GetStream().BeginRead(this.clientBuffers[client], 0, this.clientBuffers[client].Length, this.OnDataReceived, client);
-			} catch(ObjectDisposedException) {
-				;
-				// Connection closed
-			} catch (IOException) {
-				;
-				// Connection closed
-			} catch (InvalidOperationException) {
-				;
-				// Connection closed
+			} catch (Exception e) {
+				Logging.HandledException(e);
 			}
 		}
 
@@ -415,16 +404,15 @@ namespace WRMC.Core.Networking {
 					}
 
 					Thread.Sleep(MonitoringOptions.Delay);
+				} catch (Exception e) {
+					Logging.HandledException(e);
 				}
-				catch (ObjectDisposedException) { }
-				catch (IOException) { }
-				catch (InvalidOperationException) { }
 			}
 		}
 
 		private void CloseConnection(System.Net.Sockets.TcpClient client) {
-			try { client.GetStream().Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { }
-			try { client.Close(); } catch (ObjectDisposedException) { } catch (InvalidOperationException) { }
+			try { client.GetStream().Close(); } catch (Exception e) { Logging.HandledException(e); }
+			try { client.Close(); } catch (Exception e) { Logging.HandledException(e); }
 
 			ClientDevice cd;
 

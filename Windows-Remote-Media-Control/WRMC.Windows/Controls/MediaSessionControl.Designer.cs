@@ -24,7 +24,6 @@ namespace WRMC.Windows.Controls {
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			this.labelProcessID = new System.Windows.Forms.Label();
 			this.labelProcessName = new System.Windows.Forms.Label();
 			this.labelTitle = new System.Windows.Forms.Label();
 			this.labelArtist = new System.Windows.Forms.Label();
@@ -33,30 +32,16 @@ namespace WRMC.Windows.Controls {
 			this.buttonNext = new WRMC.Windows.Controls.NoFocusCueButton();
 			this.SuspendLayout();
 			// 
-			// labelProcessID
-			// 
-			this.labelProcessID.Dock = System.Windows.Forms.DockStyle.Left;
-			this.labelProcessID.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelProcessID.ForeColor = System.Drawing.Color.White;
-			this.labelProcessID.Location = new System.Drawing.Point(0, 0);
-			this.labelProcessID.Name = "labelProcessID";
-			this.labelProcessID.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-			this.labelProcessID.Size = new System.Drawing.Size(100, 40);
-			this.labelProcessID.TabIndex = 0;
-			this.labelProcessID.Text = "123456789";
-			this.labelProcessID.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
 			// labelProcessName
 			// 
 			this.labelProcessName.Dock = System.Windows.Forms.DockStyle.Left;
 			this.labelProcessName.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelProcessName.ForeColor = System.Drawing.Color.White;
-			this.labelProcessName.Location = new System.Drawing.Point(100, 0);
+			this.labelProcessName.Location = new System.Drawing.Point(0, 0);
 			this.labelProcessName.Name = "labelProcessName";
 			this.labelProcessName.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-			this.labelProcessName.Size = new System.Drawing.Size(160, 40);
+			this.labelProcessName.Size = new System.Drawing.Size(205, 40);
 			this.labelProcessName.TabIndex = 1;
-			this.labelProcessName.Text = "Microsoft Movies && TV";
 			this.labelProcessName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// labelTitle
@@ -65,12 +50,11 @@ namespace WRMC.Windows.Controls {
 			this.labelTitle.Dock = System.Windows.Forms.DockStyle.Left;
 			this.labelTitle.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelTitle.ForeColor = System.Drawing.Color.White;
-			this.labelTitle.Location = new System.Drawing.Point(260, 0);
+			this.labelTitle.Location = new System.Drawing.Point(205, 0);
 			this.labelTitle.Name = "labelTitle";
 			this.labelTitle.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-			this.labelTitle.Size = new System.Drawing.Size(340, 40);
+			this.labelTitle.Size = new System.Drawing.Size(395, 40);
 			this.labelTitle.TabIndex = 2;
-			this.labelTitle.Text = "006 Gefährliche Mission Reise ins Reich der Wellen";
 			this.labelTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// labelArtist
@@ -82,9 +66,8 @@ namespace WRMC.Windows.Controls {
 			this.labelArtist.Location = new System.Drawing.Point(600, 0);
 			this.labelArtist.Name = "labelArtist";
 			this.labelArtist.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-			this.labelArtist.Size = new System.Drawing.Size(168, 40);
+			this.labelArtist.Size = new System.Drawing.Size(165, 40);
 			this.labelArtist.TabIndex = 3;
-			this.labelArtist.Text = "Naruto";
 			this.labelArtist.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// buttonPrevious
@@ -140,7 +123,6 @@ namespace WRMC.Windows.Controls {
 			this.Controls.Add(this.labelArtist);
 			this.Controls.Add(this.labelTitle);
 			this.Controls.Add(this.labelProcessName);
-			this.Controls.Add(this.labelProcessID);
 			this.DoubleBuffered = true;
 			this.Name = "MediaSessionControl";
 			this.Size = new System.Drawing.Size(890, 40);
@@ -149,8 +131,6 @@ namespace WRMC.Windows.Controls {
 		}
 
 		#endregion
-
-		private System.Windows.Forms.Label labelProcessID;
 		private System.Windows.Forms.Label labelProcessName;
 		private System.Windows.Forms.Label labelTitle;
 		private System.Windows.Forms.Label labelArtist;

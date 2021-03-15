@@ -48,8 +48,12 @@ namespace WRMC.Android.Views.Adapters {
 		}
 
 		public void OnClick(object sender, EventArgs e) {
-			if (this.viewPositions.ContainsKey(sender as View))
-				this.onServerDeviceSelected?.Invoke(this, new ServerEventArgs(this.ServerDevices[this.viewPositions[sender as View]]));
+			if (this.viewPositions.ContainsKey(sender as View)) {
+				int position = this.viewPositions[sender as View];
+
+				if (position >= 0 && position < this.ServerDevices.Count)
+					this.onServerDeviceSelected?.Invoke(this, new ServerEventArgs(this.ServerDevices[position]));
+			}
 		}
 	}
 

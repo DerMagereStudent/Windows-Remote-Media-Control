@@ -8,6 +8,7 @@ using Windows.System.Profile;
 using Windows.Storage.Streams;
 
 using WRMC.Core.Networking;
+using System.Net.Sockets;
 
 namespace WRMC.Windows {
 	public static class DeviceInformation {
@@ -25,13 +26,13 @@ namespace WRMC.Windows {
 		public static IPAddress IPAddress {
 			get {
 				foreach (NetworkInterface nInterface in NetworkInterface.GetAllNetworkInterfaces()) {
-					if (nInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet && nInterface.OperationalStatus == OperationalStatus.Up)
+					if ((nInterface.NetworkInterfaceType == NetworkInterfaceType.Ethernet || nInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211) && nInterface.OperationalStatus == OperationalStatus.Up)
 						foreach (var ip in nInterface.GetIPProperties().UnicastAddresses)
-							if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+							if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
 								return ip.Address;
 				}
 
-				return IPAddress.None;
+				return IPAddress.Parse("123.123.123.123");
 			}
 		}
 

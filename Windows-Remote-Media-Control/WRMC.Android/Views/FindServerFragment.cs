@@ -125,10 +125,10 @@ namespace WRMC.Android.Views {
 				case Resource.Id.find_server_toolbar_item_start_stop:
 					if (!ConnectionManager.IsSearchingServers) {
 						ConnectionManager.StartFindServer();
-						item.SetIcon((this.Activity as MainActivity).GetDrawable(Resource.Drawable.close));
+						item.SetIcon(Resource.Drawable.close);
 					} else {
 						ConnectionManager.StopFindServer();
-						item.SetIcon((this.Activity as MainActivity).GetDrawable(Resource.Drawable.magnify));
+						item.SetIcon(Resource.Drawable.magnify);
 					}
 
 					return true;
@@ -147,7 +147,7 @@ namespace WRMC.Android.Views {
 							this.availableServers.Remove(e.DataBody.Server);
 
 						this.Activity.RunOnUiThread(() => {
-							this.knownServersAdapter.NotifyItemInserted(this.knownServers.Count - 1);
+							this.knownServersAdapter.NotifyDataSetChanged();
 							this.knownServersLayout.Visibility = ViewStates.Visible;
 							this.availableServersLayout.Visibility = this.availableServers.Count == 0 ? ViewStates.Gone : ViewStates.Visible;
 						});
@@ -156,7 +156,7 @@ namespace WRMC.Android.Views {
 					if (!this.availableServers.Contains(e.DataBody.Server)) {
 						this.availableServers.Add(e.DataBody.Server);
 						this.Activity.RunOnUiThread(() => {
-							this.availableServersAdapter.NotifyItemInserted(this.availableServers.Count - 1);
+							this.availableServersAdapter.NotifyDataSetChanged();
 							this.availableServersLayout.Visibility = ViewStates.Visible;
 						});
 					}
@@ -166,7 +166,7 @@ namespace WRMC.Android.Views {
 
 		private void ConnectionManager_OnFindServerFinished(object sender, EventArgs e) {
 			this.Activity.RunOnUiThread(() => {
-				this.menu.FindItem(Resource.Id.find_server_toolbar_item_start_stop)?.SetIcon((this.Activity as MainActivity).GetDrawable(Resource.Drawable.magnify));
+				this.menu.FindItem(Resource.Id.find_server_toolbar_item_start_stop)?.SetIcon(Resource.Drawable.magnify);
 			});
 		}
 

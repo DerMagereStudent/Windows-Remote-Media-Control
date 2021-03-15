@@ -52,19 +52,7 @@ namespace WRMC.Windows.Media {
 			if (screen == null)
 				return;
 
-			List<Process> processes = new List<Process>();
-
-			foreach (int pid in session.ProcessIDs) {
-				try {
-					Process p = Process.GetProcessById(pid);
-					processes.Add(p);
-				}
-				catch (ArgumentException) { }
-			}
-
-			List<IntPtr> hwnds = session.AppType == MediaSession.ApplicationType.UWP ?
-				NativeHWNDExtractor.GetHwndsForUWPApp(session.AUMID) :
-				NativeHWNDExtractor.GetHwndsForPids(session.ProcessIDs);
+			List<IntPtr> hwnds = NativeExtractor.GetHwndsForAUMID(session.AUMID);
 
 			foreach (IntPtr hwnd in hwnds) {
 				if (!NativeMethods.IsWindowVisible(hwnd))
@@ -92,10 +80,10 @@ namespace WRMC.Windows.Media {
 				NativeMethods.ShowWindow(hwnd, NativeDefinitions.SW_RESTORE);
 
 			// Remove fullscreen mode if set
-			//style = NativeMethods.GetWindowLong(hwnd, NativeDefinitions.GWL_STYLE);
-			//bool fullscreen = (style & NativeDefinitions.WS_OVERLAPPEDWINDOW) != NativeDefinitions.WS_OVERLAPPEDWINDOW;
-			//if (fullscreen)
-			//	NativeMethods.SetWindowLong(hwnd, NativeDefinitions.GWL_STYLE, style | NativeDefinitions.WS_OVERLAPPEDWINDOW);
+			style = NativeMethods.GetWindowLong(hwnd, NativeDefinitions.GWL_STYLE);
+			bool fullscreen = (style & NativeDefinitions.WS_OVERLAPPEDWINDOW) != NativeDefinitions.WS_OVERLAPPEDWINDOW;
+			if (fullscreen)
+				NativeMethods.SetWindowLong(hwnd, NativeDefinitions.GWL_STYLE, style | NativeDefinitions.WS_OVERLAPPEDWINDOW);
 
 			// Make window normal if maximized to move it
 			style = NativeMethods.GetWindowLong(hwnd, NativeDefinitions.GWL_STYLE);
@@ -107,16 +95,16 @@ namespace WRMC.Windows.Media {
 			this.GetScreenPos(hwnd, out int x, out int y);
 			NativeMethods.SetWindowPos(
 				hwnd, IntPtr.Zero, screen.Bounds.X + x, screen.Bounds.Y + y, 0, 0,
-				NativeDefinitions.SWP_NOZORDER | NativeDefinitions.SWP_NOOWNERZORDER | NativeDefinitions.SWP_NOSIZE
+				NativeDefinitions.SWP_NOZORDER | NativeDefinitions.SWP_NOOWNERZORDER | NativeDefinitions.SWP_NOSIZE | NativeDefinitions.SWP_FRAMECHANGED
 			);
-
-			// Restore fullscreen mode if it was set.
-			//if (fullscreen)
-			//	NativeMethods.SetWindowLong(hwnd, NativeDefinitions.GWL_STYLE, style | ~NativeDefinitions.WS_OVERLAPPEDWINDOW);
 
 			// make window maximized again after move
 			if (maximized)
 				NativeMethods.ShowWindow(hwnd, NativeDefinitions.SW_MAXIMIZE);
+
+			// Restore fullscreen mode if it was set.
+			if (fullscreen)
+				NativeMethods.SetWindowLong(hwnd, NativeDefinitions.GWL_STYLE, style & ~NativeDefinitions.WS_OVERLAPPEDWINDOW);
 
 			NativeMethods.SetForegroundWindow(hwnd);
 		}
@@ -169,6 +157,7 @@ namespace WRMC.Windows.Media {
 			);
 
 			deviceCollection.GetCount(out uint collectionCount);
+			List<int> pids = NativeExtractor.GetProcessIDsForAUMID(session.AUMID);
 
 			for (uint i = 0; i < collectionCount; i++) {
 				deviceCollection.Item(i, out NativeInterfaces.IMMDevice device);
@@ -183,7 +172,7 @@ namespace WRMC.Windows.Media {
 					NativeInterfaces.IAudioSessionControl2 control2 = control as NativeInterfaces.IAudioSessionControl2;
 					control2.GetProcessId(out int pid);
 
-					if (session.ProcessIDs.Contains(pid)) {
+					if (pids.Contains(pid)) {
 						NativeInterfaces.ISimpleAudioVolume audioVolume = control as NativeInterfaces.ISimpleAudioVolume;
 						audioVolume.SetMasterVolume(volume / 100.0f, Guid.Empty);
 					}
@@ -197,7 +186,7 @@ namespace WRMC.Windows.Media {
 		}
 
 		public override void ResumeSuspendedProcess(SuspendedProcess suspendedProcess) {
-			string aumid = MediaSessionConverter.GetAUMID(suspendedProcess.ID);
+			string aumid = NativeExtractor.GetAUMIDForPid(suspendedProcess.ID);
 			if (MediaSessionConverter.GetApplicationType(aumid) == MediaSession.ApplicationType.UWP) {
 				var diags = AppDiagnosticInfo.RequestInfoForPackageAsync(aumid.Substring(0, aumid.IndexOf("!"))).GetAwaiter().GetResult();
 				foreach (AppDiagnosticInfo diag in diags) {
@@ -231,12 +220,10 @@ namespace WRMC.Windows.Media {
 
 		public override void PlayFile(string filePath) {
 			//NativeInterfaces.IApplicationActivationManager applicationActivationManager = NativeClasses.ComObjectFactory.CreateInstance(new Guid(NativeGuids.APPLICATION_ACTIVATION_MANAGER)) as NativeInterfaces.IApplicationActivationManager;
-
 			//NativeMethods.SHCreateItemFromParsingName(filePath, IntPtr.Zero, new Guid(NativeGuids.I_SHELL_ITEM), out NativeInterfaces.IShellItem shellItem);
 
 			ProcessStartInfo startInfo = new ProcessStartInfo() {
 				FileName = filePath,
-				UseShellExecute = true,
 				WindowStyle = ProcessWindowStyle.Maximized
 			};
 
@@ -262,7 +249,7 @@ namespace WRMC.Windows.Media {
 				if (endpoint.Equals(defaultAudioEndpoint))
 					endpoints.Insert(0, endpoint);
 				else
-					endpoints.Add(endpoint); ;
+					endpoints.Add(endpoint);
 			}
 
 			return endpoints;
@@ -321,6 +308,7 @@ namespace WRMC.Windows.Media {
 			);
 
 			deviceCollection.GetCount(out uint collectionCount);
+			List<int> pids = NativeExtractor.GetProcessIDsForAUMID(session.AUMID);
 
 			for (uint i = 0; i < collectionCount; i++) {
 				deviceCollection.Item(i, out NativeInterfaces.IMMDevice device);
@@ -335,7 +323,7 @@ namespace WRMC.Windows.Media {
 					NativeInterfaces.IAudioSessionControl2 control2 = control as NativeInterfaces.IAudioSessionControl2;
 					control2.GetProcessId(out int pid);
 
-					if (session.ProcessIDs.Contains(pid)) {
+					if (pids.Contains(pid)) {
 						NativeInterfaces.ISimpleAudioVolume audioVolume = control as NativeInterfaces.ISimpleAudioVolume;
 						audioVolume.GetMasterVolume(out float volume);
 						return (int)(volume * 100.0f);
@@ -388,27 +376,63 @@ namespace WRMC.Windows.Media {
 			return processes;
 		}
 
-		public override Tuple<List<string>, List<string>> GetDirectoryContent(string directory) {
+		public override List<DirectoryItem> GetDirectoryContent(string directory) {
 			if (string.IsNullOrWhiteSpace(directory)) {
-				DriveInfo[] driveInfos = DriveInfo.GetDrives();
-				List<string> drives = driveInfos.Select(d => d.Name).ToList();
-				drives.Sort();
-				return new Tuple<List<string>, List<string>>(drives, new List<string>());
+				string quickAccess = "shell:::{679F85CB-0220-4080-B29B-5540CC05AAB6}";
+				string thisPC = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
+
+				return new List<DirectoryItem>() {
+					new DirectoryItem() {
+						Path = quickAccess,
+						Name = "Quick Access",
+						IsFolder = true,
+						Icon = NativeExtractor.GetDirectoryItemIconBytes(quickAccess)
+					},
+					new DirectoryItem() {
+						Path = thisPC,
+						Name = "This PC",
+						IsFolder = true,
+						Icon = NativeExtractor.GetDirectoryItemIconBytes(thisPC)
+					}
+				};
 			}
 
-			if (directory.LastIndexOf(":") == directory.Length - 1)
-				directory += "\\";
+			Type shellType = Type.GetTypeFromProgID("Shell.Application");
+			object shell = Activator.CreateInstance(shellType);
+			Shell32.Folder folder = (Shell32.Folder)shellType.InvokeMember("NameSpace", System.Reflection.BindingFlags.InvokeMethod, null, shell, new object[] { directory });
 
-			if (!Directory.Exists(directory))
-				return new Tuple<List<string>, List<string>>(new List<string>(), new List<string>());
+			if (folder is null)
+				return new List<DirectoryItem>();
 
-			List<string> folders = Directory.GetDirectories(directory).ToList();
-			List<string> files = Directory.GetFiles(directory).Where(f => SUPPORTED_FILES.Contains(new FileInfo(f).Extension.ToUpper())).ToList();
+			List<DirectoryItem> folders = new List<DirectoryItem>();
+			List<DirectoryItem> files = new List<DirectoryItem>();
 
-			folders.Sort();
-			files.Sort();
+			foreach (Shell32.FolderItem item in folder.Items()) {
+				if (item.IsFolder) {
+					folders.Add(new DirectoryItem() {
+						Path = item.Path,
+						Name = item.Name,
+						IsFolder = true,
+						Icon = NativeExtractor.GetDirectoryItemIconBytes(item.Path)
+					});
+				}
+				else {
+					int index = item.Path.LastIndexOf(".");
+					if (index >= 0 && SUPPORTED_FILES.Contains(item.Path.Substring(index).ToUpper())) {
+						files.Add(new DirectoryItem() {
+							Path = item.Path,
+							Name = item.Name,
+							IsFolder = false,
+							Icon = NativeExtractor.GetDirectoryItemIconBytes(item.Path)
+						});
+					}
+				}
+			}
 
-			return new Tuple<List<string>, List<string>>(folders, files);
+			folders = folders.OrderBy(item => item.Name).ToList();
+			files = files.OrderBy(item => item.Name).ToList();
+
+			return folders.Concat(files).ToList();
 		}
 	}
 }

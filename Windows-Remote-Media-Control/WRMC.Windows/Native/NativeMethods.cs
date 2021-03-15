@@ -8,6 +8,9 @@ namespace WRMC.Windows.Native {
 		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool CloseHandle(IntPtr hObject);
 
+		[DllImport("User32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		public static extern bool DestroyIcon(IntPtr hIcon);
+
 		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool EnumWindows(WNDENUMPROC lpEnumFunc, IntPtr lParam);
@@ -53,6 +56,9 @@ namespace WRMC.Windows.Native {
 		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern uint GetWindowThreadProcessId(IntPtr hwnd, out int lpdwProcessId);
 
+		[DllImport("comctl32.dll", SetLastError = true)]
+		public static extern IntPtr ImageList_GetIcon(IntPtr html, int i, int flags);
+
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool IsWindowVisible(IntPtr hwnd);
@@ -80,8 +86,17 @@ namespace WRMC.Windows.Native {
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
+		[DllImport("Shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+		public static extern NativeEnums.HRESULT SHILCreateFromPath([MarshalAs(UnmanagedType.LPWStr)] string pszPath, out IntPtr ppIdl, ref uint rgflnOut);
+
 		[DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern NativeEnums.HRESULT SHCreateItemFromParsingName([In, MarshalAs(UnmanagedType.LPWStr)] string pszPath, [In] IntPtr pbc, [In, MarshalAs(UnmanagedType.Struct)] Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out NativeInterfaces.IShellItem ppv);
+
+		[DllImport("Shell32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		public static extern IntPtr SHGetFileInfo(IntPtr pszPath, uint dwFileAttributes, ref NativeStructs.SHFILEINFO psfi, uint cbFileInfo, uint uFlags);
+
+		[DllImport("shell32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, EntryPoint = "SHGetFileInfoW")]
+		public static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref NativeStructs.SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
 
 		[DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern NativeEnums.HRESULT SHGetPropertyStoreForWindow(IntPtr hwnd, Guid iid, [Out, MarshalAs(UnmanagedType.Interface)] out NativeInterfaces.IPropertyStore propertyStore);

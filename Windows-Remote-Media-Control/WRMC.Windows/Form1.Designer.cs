@@ -55,7 +55,6 @@ namespace WRMC.Windows {
 			this.labelHeaderArtist = new System.Windows.Forms.Label();
 			this.labelHeaderTitle = new System.Windows.Forms.Label();
 			this.labelHeaderProcessName = new System.Windows.Forms.Label();
-			this.labelHeaderProcessID = new System.Windows.Forms.Label();
 			this.panelMenuPlaceHolder = new System.Windows.Forms.Panel();
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -421,7 +420,6 @@ namespace WRMC.Windows {
 			this.panelSessionsHeader.Controls.Add(this.labelHeaderArtist);
 			this.panelSessionsHeader.Controls.Add(this.labelHeaderTitle);
 			this.panelSessionsHeader.Controls.Add(this.labelHeaderProcessName);
-			this.panelSessionsHeader.Controls.Add(this.labelHeaderProcessID);
 			this.panelSessionsHeader.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panelSessionsHeader.Location = new System.Drawing.Point(0, 0);
 			this.panelSessionsHeader.Name = "panelSessionsHeader";
@@ -437,7 +435,7 @@ namespace WRMC.Windows {
 			this.labelHeaderArtist.Location = new System.Drawing.Point(600, 0);
 			this.labelHeaderArtist.Name = "labelHeaderArtist";
 			this.labelHeaderArtist.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-			this.labelHeaderArtist.Size = new System.Drawing.Size(180, 40);
+			this.labelHeaderArtist.Size = new System.Drawing.Size(165, 40);
 			this.labelHeaderArtist.TabIndex = 7;
 			this.labelHeaderArtist.Text = "Artist";
 			this.labelHeaderArtist.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -448,10 +446,10 @@ namespace WRMC.Windows {
 			this.labelHeaderTitle.Dock = System.Windows.Forms.DockStyle.Left;
 			this.labelHeaderTitle.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelHeaderTitle.ForeColor = System.Drawing.Color.White;
-			this.labelHeaderTitle.Location = new System.Drawing.Point(260, 0);
+			this.labelHeaderTitle.Location = new System.Drawing.Point(205, 0);
 			this.labelHeaderTitle.Name = "labelHeaderTitle";
 			this.labelHeaderTitle.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-			this.labelHeaderTitle.Size = new System.Drawing.Size(340, 40);
+			this.labelHeaderTitle.Size = new System.Drawing.Size(395, 40);
 			this.labelHeaderTitle.TabIndex = 6;
 			this.labelHeaderTitle.Text = "Title";
 			this.labelHeaderTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -461,26 +459,13 @@ namespace WRMC.Windows {
 			this.labelHeaderProcessName.Dock = System.Windows.Forms.DockStyle.Left;
 			this.labelHeaderProcessName.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelHeaderProcessName.ForeColor = System.Drawing.Color.White;
-			this.labelHeaderProcessName.Location = new System.Drawing.Point(100, 0);
+			this.labelHeaderProcessName.Location = new System.Drawing.Point(0, 0);
 			this.labelHeaderProcessName.Name = "labelHeaderProcessName";
 			this.labelHeaderProcessName.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-			this.labelHeaderProcessName.Size = new System.Drawing.Size(160, 40);
+			this.labelHeaderProcessName.Size = new System.Drawing.Size(205, 40);
 			this.labelHeaderProcessName.TabIndex = 5;
 			this.labelHeaderProcessName.Text = "Process Name";
 			this.labelHeaderProcessName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// labelHeaderProcessID
-			// 
-			this.labelHeaderProcessID.Dock = System.Windows.Forms.DockStyle.Left;
-			this.labelHeaderProcessID.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelHeaderProcessID.ForeColor = System.Drawing.Color.White;
-			this.labelHeaderProcessID.Location = new System.Drawing.Point(0, 0);
-			this.labelHeaderProcessID.Name = "labelHeaderProcessID";
-			this.labelHeaderProcessID.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-			this.labelHeaderProcessID.Size = new System.Drawing.Size(100, 40);
-			this.labelHeaderProcessID.TabIndex = 4;
-			this.labelHeaderProcessID.Text = "Process IDs";
-			this.labelHeaderProcessID.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// panelMenuPlaceHolder
 			// 
@@ -533,8 +518,8 @@ namespace WRMC.Windows {
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(43)))), ((int)(((byte)(60)))));
 			this.ClientSize = new System.Drawing.Size(1090, 665);
-			this.Controls.Add(this.panelDevices);
 			this.Controls.Add(this.panelSessions);
+			this.Controls.Add(this.panelDevices);
 			this.Controls.Add(this.panelSettings);
 			this.Controls.Add(this.panelMenu);
 			this.Controls.Add(this.panelTitleBar);
@@ -584,7 +569,6 @@ namespace WRMC.Windows {
 		private System.Windows.Forms.Label labelHeaderArtist;
 		private System.Windows.Forms.Label labelHeaderTitle;
 		private System.Windows.Forms.Label labelHeaderProcessName;
-		private System.Windows.Forms.Label labelHeaderProcessID;
 		private System.Windows.Forms.Panel panelMenuPlaceHolder;
 		private System.Windows.Forms.Label labelSessionExtractor;
 		private Controls.CustomComboBox customComboBoxSessionExtractor;

@@ -13,13 +13,13 @@ using System.Text;
 using WRMC.Android.Views.Adapters;
 using WRMC.Android.Networking;
 using WRMC.Core;
+using WRMC.Core.Models;
 
 namespace WRMC.Android.Views {
 	public class PlayMediaFragment : BackButtonNotifiableFragment {
 		private DirectoryRecyclerAdapter directoryAdapter;
 
-		private string parentDir;
-		private string currentDir;
+		private Stack<string> directoryStack = new Stack<string>();
 
 		private bool closeFragment;
 
@@ -45,7 +45,7 @@ namespace WRMC.Android.Views {
 			if (directoryRecyclerView != null) {
 				directoryRecyclerView.SetLayoutManager(new LinearLayoutManager(view.Context));
 
-				this.directoryAdapter = new DirectoryRecyclerAdapter(new List<string>(), new List<string>(), this.Item_OnClick);
+				this.directoryAdapter = new DirectoryRecyclerAdapter(new List<DirectoryItem>(), this.Item_OnClick);
 				directoryRecyclerView.SetAdapter(this.directoryAdapter);
 				directoryRecyclerView.AddItemDecoration(new LineDividerItemDecoration(directoryRecyclerView.Context));
 			}
@@ -65,13 +65,13 @@ namespace WRMC.Android.Views {
 		}
 
 		public override bool OnBackButton() {
-			if ((string.IsNullOrEmpty(this.currentDir) && string.IsNullOrEmpty(this.parentDir)) || this.closeFragment) {
+			if (this.directoryStack.Count == 0 || this.closeFragment) {
 				ConnectionManager.OnDirectoryContentReceived -= this.ConnectionManager_OnDirectoryContentReceived;
 				ConnectionManager.OnConnectionClosed -= this.ConnectionManager_OnConnectionClosed;
 				return false;
 			}
 
-			this.ChangeDir(this.parentDir);
+			this.GotoParentFolder();
 			return true;
 		}
 
@@ -82,24 +82,23 @@ namespace WRMC.Android.Views {
 		public override bool OnOptionsItemSelected(IMenuItem item) {
 			switch (item.ItemId) {
 				case Resource.Id.refresh_directory:
-					this.SendDirRequest(this.currentDir);
+					this.SendDirRequest(this.directoryStack.Peek());
 					return true;
 				default:
 					return base.OnOptionsItemSelected(item);
 			}
 		}
 
-		public void ConnectionManager_OnDirectoryContentReceived(object sender, EventArgs<Tuple<List<string>, List<string>>> e) {
+		public void ConnectionManager_OnDirectoryContentReceived(object sender, EventArgs<List<DirectoryItem>> e) {
 			this.Activity.RunOnUiThread(() => {
-				this.directoryAdapter.Folders = e.Data.Item1;
-				this.directoryAdapter.Files = e.Data.Item2;
+				this.directoryAdapter.Items = e.Data;
 				this.directoryAdapter.NotifyDataSetChanged();
 			});
 		}
 
-		private void Item_OnClick(object sender, EventArgs<string> e) {
-			if (!System.IO.Path.HasExtension(e.Data)) {
-				this.ChangeDir(e.Data);
+		private void Item_OnClick(object sender, EventArgs<DirectoryItem> e) {
+			if (e.Data.IsFolder) {
+				this.GotoSubfolder(e.Data);
 				return;
 			}
 
@@ -107,32 +106,21 @@ namespace WRMC.Android.Views {
 				Method = WRMC.Core.Networking.Message.Type.PlayFile,
 				Body = new WRMC.Core.Networking.PlayFileMessageBody() {
 					ClientDevice = DeviceInformation.GetClientDevice(this.Activity.ApplicationContext),
-					FilePath = e.Data
+					FilePath = e.Data.Path
 				}
 			});
 		}
 
-		private void ChangeDir(string newDir) {
-			this.UpdateDirs(newDir);
-			this.SendDirRequest(newDir);
+		private void GotoSubfolder(DirectoryItem folder) {
+			this.directoryStack.Push(folder.Path);
+			this.SendDirRequest(folder.Path);
 		}
 
-		private void UpdateDirs(string currentDir) {
-			this.currentDir = currentDir;
+		private void GotoParentFolder() {
+			if (this.directoryStack.Count >= 1)
+				this.directoryStack.Pop();
 
-			int index = this.currentDir.LastIndexOf("\\");
-
-			if (index > 0 && index == this.currentDir.Length - 1) {
-				this.currentDir = this.currentDir.Substring(0, index);
-				index = this.currentDir.LastIndexOf("\\");
-			}
-
-			if (index < 0) {
-				this.parentDir = "";
-				return;
-			}
-
-			this.parentDir = this.currentDir.Substring(0, index);
+			this.SendDirRequest(this.directoryStack.Count == 0 ? "" : this.directoryStack.Peek());
 		}
 
 		private void SendDirRequest(string dir) {

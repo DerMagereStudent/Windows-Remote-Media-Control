@@ -8,6 +8,7 @@ using WRMC.Core.Networking;
 using WRMC.Windows.Media;
 
 using Newtonsoft.Json;
+using WRMC.Core;
 
 namespace WRMC.Windows.Networking {
 	public static class ConnectionManager {
@@ -93,8 +94,8 @@ namespace WRMC.Windows.Networking {
 				ConnectionManager.tcpServer.SendMessage(message, client);
 		}
 
-		private static void UdpServer_OnFindServerRequestReceived(UdpServer sender, EventArgs e) {
-			sender.SendServerInformation(DeviceInformation.ServerDevice);
+		private static void UdpServer_OnFindServerRequestReceived(UdpServer sender, EventArgs<ClientDevice> e) {
+			sender.SendServerInformation(DeviceInformation.ServerDevice, e.Data);
 		}
 
 		private static void TcpServer_OnConnectionAccpeted(TcpServer sender, ClientEventArgs e) {
@@ -279,13 +280,12 @@ namespace WRMC.Windows.Networking {
 					if (device == null || device.SessionID != directoryAuthenticatedMessageBody.ClientDevice.SessionID)
 						break;
 
-					Tuple<List<string>, List<string>> directoryContent = MediaCommandInvoker.Default.GetDirectoryContent(directoryAuthenticatedMessageBody.Directory);
+					List<DirectoryItem> directoryContent = MediaCommandInvoker.Default.GetDirectoryContent(directoryAuthenticatedMessageBody.Directory);
 
 					Response directoryResponse = new Response() {
 						Method = Response.Type.DirectoryContent,
 						Body = new DirectoryContentResponseBody() {
-							Folders = directoryContent.Item1,
-							Files = directoryContent.Item2
+							Items = directoryContent
 						}
 					};
 

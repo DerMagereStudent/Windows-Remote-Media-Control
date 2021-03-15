@@ -24,7 +24,7 @@ namespace WRMC.Windows.Media {
 			foreach (Process p in processes) {
 				try {
 					if (type == MediaSession.ApplicationType.UWP) {
-						string sApplicationUserModelId = GetAUMID(p.Id);
+						string sApplicationUserModelId = NativeExtractor.GetAUMIDForPid(p.Id);
 
 						if (sApplicationUserModelId.Equals(session.SourceAppUserModelId)) {
 							ids.Add(p.Id);
@@ -47,7 +47,6 @@ namespace WRMC.Windows.Media {
 				var playbackInfo = session.GetPlaybackInfo();
 
 				MediaSession ms = new MediaSession() {
-					ProcessIDs = ids,
 					ProcessName = name,
 					Title = mediaProperties.Title,
 					Artist = mediaProperties.Artist,
@@ -63,19 +62,6 @@ namespace WRMC.Windows.Media {
 			} catch (Exception) {
 				return null;
 			}
-		}
-
-		public static string GetAUMID(int pid) {
-			IntPtr hProcess = NativeMethods.OpenProcess(NativeDefinitions.PROCESS_QUERY_LIMITED_INFORMATION, false, pid);
-
-			uint sbc = 256;
-			StringBuilder sbApplicationUserModelId = new StringBuilder((int)sbc);
-			NativeMethods.GetApplicationUserModelId(hProcess, ref sbc, sbApplicationUserModelId);
-
-			string s = sbApplicationUserModelId.ToString();
-			NativeMethods.CloseHandle(hProcess);
-
-			return s;
 		}
 
 		public static MediaSession.ApplicationType GetApplicationType(string aumid) {

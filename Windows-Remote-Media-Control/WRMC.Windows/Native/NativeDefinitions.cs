@@ -4,6 +4,22 @@ namespace WRMC.Windows.Native {
 	public static class NativeDefinitions {
 		public static NativeStructs.PROPERTYKEY PKEY_AppUserModel_ID = new NativeStructs.PROPERTYKEY(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 5);
 
+		public const int ILD_NORMAL = 0x00000000;
+		public const int ILD_TRANSPARENT = 0x00000001;
+		public const int ILD_MASK = 0x00000010;
+		public const int ILD_IMAGE = 0x00000020;
+		public const int ILD_ROP = 0x00000040;
+		public const int ILD_BLEND25 = 0x00000002;
+		public const int ILD_BLEND50 = 0x00000004;
+		public const int ILD_OVERLAYMASK = 0x00000F00;
+		public const int ILD_PRESERVEALPHA = 0x00001000;
+		public const int ILD_SCALE = 0x00002000;
+		public const int ILD_DPISCALE = 0x00004000;
+		public const int ILD_ASYNC = 0x00008000;
+		public const int ILD_SELECTED = ILD_BLEND50;
+		public const int ILD_FOCUS = ILD_BLEND25;
+		public const int ILD_BLEND = ILD_BLEND50;
+
 		public const int PROCESS_TERMINATE = 0x0001;
 		public const int PROCESS_CREATE_THREAD = 0x0002;
 		public const int PROCESS_SET_SESSIONID = 0x0004;
@@ -19,6 +35,25 @@ namespace WRMC.Windows.Native {
 		public const int STANDARD_RIGHTS_REQUIRED = 0x000F0000;
 		public const int SYNCHRONIZE = 0x00100000;
 		public const int PROCESS_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xFFF;
+
+		public const uint SHGFI_ADDOVERLAYS = 0x000000020;
+		public const uint SHGFI_ATTR_SPECIFIED = 0x000020000;
+		public const uint SHGFI_ATTRIBUTES = 0x000000800;
+		public const uint SHGFI_DISPLAYNAME = 0x000000200;
+		public const uint SHGFI_EXETYPE = 0x000000020;
+		public const uint SHGFI_ICON = 0x000000100;
+		public const uint SHGFI_ICONLOCATION = 0x000001000;
+		public const uint SHGFI_LARGEICON = 0x000000000;
+		public const uint SHGFI_LINKOVERLAY = 0x000008000;
+		public const uint SHGFI_OPENICON = 0x000000002;
+		public const uint SHGFI_OVERLAYINDEX = 0x000000040;
+		public const uint SHGFI_PIDL = 0x000000008;
+		public const uint SHGFI_SELECTED = 0x000010000;
+		public const uint SHGFI_SHELLICONSIZE = 0x000000004;
+		public const uint SHGFI_SMALLICON = 0x000000001;
+		public const uint SHGFI_SYSICONINDEX = 0x000004000;
+		public const uint SHGFI_TYPENAME = 0x000000400;
+		public const uint SHGFI_USEFILEATTRIBUTES = 0x000000010;
 
 		public const int SPI_GETWORKAREA = 0x0030;
 

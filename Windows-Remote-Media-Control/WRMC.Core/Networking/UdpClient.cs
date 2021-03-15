@@ -56,7 +56,7 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		/// <param name="sendTimeout">The time span between two requests.</param>
 		/// <param name="searchDuration">The duration the client should keep sending requests.</param>
-		public void StartSending(int sendTimeout, int searchDuration) {
+		public void StartSending(int sendTimeout, int searchDuration, ClientDevice clientDevice) {
 			if (this.cancellationTokenSource != null && !this.cancellationTokenSource.IsCancellationRequested)
 				return;
 
@@ -65,13 +65,16 @@ namespace WRMC.Core.Networking {
 			Task.Factory.StartNew(() => {
 				Request request = new Request() {
 					Method = Request.Type.FindServer,
-					Body = null
+					Body = new AuthenticatedMessageBody() {
+						ClientDevice = clientDevice
+					}
 				};
 
 				byte[] datagram = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request, SerializationOptions.DefaultSerializationOptions));
 
 				while (!this.cancellationTokenSource.IsCancellationRequested) {
 					this.client.Send(datagram, datagram.Length, UdpOptions.DefaultClientSendingIPEndPoint);
+					//Logging.Request(request, true);
 					Thread.Sleep(sendTimeout);
 				}
 
@@ -111,6 +114,7 @@ namespace WRMC.Core.Networking {
 
 				if (datagramObject is Response) {
 					Response response = datagramObject as Response;
+					//Logging.Response(response, false);
 
 					if (response.Method == Response.Type.Servers)
 						this.OnServersResponseReceived?.Invoke(this, new MessageBodyEventArgs<ServerResponseBody>(response.Body as ServerResponseBody));
@@ -118,9 +122,7 @@ namespace WRMC.Core.Networking {
 
 				this.client.BeginReceive(this.OnResponseReceived, null);
 			}
-			catch (ObjectDisposedException) { }
-			catch (NullReferenceException) { }
-			catch (SocketException) { }
+			catch (Exception e) { Logging.HandledException(e); }
 		}
 	}
 }

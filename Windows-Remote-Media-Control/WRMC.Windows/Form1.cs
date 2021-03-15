@@ -25,6 +25,7 @@ namespace WRMC.Windows {
 
 		public Form1() {
 			this.InitializeComponent();
+			this.TransparencyKey = Color.Empty;
 
 			Settings.Load();
 
@@ -67,7 +68,8 @@ namespace WRMC.Windows {
 			};
 
 			Application.ApplicationExit += (s, e) => {
-				this.notifyIcon.Dispose();
+				this.notifyIcon?.Icon?.Dispose();
+				this.notifyIcon?.Dispose();
 			};
 
 			ConnectionManager.OnClientsChanged += (s, e) => this.UpdateDeviceList();
@@ -158,6 +160,11 @@ namespace WRMC.Windows {
 			switch (Settings.Current.RequestHandlingMethod) {
 				case ConnectionRequestHandlingMethod.AcceptAll:
 					ConnectionManager.AcceptConnection(e.Client, e.ClientDevice);
+					break;
+
+				case ConnectionRequestHandlingMethod.AcceptKnown:
+					if (ConnectionManager.KnownClients.ContainsKey(e.ClientDevice.ID))
+						ConnectionManager.AcceptConnection(e.Client, e.ClientDevice);
 					break;
 
 				case ConnectionRequestHandlingMethod.Ask:

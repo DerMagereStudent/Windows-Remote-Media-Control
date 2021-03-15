@@ -24,11 +24,6 @@ namespace WRMC.Core.Models {
 		}
 
 		/// <summary>
-		/// The ids of the corresponding processes.
-		/// </summary>
-		public List<int> ProcessIDs { get; set; }
-
-		/// <summary>
 		/// The name of the corresponding process.
 		/// </summary>
 		public string ProcessName { get; set; }
@@ -64,7 +59,6 @@ namespace WRMC.Core.Models {
 			this.AppType = session.AppType;
 			this.Artist = session.Artist;
 			this.AUMID = session.AUMID;
-			this.ProcessIDs = session.ProcessIDs;
 			this.ProcessName = session.ProcessName;
 			this.State = session.State;
 			this.Title = session.Title;
