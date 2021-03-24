@@ -18,6 +18,9 @@ using WRMC.Core.Models;
 using WRMC.Core.Networking;
 
 namespace WRMC.Android.Views {
+	/// <summary>
+	/// Fragment which contains the view and the functionality to access and resume suspended processes.
+	/// </summary>
 	public class SuspendedProcessesFragment : BackButtonNotifiableFragment {
 		private SuspendedProcessesRecyclerAdapter suspendedProcessesAdapter;
 		private SuspendedProcess processToResume;

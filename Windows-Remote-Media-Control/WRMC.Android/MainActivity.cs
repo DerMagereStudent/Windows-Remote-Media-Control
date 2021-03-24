@@ -73,7 +73,7 @@ namespace WRMC.Android {
             //Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             //base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-
+        
 		public override void OnBackPressed() {
             global::Android.Support.V4.App.Fragment fragment = this.SupportFragmentManager.FindFragmentById(Resource.Id.main_fragment_container);
 

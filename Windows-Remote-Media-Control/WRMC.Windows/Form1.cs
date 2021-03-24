@@ -53,7 +53,7 @@ namespace WRMC.Windows {
 			this.customComboBoxConnectionRequestHandlingMethod.SelectedItem = Settings.Current.RequestHandlingMethod;
 
 			this.customComboBoxSessionExtractor.DisplayMember = "Name";
-			this.customComboBoxSessionExtractor.DataSource = MediaCommandInvoker.RegisteredExtractors;
+			this.customComboBoxSessionExtractor.DataSource = MediaCommandInvoker.RegisteredInvokers;
 
 			this.customComboBoxSessionExtractor.SelectedItem = Settings.Current.SessionExtractor.GetType();
 

@@ -14,6 +14,9 @@ using WRMC.Android.Views.Adapters;
 using WRMC.Core.Networking;
 
 namespace WRMC.Android.Views {
+	/// <summary>
+	/// Fragment which contains the view and the functionality to connect to recent servers and to access the media sessions, processes and directorries.
+	/// </summary>
 	public class HomeFragment : Fragment {
 		private AlertDialog.Builder connectDialogBuilder;
 		private AlertDialog connectDialog;

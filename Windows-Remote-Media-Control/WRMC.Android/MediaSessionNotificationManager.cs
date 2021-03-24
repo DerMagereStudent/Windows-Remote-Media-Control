@@ -13,6 +13,9 @@ using WRMC.Core.Models;
 using WRMC.Core.Networking;
 
 namespace WRMC.Android {
+	/// <summary>
+	/// Static class to manage the android media style notification of the app.
+	/// </summary>
 	public static class MediaSessionNotificationManager {
 		private const string CHANNEL_ID = "WRMC.Android.MediaSessionNotificationChannel";
 		private const int NOTIFICATION_ID = 18517;
@@ -25,6 +28,10 @@ namespace WRMC.Android {
 		private static Bitmap currentThumbnail;
 		private static MediaSessionCompat mediaSession;
 
+		/// <summary>
+		/// Initializes the manager to allow him to show the nofification when allowed.
+		/// </summary>
+		/// <param name="context"></param>
 		public static void Initialize(Context context) {
 			MediaSessionNotificationManager.context = context;
 
@@ -42,6 +49,9 @@ namespace WRMC.Android {
 			ConnectionManager.OnConnectSuccess += ConnectionManager_OnConnectSuccess;
 		}
 
+		/// <summary>
+		/// Removes the notification if visible.
+		/// </summary>
 		public static void Cancel() {
 			(context.GetSystemService(Context.NotificationService) as NotificationManager).Cancel(NOTIFICATION_ID);
 		}
@@ -100,6 +110,10 @@ namespace WRMC.Android {
 			DisplayNotification();
 		}
 
+		/// <summary>
+		/// Updates the notification to display the given media session.
+		/// </summary>
+		/// <param name="session"></param>
 		public static void UpdateDisplayedSession(MediaSession session) {
 			if (currentSession == null && session == null)
 				return;
@@ -205,6 +219,9 @@ namespace WRMC.Android {
 			(context.GetSystemService(Context.NotificationService) as NotificationManager).Notify(NOTIFICATION_ID, notification);
 		}
 
+		/// <summary>
+		/// Base class of every android service with is called by the notification.
+		/// </summary>
 		public abstract class MediaService : Service {
 			public enum Type {
 				PlayPause,
@@ -241,9 +258,7 @@ namespace WRMC.Android {
 				return base.OnStartCommand(intent, flags, startId);
 			}
 
-			public override IBinder OnBind(Intent intent) {
-				return null;
-			}
+			public override IBinder OnBind(Intent intent) => null;
 		}
 
 		[Service]

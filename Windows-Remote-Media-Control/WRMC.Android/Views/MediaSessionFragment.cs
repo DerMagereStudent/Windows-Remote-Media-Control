@@ -16,6 +16,9 @@ using WRMC.Core.Models;
 using WRMC.Core.Networking;
 
 namespace WRMC.Android.Views {
+	/// <summary>
+	/// Fragment which contains the view and the functionality control a speficif media session.
+	/// </summary>
 	public class MediaSessionFragment : BackButtonNotifiableFragment {
 		private TextView textViewVolume;
 		private SeekBar seekBarVolume;

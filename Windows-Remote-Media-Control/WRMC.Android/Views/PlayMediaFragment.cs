@@ -16,6 +16,9 @@ using WRMC.Core;
 using WRMC.Core.Models;
 
 namespace WRMC.Android.Views {
+	/// <summary>
+	/// Fragment which contains the view and the functionality to get the content of the servers directories and open files.
+	/// </summary>
 	public class PlayMediaFragment : BackButtonNotifiableFragment {
 		private DirectoryRecyclerAdapter directoryAdapter;
 

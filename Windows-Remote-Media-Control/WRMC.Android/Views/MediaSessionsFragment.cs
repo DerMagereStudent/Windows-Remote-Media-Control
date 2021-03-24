@@ -13,6 +13,9 @@ using WRMC.Core.Models;
 using WRMC.Core.Networking;
 
 namespace WRMC.Android.Views {
+	/// <summary>
+	/// Fragment which contains the view and the functionality to access the list of media sessions.
+	/// </summary>
 	public class MediaSessionsFragment : BackButtonNotifiableFragment {
 		private MediaSessionsAdapter mediaSessionsAdapter;
 

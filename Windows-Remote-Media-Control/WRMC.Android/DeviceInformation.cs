@@ -12,9 +12,16 @@ using System.Text;
 using WRMC.Core.Networking;
 
 namespace WRMC.Android {
+	/// <summary>
+	/// Static class to read out the necessary device information.
+	/// </summary>
 	public static class DeviceInformation {
 		public static string DeviceName => Xamarin.Essentials.DeviceInfo.Name;
 
+		/// <summary>
+		/// Reads out the local IPv4 address of the device.
+		/// </summary>
+		/// <returns></returns>
 		public static IPAddress GetIPAddress() {
 			//return new IPAddress((context.GetSystemService(Context.WifiService) as WifiManager).ConnectionInfo.IpAddress);
 			foreach (NetworkInterface nInterface in NetworkInterface.GetAllNetworkInterfaces()) {
@@ -24,7 +31,7 @@ namespace WRMC.Android {
 							return ip.Address;
 			}
 
-			return IPAddress.Parse("123.123.123.123");
+			return IPAddress.None;
 		}
 
 		public static string GetDevideId(Context context) {

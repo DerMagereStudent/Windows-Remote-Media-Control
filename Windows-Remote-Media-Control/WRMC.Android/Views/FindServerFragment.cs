@@ -15,6 +15,9 @@ using WRMC.Android.Views.Adapters;
 using WRMC.Core.Networking;
 
 namespace WRMC.Android.Views {
+	/// <summary>
+	/// Fragment which contains the view and the functionality to search and connect to servers.
+	/// </summary>
 	public class FindServerFragment : BackButtonNotifiableFragment {
 		private List<ServerDevice> knownServers = new List<ServerDevice>();
 		private List<ServerDevice> availableServers = new List<ServerDevice>();

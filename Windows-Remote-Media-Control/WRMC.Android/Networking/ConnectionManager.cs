@@ -25,32 +25,100 @@ namespace WRMC.Android.Networking {
 
 		private static ServerDevice pendingServerDevice;
 
+		/// <summary>
+		/// List containing all known servers and the session ids the client can use to authenticate.
+		/// </summary>
 		[JsonConverter(typeof(KeyedListJsonConverter<ServerDevice, long>))]
 		public static KeyedList<ServerDevice, long> KnownServers { get; set; }
 
+		/// <summary>
+		/// Boolean taht indicates if the client is currently searching servers by sending <see cref="Request.Type.FindServer"/> requests.
+		/// </summary>
 		public static bool IsSearchingServers { get; private set; }
 
+		/// <summary>
+		/// The server information of the server the client is currently connected to. Null if no connection.
+		/// </summary>
 		public static ServerDevice CurrentServer { get; set; }
 
+		/// <summary>
+		/// Event handler that is called whenever the client receives a <see cref="Response.Type.Servers"/> response.
+		/// </summary>
 		public static event EventHandler<MessageBodyEventArgs<ServerResponseBody>> OnFindServerResponseReceived = null;
+
+		/// <summary>
+		/// Event handler that is called when the find server process is finished sending packages.
+		/// </summary>
 		public static event EventHandler<EventArgs> OnFindServerFinished = null;
 
+		/// <summary>
+		/// Event handler that is called when the client established a TCP connection.
+		/// </summary>
 		public static event EventHandler<EventArgs> OnTcpConnectSuccess = null;
+
+		/// <summary>
+		/// Event handler that is called when the client failed to establish a TCP connection.
+		/// </summary>
 		public static event EventHandler<EventArgs> OnTcpConnectFailure = null;
+
+		/// <summary>
+		/// Event handler that is called when the client receives a <see cref="Response.Type.ConnectSuccess"/> response.
+		/// </summary>
 		public static event EventHandler<EventArgs> OnConnectSuccess = null;
+
+		/// <summary>
+		/// Event handler that should be called when the server rejects the connect request of when client gets no response. Currenly not implemented.
+		/// </summary>
 		public static event EventHandler<EventArgs> OnConnectFailure = null;
+
+		/// <summary>
+		/// Event handler that is called when the server closed the connection or when connection monitoring process recognizes the server does not responde to Pings.
+		/// </summary>
 		public static event EventHandler<EventArgs> OnConnectionClosed = null;
 
+		/// <summary>
+		/// Event handler that is called when the client receives screen information.
+		/// </summary>
 		public static event EventHandler<EventArgs<List<string>>> OnScreensReceived = null;
+
+		/// <summary>
+		/// Event handler that is called when the client receives audio device information.
+		/// </summary>
 		public static event EventHandler<EventArgs<List<AudioEndpoint>>> OnAudioDevicesReceived = null;
+
+		/// <summary>
+		/// Event handler that is called when the client receives volume information.
+		/// </summary>
 		public static event EventHandler<EventArgs<int>> OnVolumeReceived = null;
+
+		/// <summary>
+		/// Event handler that is called when the client receives the thumbnail bytes.
+		/// </summary>
 		public static event EventHandler<EventArgs<byte[]>> OnThumbnailReceived = null;
+
+		/// <summary>
+		/// Event handler that is called when the client receives the list of suspended processes.
+		/// </summary>
 		public static event EventHandler<EventArgs<List<SuspendedProcess>>> OnSuspendedProcessesReceived = null;
+
+		/// <summary>
+		/// Event handler that is called when the client receives the content of a specific directory.
+		/// </summary>
 		public static event EventHandler<EventArgs<List<DirectoryItem>>> OnDirectoryContentReceived = null;
 
+		/// <summary>
+		/// Event handler that is called when the client receives the list of media sessions active on the server device.
+		/// </summary>
 		public static event EventHandler<EventArgs<List<MediaSession>>> OnMediaSessionsReceived = null;
+
+		/// <summary>
+		/// Event handler that is called when the client receives information about a specific media session.
+		/// </summary>
 		public static event EventHandler<EventArgs<MediaSession>> OnMediaSessionChanged = null;
 
+		/// <summary>
+		/// Static contructor called by the CLI before using static fields.
+		/// </summary>
 		static ConnectionManager() {
 			ConnectionManager.LoadKnownServers();
 
@@ -68,6 +136,9 @@ namespace WRMC.Android.Networking {
 			ConnectionManager.tcpClient.OnResponseReceived += TcpClient_OnResponseReceived;
 		}
 
+		/// <summary>
+		/// Starts the find server process by sending UDP <see cref="Request.Type.FindServer"/> requests.
+		/// </summary>
 		public static void StartFindServer() {
 			if (ConnectionManager.IsSearchingServers)
 				return;
@@ -77,6 +148,9 @@ namespace WRMC.Android.Networking {
 			ConnectionManager.IsSearchingServers = true;
 		}
 
+		/// <summary>
+		/// Starts the find server process.
+		/// </summary>
 		public static void StopFindServer() {
 			if (!ConnectionManager.IsSearchingServers)
 				return;
@@ -86,6 +160,11 @@ namespace WRMC.Android.Networking {
 			ConnectionManager.IsSearchingServers = false;
 		}
 
+		/// <summary>
+		/// Starts to try to establish a TCP connection to a given server device.
+		/// </summary>
+		/// <param name="device">The server to connect to.</param>
+		/// <returns>True if the try was successful and a connection was established.</returns>
 		public static bool StartConnect(ServerDevice device) {
 			ConnectionManager.pendingServerDevice = device;
 			return ConnectionManager.tcpClient.Start(device);
@@ -95,11 +174,19 @@ namespace WRMC.Android.Networking {
 			ConnectionManager.tcpClient.Stop();
 		}
 
+		/// <summary>
+		/// Closes the connection and sends a <see cref="WRMC.Core.Networking.Message.Type.Disconnect"/> to the server.
+		/// </summary>
+		/// <param name="clientDevice"></param>
 		public static void CloseConnection(ClientDevice clientDevice) {
 			clientDevice.SessionID = ConnectionManager.KnownServers.ContainsKey(ConnectionManager.CurrentServer) ? ConnectionManager.KnownServers[ConnectionManager.CurrentServer] : 0;
 			ConnectionManager.tcpClient.Stop(clientDevice);
 		}
 
+		/// <summary>
+		/// Sends a <see cref="Request.Type.Connect"/> request to the current server.
+		/// </summary>
+		/// <param name="clientDevice">The client information used to authenticate.</param>
 		public static void SendConnectRequest(ClientDevice clientDevice) {
 			clientDevice.SessionID = ConnectionManager.KnownServers.ContainsKey(ConnectionManager.pendingServerDevice) ? ConnectionManager.KnownServers[ConnectionManager.pendingServerDevice] : 0;
 
@@ -111,6 +198,10 @@ namespace WRMC.Android.Networking {
 			});
 		}
 
+		/// <summary>
+		/// Sends a request to the server.
+		/// </summary>
+		/// <param name="request">The request to send.</param>
 		public static void SendRequest(Request request) {
 			if (request.Body is AuthenticatedMessageBody)
 				(request.Body as AuthenticatedMessageBody).ClientDevice.SessionID = ConnectionManager.KnownServers.ContainsKey(ConnectionManager.CurrentServer) ? ConnectionManager.KnownServers[ConnectionManager.CurrentServer] : 0;
@@ -118,6 +209,10 @@ namespace WRMC.Android.Networking {
 			ConnectionManager.tcpClient.SendRequest(request);
 		}
 
+		/// <summary>
+		/// Sends a message to the server.
+		/// </summary>
+		/// <param name="message">The message to send.</param>
 		public static void SendMessage(WRMC.Core.Networking.Message message) {
 			if (message.Body is AuthenticatedMessageBody)
 				(message.Body as AuthenticatedMessageBody).ClientDevice.SessionID = ConnectionManager.KnownServers.ContainsKey(ConnectionManager.CurrentServer) ? ConnectionManager.KnownServers[ConnectionManager.CurrentServer] : 0;
@@ -212,6 +307,9 @@ namespace WRMC.Android.Networking {
 			}
 		}
 
+		/// <summary>
+		/// Loads the known server list from the servers json file.
+		/// </summary>
 		private static void LoadKnownServers() {
 			if (ContextCompat.CheckSelfPermission(Application.Context, Manifest.Permission.ReadExternalStorage) == Permission.Granted) {
 				try {
@@ -232,6 +330,9 @@ namespace WRMC.Android.Networking {
 			}
 		}
 
+		/// <summary>
+		/// Saves the known server list to the servers json file.
+		/// </summary>
 		private static void SaveKnownServers() {
 			if (ContextCompat.CheckSelfPermission(Application.Context, Manifest.Permission.WriteExternalStorage) != Permission.Granted)
 				return;

@@ -8,7 +8,7 @@ namespace WRMC.Windows.Media {
 		private static Dictionary<Type, MediaCommandInvoker> registeredInvokers;
 
 		public static MediaCommandInvoker Default { get; set; }
-		public static List<Type> RegisteredExtractors => new List<Type>(registeredInvokers.Keys);
+		public static List<Type> RegisteredInvokers => new List<Type>(registeredInvokers.Keys);
 
 		static MediaCommandInvoker() {
 			registeredInvokers = new Dictionary<Type, MediaCommandInvoker>();

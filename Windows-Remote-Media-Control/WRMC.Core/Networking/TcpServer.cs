@@ -80,7 +80,7 @@ namespace WRMC.Core.Networking {
 				return;
 
 			this.server.Start();
-			this.server.Server.Listen(1);
+			this.server.Server.Listen(5);
 			this.server.BeginAcceptTcpClient(this.OnConnectionRequestReceived, null);
 			this.Listening = true;
 		}
