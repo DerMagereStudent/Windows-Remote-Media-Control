@@ -33,6 +33,26 @@ namespace WRMC.Windows.Native {
 			return hwnds;
 		}
 
+		public static List<IntPtr> GetHwndsForPids(string aumid) {
+			List<int> pids = GetProcessIDsForAUMID(aumid);
+
+			List<IntPtr> hwnds = new List<IntPtr>();
+
+			IntPtr hWndChild = IntPtr.Zero;
+			hWndChild = NativeMethods.FindWindowEx(IntPtr.Zero, hWndChild, null, null);
+
+			while (hWndChild != IntPtr.Zero) {
+				NativeMethods.GetWindowThreadProcessId(hWndChild, out int pid);
+
+				if (pids.Contains(pid))
+					hwnds.Add(hWndChild);
+
+				hWndChild = NativeMethods.FindWindowEx(IntPtr.Zero, hWndChild, null, null);
+			}
+
+			return hwnds;
+		}
+
 		public static List<int> GetProcessIDsForAUMID(string aumid) {
 			List<int> ids = new List<int>();
 

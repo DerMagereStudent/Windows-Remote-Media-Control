@@ -52,7 +52,7 @@ namespace WRMC.Windows.Media {
 			if (screen == null)
 				return;
 
-			List<IntPtr> hwnds = NativeExtractor.GetHwndsForAUMID(session.AUMID);
+			List<IntPtr> hwnds = session.AppType == MediaSession.ApplicationType.UWP ? NativeExtractor.GetHwndsForAUMID(session.AUMID) : NativeExtractor.GetHwndsForPids(session.AUMID);
 
 			foreach (IntPtr hwnd in hwnds) {
 				if (!NativeMethods.IsWindowVisible(hwnd))
