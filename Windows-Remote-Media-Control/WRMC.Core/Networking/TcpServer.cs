@@ -65,6 +65,7 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		public TcpServer() {
 			this.server = new TcpListener(TcpOptions.DefaultListenIPAddress, TcpOptions.DefaultPort);
+			this.server.Server.NoDelay = true;
 			this.clients = new Dictionary<System.Net.Sockets.TcpClient, ClientDevice>();
 			this.clientBuffers = new Dictionary<System.Net.Sockets.TcpClient, byte[]>();
 			this.clientRemainingData = new Dictionary<System.Net.Sockets.TcpClient, string>();

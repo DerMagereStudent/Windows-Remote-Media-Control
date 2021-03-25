@@ -61,6 +61,7 @@ namespace WRMC.Core.Networking {
 		/// </summary>
 		public TcpClient() {
 			this.client = new System.Net.Sockets.TcpClient();
+			this.client.Client.NoDelay = true;
 			this.buffer = new byte[TcpOptions.BufferSize];
 			this.remainingData = "";
 
@@ -96,6 +97,7 @@ namespace WRMC.Core.Networking {
 				try { this.client.GetStream().Close(); } catch (ObjectDisposedException e) { Logging.HandledException(e); } catch (InvalidOperationException e) { Logging.HandledException(e); } catch (IOException e) { Logging.HandledException(e); }
 				try { this.client.Close(); } catch (ObjectDisposedException e) { Logging.HandledException(e); } catch (InvalidOperationException e) { Logging.HandledException(e); } catch (IOException e) { Logging.HandledException(e); }
 				this.client = new System.Net.Sockets.TcpClient();
+				this.client.Client.NoDelay = true;
 			}
 
 			this.serverDevice = null;
